@@ -1,7 +1,6 @@
 <template>
-  <!-- Step 1: Information about the child -->
   <div class="page">
-    <TypewriterText class="typewriter" text="Remplissez l'objectif de la journée en suivant ces étapes..." />
+    <!-- <TypewriterText class="typewriter" text="Remplissez l'objectif de la journée en suivant ces étapes..." /> -->
     <div class="container">
       <!-- Step 1: Information about the child -->
       <div v-if="currentStep === 1" class="info">
@@ -26,7 +25,6 @@
           <select v-model="child.class" class="input-field">
             <option value="CP1">CP1</option>
             <option value="CP2">CP2</option>
-            <!-- Autres options -->
           </select>
         </div><br>
         <div class="form-group">
@@ -45,7 +43,8 @@
           <label>Quartier de résidence <span>*</span></label>
           <input type="text" v-model="child.live" class="input-field">
         </div><br>
-        <button class="button" @click="nextStep">Suivant</button>
+        <p v-if="showAlert" class="alert-message">Veuillez remplir tous les champs obligatoires.</p>
+        <button class="button" @click="validateStep1">Suivant</button>
       </div>
 
       <!-- Step 2: Information about the parents -->
@@ -60,15 +59,16 @@
           <input type="text" v-model="parent.motherName" class="input-field">
         </div><br>
         <div class="form-group">
-          <label>Téléphone :</label>
+          <label>Téléphone <span>*</span></label>
           <input type="text" v-model="parent.phoneNumber" class="input-field">
         </div><br>
         <div class="form-group">
           <label>Profession</label>
           <input type="text" v-model="parent.occupation" class="input-field">
-        </div>
+        </div><br>
+        <p v-if="showAlert" class="alert-message">Veuillez remplir tous les champs obligatoires.</p>
         <button class="previous" @click="previousStep">Retour</button>
-        <button class="button" @click="nextStep">Suivant</button>
+        <button class="button" @click="validateStep2">Suivant</button>
       </div>
 
       <!-- Step 3: Entry Date -->
@@ -84,16 +84,16 @@
           <p>Pouvez-vous fournir une autre information concernant la vie de l'enfant ?</p>
         </div><br>
         <button class="previous" @click="previousStep">Retour</button>
-        <button class="button" @click="nextStep">Suivant</button>
+        <button class="button" @click="validateStep3">Suivant</button>
       </div>
 
       <!-- Step 4: Add a photo -->
       <div v-if="currentStep === 4" class="info">
         <h2>Ajouter la photo de l'enfant</h2>
         <input type="file" @change="onFileChange" accept="image/*">
-        <img v-if="profileImage" :src="profileImageURL" alt="Photo de profil" class="profile-photo">
+        <img v-if="profileImage" :src="profileImageURL" alt="Photo de profil" class="profile-photo"><br>
         <button class="previous" @click="previousStep">Retour</button>
-        <button class="button" @click="submit">Soumettre</button>
+        <button @click="submitForm"><i v-if="loading" class="fas fa-circle-notch fa-spin"></i><span v-else>Submit</span></button>
       </div>
     </div>
     <div v-if="showPopup" class="popup">
@@ -102,19 +102,21 @@
   </div>
 </template>
 
-
 <script>
 import axios from 'axios';
 import TypewriterText from '@/components/TypewriterText.vue';
-import {API_BASE_URL}  from '@/config.js';
+import { API_BASE_URL } from '@/config.js';
+
 export default {
   components: {
     TypewriterText
   },
   data() {
     return {
+      showAlert: false,
+      loading: false,
       currentStep: 1,
-      showPopup:false,
+      showPopup: false,
       child: {
         lastName: '',
         firstName: '',
@@ -122,40 +124,60 @@ export default {
         class: '',
         birthDate: '',
         birthPlace: '',
-        live: '',
-        // Other child fields
+        live: ''
       },
       parent: {
         fatherName: '',
         motherName: '',
         phoneNumber: ''
-        // Other parent fields
       },
       date: {
         dateOfEntrance: '',
-        otherInfo: '',
+        otherInfo: ''
       },
       profileImage: null,
-      profileImageURL: null,
+      profileImageURL: null
     };
   },
   methods: {
+    validateStep1() {
+      if (this.child.lastName && this.child.firstName && this.child.birthDate && this.child.birthPlace && this.child.live) {
+        this.showAlert = false;
+        this.nextStep();
+      } else {
+        this.showAlert = true;
+      }
+    },
+    validateStep2() {
+      if (this.parent.fatherName && this.parent.phoneNumber) {
+        this.showAlert = false;
+        this.nextStep();
+      } else {
+        this.showAlert = true;
+      }
+    },
+    validateStep3() {
+      this.showAlert = false;
+      this.nextStep();
+    },
     nextStep() {
       this.currentStep++;
     },
     previousStep() {
       this.currentStep--;
     },
-    skipStep() {
-      // Move to the next step (in this case, step 3)
-      this.nextStep();
-    },
     onFileChange(event) {
-      // Récupérer le fichier d'image sélectionné par l'utilisateur
       const file = event.target.files[0];
-      // Mettre à jour la variable profileImage avec le fichier sélectionné
       this.profileImageURL = URL.createObjectURL(file);
       this.profileImage = file;
+    },
+    submitForm() {
+      if (this.profileImage) {
+        this.showAlert = false;
+        this.submit();
+      } else {
+        this.showAlert = true;
+      }
     },
     submit() {
       const token = localStorage.getItem('token');
@@ -169,54 +191,51 @@ export default {
         ...this.date,
         profileImageURL: this.profileImageURL
       };
-      console.log('Data to be sent:', postData);
+
+      this.loading = true;
 
       axios.post(`${API_BASE_URL}/child/childInfo`, postData, { headers })
         .then(res => {
           console.log('Data saved successfully:', res.data);
           this.showPopup = true;
-          // Réinitialiser le formulaire et revenir à l'étape 1 après la soumission réussie
           setTimeout(() => {
-            this.showPopup = false; // Hide the popup
+            this.showPopup = false;
           }, 1000);
           this.resetForm();
         })
         .catch(error => {
-          console.log("backend error", error.response.data);
           console.error('Error saving data:', error);
+        })
+        .finally(() => {
+          this.loading = false;
         });
     },
     resetForm() {
-      // Réinitialiser toutes les données du formulaire à leur état initial
       this.currentStep = 1;
       this.child = {
         lastName: '',
-        firstNames: '',
+        firstName: '',
         sex: '',
         class: '',
         birthDate: '',
         birthPlace: '',
-        live: '',
-        // Autres champs pour l'enfant
+        live: ''
       };
       this.parent = {
         fatherName: '',
         motherName: '',
         phoneNumber: ''
-        // Autres champs pour le parent
       };
       this.date = {
-        dateOfEntre: '',
-        otherInfo: '',
+        dateOfEntrance: '',
+        otherInfo: ''
       };
+      this.profileImage = null;
       this.profileImageURL = null;
     }
   }
 };
 </script>
-
-
-
 
 <style scoped>
 .page {
@@ -241,14 +260,14 @@ span {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.typewriter {
+/* .typewriter {
   margin: 20px 0;
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   padding: 20px;
   text-align: center;
-}
+} */
 
 .form-group {
   margin-bottom: 20px;
@@ -306,6 +325,11 @@ span {
   text-align: center;
   color: rgb(180, 34, 34);
 }
+.alert-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+}
 
 @media only screen and (max-width: 768px) {
   .container {
@@ -317,4 +341,3 @@ span {
   }
 }
 </style>
-

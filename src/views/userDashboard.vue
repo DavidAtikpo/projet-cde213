@@ -32,7 +32,7 @@ import userReportComponent from '@/components/user/userReportComponent.vue';
 import userRevewComponent from '@/components/user/userRevewComponent.vue';
 import userStatisticComponent from '@/components/user/userStatisticComponent.vue';
 import listOfChildComponent from '@/components/listOfChildComponent.vue';
-import createActivityComponent from '@/components/createActivityComponent.vue';
+import createActivityComponent from '@/components/user/createActivityComponent.vue';
 import messageComponent from '@/components/messageComponent.vue';
 import absentComponent from '@/components/absentComponent.vue';
 import uploadChildPictureComponent from '@/components/uploadChildPictureComponent.vue';

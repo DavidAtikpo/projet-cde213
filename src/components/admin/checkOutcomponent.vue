@@ -29,7 +29,8 @@
             <textarea id="justification" v-model="justification" rows="4" :class="{'error': errors.justification}" ref="justificationField"></textarea>
           </div>
           <h5>Bon travail ! Passez une agréable soirée sous la protection de Dieu</h5><br>
-          <button @click="submitForm">Soumettre</button>
+          <button @click="submitForm"> <i v-if="loading" class="fas fa-circle-notch fa-spin"></i>
+            <span v-else>Submit</span></button>
         </div>
         <div class="popup" ref="popup">
           <img class="check" src="@/assets/images/check.png" />
@@ -53,6 +54,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       justification: '',
       choix: '',
       pourcentage: '',
@@ -102,7 +104,7 @@ export default {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       };
-
+      this.loading = true
       axios.post(`${API_BASE_URL}/user/rapport`, formData, { headers })
         .then(res => {
           if (res.status === 201) {
@@ -114,6 +116,9 @@ export default {
         })
         .catch(error => {
           console.error(error);
+        })
+        .finally(()=>{
+          this.loading = false
         });
     },
     shakeInput() {
@@ -306,6 +311,9 @@ label {
   }
   h5 {
     font-size: 10px;
+  }
+  .typewriter {
+    display: none; /* Masquer le composant */
   }
 }
 .check {

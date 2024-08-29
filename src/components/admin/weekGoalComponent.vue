@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="container">
-      <TypewriterText class="typewriter" text="Remplissez l'objectif de la journée en suivant ces étapes..." />
+      <!-- <TypewriterText class="typewriter" text="Remplissez l'objectif de la journée en suivant ces étapes..." /> -->
       <div class="content-wrapper">
       <div class="content">
         <h2>Définir l'objectif pour la Semaine</h2>
@@ -12,7 +12,8 @@
                     :class="{ 'error-border': errorSubmitting }" 
                     ref="weeklyGoalField"></textarea>
         </div><br>
-        <button @click="submitForm">Soumettre</button>
+        <button @click="submitForm"> <i v-if="loading" class="fas fa-circle-notch fa-spin"></i>
+          <span v-else>Submit</span></button>
         <h5 v-if="errorFetchingDate">Erreur lors du chargement de la date. Veuillez vérifier votre connexion Internet.</h5>
       </div>
       <!-- Popup to display "Created successfully" -->
@@ -37,6 +38,7 @@ export default {
     },
   data() {
     return {
+      loading:false,
       weeklyGoal: '',
       showPopup: false, // Initialize popup visibility to false
       errorSubmitting: false,
@@ -53,7 +55,7 @@ export default {
       const formData = {
         weeklyGoal: this.weeklyGoal
       };
-
+  this.loading = true
       axios.post(`${API_BASE_URL}/week/weekly`, formData, { headers })
         .then(response => {
           console.log('Form submitted successfully:', response.data);
@@ -70,6 +72,9 @@ export default {
           console.error('Error submitting form:', error);
           this.errorSubmitting = true;
           this.shakeInput();
+        })
+        .finally(()=>{
+          this.loading = false
         });
     },
     shakeInput() {
@@ -101,8 +106,8 @@ button {
   width: 100%;
   height: 100vh;
   display: flex;
-  /* justify-content: center; */
-  /* align-items: center; */
+  justify-content: center;
+  align-items: center;
 }
 .content {
   width: 65%;

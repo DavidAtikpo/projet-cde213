@@ -1,52 +1,60 @@
 <template>
-  <div class="page">
-    <div class="container1">
-      <div class="content1">
-        <h2>Rapport journalier</h2><br>
-        <div class="goal">
-          <p>{{ dailyGoal }}</p>
+  <div :class="[theme, 'page']">
+    <div class="container">
+      <TypewriterText class="typewriter" text="Remplissez l'objectif de la journée en suivant ces étapes..." />
+      <div class="content-wrapper">
+        <div class="content">
+          <h2>Rapport journalier</h2><br>
+          <div class="goal">
+            <p>{{ dailyGoal }}</p>
+          </div>
+          <h4>Est-ce que l'objectif quotidien a été réalisé ?</h4>
+          <div class="check">
+            <label for="oui">Oui :</label>
+            <input type="radio" id="oui" value="oui" v-model="choix" :class="{'error': errors.choix}" ref="choixField" />
+          </div>
+          <div class="check">
+            <label for="non">Non:</label>
+            <input type="radio" id="non" value="non" v-model="choix" :class="{'error': errors.choix}" ref="choixField" />
+          </div>
+          <div>
+            <label for="pourcentage">Pourcentage de travail effectué:</label>
+            <select id="pourcentage" v-model="pourcentage" :class="{'error': errors.pourcentage}" ref="pourcentageField">
+              <option value="">Sélectionner le pourcentage</option>
+              <option v-for="i in 11" :key="i" :value="i * 10">{{ i * 10 }}%</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="justification">Commentaire ou justification</label>
+            <textarea id="justification" v-model="justification" rows="4" :class="{'error': errors.justification}" ref="justificationField"></textarea>
+          </div>
+          <h5>Bon travail ! Passez une agréable soirée sous la protection de Dieu</h5><br>
+          <button @click="submitForm"> <i v-if="loading" class="fas fa-circle-notch fa-spin"></i>
+            <span v-else>Submit</span></button>
         </div>
-        <h4>Est-ce que l'objectif quotidien a été réalisé ?</h4>
-        <div class="check">
-          <label for="oui">Oui :</label>
-          <input type="radio" id="oui" value="oui" v-model="choix" :class="{'error': errors.choix}" ref="choixField" />
+        <div class="popup" ref="popup">
+          <img class="check" src="@/assets/images/check.png" />
+          <h2>Rapport soumis avec succès !</h2>
+          <button @click="closePopup" type="button">OK</button>
         </div>
-        <div class="check">
-          <label for="non">Non:</label>
-          <input type="radio" id="non" value="non" v-model="choix" :class="{'error': errors.choix}" ref="choixField" />
-        </div>
-        <div>
-          <label for="pourcentage">Pourcentage de travail effectué:</label>
-          <select id="pourcentage" v-model="pourcentage" :class="{'error': errors.pourcentage}" ref="pourcentageField">
-            <option value="">Sélectionner le pourcentage</option>
-            <option v-for="i in 11" :key="i" :value="i * 10">{{ i * 10 }}%</option>
-          </select>
-        </div>
-        <div class="input-group">
-          <label for="justification">Commentaire ou justification</label>
-          <textarea id="justification" v-model="justification" rows="4" :class="{'error': errors.justification}" ref="justificationField"></textarea>
-        </div>
-        <h5>Bon travail ! Passez une agréable soirée sous la protection de Dieu</h5><br>
-        <button @click="submitForm">Soumettre</button>
-      </div>
-      <div class="popup" ref="popup">
-        <img class="check" src="@/assets/images/check.png" />
-        <h2>Rapport soumis avec succès !</h2>
-        <button @click="closePopup" type="button">OK</button>
       </div>
     </div>
   </div>
 </template>
 
-
-
-
 <script>
-import axios from 'axios'
-import {API_BASE_URL}  from '@/config.js';
+import TypewriterText from '@/components/TypewriterText.vue';
+import { mapState } from 'vuex';
+import axios from 'axios';
+import { API_BASE_URL } from '@/config.js';
+
 export default {
+  components: {
+    TypewriterText
+  },
   data() {
     return {
+      loading: false,
       justification: '',
       choix: '',
       pourcentage: '',
@@ -57,6 +65,9 @@ export default {
         pourcentage: false,
       }
     };
+  },
+  computed: {
+    ...mapState(['theme'])
   },
   mounted() {
     this.dailyGoal = localStorage.getItem('dailyGoal');
@@ -87,14 +98,16 @@ export default {
         pourcentage: this.pourcentage,
         dailyGoal: this.dailyGoal
       };
+
       const token = localStorage.getItem('token');
       const headers = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       };
+      this.loading = true
       axios.post(`${API_BASE_URL}/user/rapport`, formData, { headers })
         .then(res => {
-          if (res.status === 200) {
+          if (res.status === 201) {
             this.openPopup();
             setTimeout(() => {
               this.closePopup();
@@ -103,17 +116,18 @@ export default {
         })
         .catch(error => {
           console.error(error);
+        })
+        .finally(()=>{
+          this.loading = false
         });
     },
     shakeInput() {
-      // Récupérer les références des champs
       const inputFields = [
         this.$refs.justificationField,
-        this.$refs.choixField, // Ceci sera une NodeList (array-like object)
+        this.$refs.choixField,
         this.$refs.pourcentageField
       ];
 
-      // Ajouter et retirer la classe 'shake' pour chaque champ
       inputFields.forEach(input => {
         if (input) {
           if (Array.isArray(input)) {
@@ -130,26 +144,55 @@ export default {
     }
   }
 };
-
-
-
 </script>
 
 <style scoped>
 .page {
   background-color: #c4c1c1;
 }
-.container1 {
+.dark.page {
+  background-color: #636060;
+  color: #fff;
+}
+.light.page {
+  background-color: #fff;
+  color: #333;
+}
+.container {
   width: 100%;
-  height: 100vh;
+  height: 70vh;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.content1 {
-  width: 90%;
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.content-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1200px;
+}
+.content {
+  width: 60%;
   max-width: 800px;
+  padding: 39px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.typewriter {
+  position: absolute;
+  width: 20%;
   padding: 40px;
+  margin-left: 900px;
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -166,10 +209,10 @@ export default {
   transform: translate(-50%, -50%);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   z-index: 9999;
-  display: none; /* Initial state hidden */
+  display: none;
 }
 .popup.open-popup {
-  display: block; /* Show when open-popup class is added */
+  display: block;
 }
 .popup img.check {
   width: 50px;
@@ -253,7 +296,7 @@ label {
     font-size: 8px;
     text-align: center;
   }
-  .content {
+  .content1 {
     width: 80%;
   }
   input,
@@ -269,6 +312,9 @@ label {
   h5 {
     font-size: 10px;
   }
+  .typewriter {
+    display: none; /* Masquer le composant */
+  }
 }
 .check {
   position: relative;
@@ -281,5 +327,3 @@ h4 {
   color: blue;
 }
 </style>
-
-

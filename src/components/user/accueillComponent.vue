@@ -1,209 +1,290 @@
 <template>
-  <div class="stud-dash">
-    <div class="welcome">
-      <div class="right">
-        <p class="up-welcome">
-          Bienvenue <span>{{ firstName }}</span>
-        </p>
-        <p class="under-welcome">
-          N'oubliez pas de générer le rapport à la fin de la journée. Votre rapport reflète le travail accompli et ne peut être rempli qu'une fois par jour.
-        </p>
+  <div :class="[theme, 'page']">
+    <div class="stud-dash">
+      <div class="welcome">
+        <div class="right">
+          <p class="up-welcome animate__animated animate__fadeInDown">
+            Bienvenue <span>{{ firstName }}</span>
+          </p>
+          <p class="under-welcome animate__animated animate__fadeInUp">
+            N'oubliez pas de générer le rapport à la fin de la journée. Votre rapport reflète le travail accompli et ne peut être rempli qu'une fois par jour.
+          </p>
+        </div>
+        <div class="left">
+          <img class="welcome-img" src="@/assets/images/logo.jpeg" alt="dashboard" />
+        </div>
       </div>
-      <div class="left">
-        <img class="welcome-img" src="@/assets/images/logo.jpeg" alt="dashboard" />
+
+      <!-- Section des Publications de l'UNICEF avec Carrousel -->
+      <div class="unicef-section">
+        <h3>Suivre les Publications de l'UNICEF</h3>
+        <div class="carousel">
+          <img :src="currentImage" alt="Publication" />
+          <div class="carousel-buttons">
+            <button @click="prevImage">←</button>
+            <button @click="nextImage">→</button>
+          </div>
+        </div>
+        <p><a href="https://www.unicef.org" target="_blank">Visitez le site de l'UNICEF</a></p>
       </div>
-    </div>
-  </div>
-  <div class="statistics-component">
-    <h2>Statistiques du jour</h2>
-    <div class="percentage-of-the-day">
-      <p>Percentage du jour: {{ percentageOfDay }}%</p>
-    </div>
-    <div class="chart">
-      <h3>Diagramme à barres</h3>
-      <canvas ref="barChartCanvas"></canvas>
-    </div>
-    <div class="chart">
-      <h3>Diagramme en courbes</h3>
-      <canvas ref="lineChartCanvas"></canvas>
+
+      <!-- Section des Actualités et Articles -->
+      <div class="news-section">
+        <h3>Actualités et Articles</h3>
+        <ul>
+          <li v-for="(article, index) in articles" :key="index">
+            <a :href="article.url" target="_blank">{{ article.title }}</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Chat Bar -->
+      <div class="chat-bar">
+        <div class="chat-header" @click="toggleChat">
+          <h4>Chat Support</h4>
+        </div>
+        <div v-if="chatOpen" class="chat-content">
+          <div class="chat-messages">
+            <p v-for="message in messages" :key="message.id">{{ message.text }}</p>
+          </div>
+          <input type="text" v-model="newMessage" placeholder="Type a message..." @keyup.enter="sendMessage" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
+
+
 <script>
-// import Chart from 'chart.js/auto';
-import axios  from 'axios';
-import {API_BASE_URL}  from '@/config.js';
+import image1 from '@/assets/images/20220902_080000.jpg';
+import image2 from '@/assets/images/348955217_778152960616511_1981663321848763521_n.jpg';
+import image3 from '@/assets/images/Screenshot from 2024-08-16 03-50-01.png';
+import image4 from '@/assets/images/Screenshot from 2024-08-16 03-50-44.png';
+import { mapState } from 'vuex';
+
 export default {
   data() {
     return {
-      percentageOfDay: 0,
-      userData: [] // Array to store user data from backend
+      firstName: '',
+      chatOpen: false,
+      messages: [],
+      newMessage: '',
+      articles: [
+        { title: "L'éducation des enfants en Afrique - UNICEF", url: "https://www.unicef.org/education" },
+        { title: "Santé mondiale et prévention des maladies - OMS", url: "https://www.who.int" },
+        { title: "L'impact de Compassion International sur les communautés", url: "https://www.compassion.com" },
+        { title: "Accès à la lecture en milieu rural - Bibliothèques Sans Frontières", url: "https://www.bibliosansfrontieres.org" },
+        { title: "Actualités sur l'éducation au Togo", url: "https://www.republicoftogo.com/Toutes-les-rubriques" },
+        { title: "Actualités globales sur l'éducation - BBC News", url: "https://www.bbc.com/news/education" }
+      ],
+      images: [
+      image1,
+        image2,
+        image3,
+        image4
+      ],
+      currentIndex: 0
     };
   },
+  computed: {
+    ...mapState(['theme']),
+    currentImage() {
+      return this.images[this.currentIndex];
+    }
+  },
   mounted() {
-    // Fetch user data from the backend
-    this.fetchUserDataFromBackend();
+    this.firstName = localStorage.getItem('user');
+    document.querySelector('.page').classList.add('animate__animated', 'animate__fadeIn');
   },
   methods: {
-    async fetchUserDataFromBackend() {
-      try {
-        const token = localStorage.getItem('token');
-        const headers = {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        };
-        const response = await axios.get( `${API_BASE_URL}/admin/percent`, { headers });
-        this.userData = response.data;
-        console.log('Data',response.data);
-
-        // Call methods to calculate percentage of the day and populate both charts
-        this.calculatePercentageOfDay();
-        this.populateCharts();
-      } catch (error) {
-        console.error('Error fetching user data from backend:', error);
+    toggleChat() {
+      this.chatOpen = !this.chatOpen;
+    },
+    sendMessage() {
+      if (this.newMessage) {
+        this.messages.push({ id: Date.now(), text: this.newMessage });
+        this.newMessage = '';
       }
     },
-    calculatePercentageOfDay() {
-  const sum = this.userData.reduce((total, user) => total + parseFloat(user.pourcentage),0);
-  console.log("sum",sum);
-  this.percentageOfDay = this.userData.length > 0 ? Math.round(sum / this.userData.length) : 0;
-}
-
-,
-    populateCharts() {
-      const barLabels = this.userData.map(user => user.name);
-      const barData = this.userData.map(user => user.percentage);
-      const lineLabels = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5']; // Replace with actual days
-      const lineData = this.userData.map(user => user.variations); // Assuming the API response contains an array of percentage variations for each user
-      
-      // Populate bar chart
-      const barCtx = this.$refs.barChartCanvas.getContext('2d');
-      new Chart(barCtx, {
-        type: 'bar',
-        data: {
-          labels: barLabels,
-          datasets: [{
-            label: 'Percentage',
-            data: barData,
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1
-          }]
-        },
-        options: {
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
-        }
-      });
-
-      // Populate line chart
-      const lineCtx = this.$refs.lineChartCanvas.getContext('2d');
-      new Chart(lineCtx, {
-        type: 'line',
-        data: {
-          labels: lineLabels,
-          datasets: this.userData.map((user, index) => ({
-            label: user.name,
-            data: lineData[index], // Assuming the API response contains an array of percentage variations for each user
-            borderColor: '#' + ((Math.random() * 0xFFFFFF) << 0), // Generate a random color for each user
-            fill: false
-          }))
-        },
-        options: {
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
-        }
-      });
+    nextImage() {
+      this.currentIndex = (this.currentIndex + 1) % this.images.length;
+    },
+    prevImage() {
+      this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
     }
   }
 };
 </script>
 
-<style scoped>
 
-.statistics-component {
-  margin-top: 20px;
-  background-color: #ffffff;
+<style scoped>
+/* Thèmes */
+.dark.page {
+  background-color: #2E2E2E;
+  color: #F5F5F5;
+}
+.light.page {
+  background-color: #F5F5F5;
+  color: #2E2E2E;
 }
 
-.percentage-of-the-day {
+/* Section de bienvenue */
+.welcome {
+  height: 10rem;
+  width: 100%;
+  background-color: #4A90E2;
+  border-bottom: 2px solid #333;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.welcome-img {
+  width: 8rem;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.welcome-img:hover {
+  transform: scale(1.1);
+}
+
+.up-welcome {
+  font-weight: bold;
+  font-size: 2.5rem;
+  padding-top: 1rem;
+}
+
+.under-welcome {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin-top: 10px;
+}
+
+/* Section des Publications de l'UNICEF avec Carrousel */
+.unicef-section {
+  text-align: center;
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #F0F0F0;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.unicef-section img {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.carousel-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.carousel-buttons button {
+  background-color: #4A90E2;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.carousel-buttons button:hover {
+  background-color: #357ABD;
+}
+
+.unicef-section a {
+  color: #007bff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.unicef-section a:hover {
+  color: #0056b3;
+}
+
+/* Section des Actualités et Articles */
+.news-section {
+  background-color: #FFF;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 }
 
-.chart {
-  margin-top: 20px;
+.news-section h3 {
+  margin-bottom: 15px;
+  color: #4A90E2;
 }
-body {
-  background-color: white;
-  padding-top: 5rem;
+
+.news-section ul {
+  list-style: none;
+  padding: 0;
 }
-/* .stud-dash {
-  height: 100vh;
-  width: 100%;
 
+.news-section li {
+  margin-bottom: 10px;
+}
 
-} */
-.welcome {
-margin-top: 4px;
-  height: 8rem;
-  width: 100%;
-  background-color: #ffffff;
-  border-bottom: 2px solid rgb(165, 8, 8);
-  /* box-shadow: 0 0 3px 3px rgb(233, 232, 232); */
+.news-section a {
+  color: #2E2E2E;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.news-section a:hover {
+  color: #007bff;
+}
+
+/* Chat Bar */
+.chat-bar {
+  position: fixed;
+  bottom: 0;
+  right: 20px;
+  width: 300px;
+  border: 1px solid #ccc;
+  background-color: #FFF;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 10px 10px 0 0;
+  overflow: hidden;
+}
+
+.chat-header {
+  background-color: #4A90E2;
+  color: white;
+  padding: 10px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.chat-content {
   display: flex;
-  justify-content: space-between;
-}
-.welcome-img {
-  width: 5.5rem;
-}
-.up-welcome {
-  color: #2e1c6c;
-  font-weight: bolder;
-  font-size: 3rem;
-  padding-top: 1rem;
-  width:100%;
-}
-.under-welcome {
-  color: #737372;
-  font-size: 1rem;
-  width: 45rem;
+  flex-direction: column;
+  height: 250px;
 }
 
+.chat-messages {
+  flex-grow: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background-color: #F5F5F5;
+}
 
-
-
-@media (max-width: 768px) {
-  .welcome {
-    flex-direction: column; /* Disposition verticale sur les appareils mobiles */
-    align-items: center; /* Centrage des éléments */
-  }
-
-  .welcome-img {
-    width: 10%; /* Ajustez la largeur de l'image */
-  }
-
-  .up-welcome {
-    font-size: 2rem; /* Réduisez la taille de la police */
-    text-align: center; /* Centrage du texte */
-  }
-
-  .under-welcome {
-    font-size: 0.8rem; /* Réduisez la taille de la police */
-    width: 80%; /* Ajustez la largeur du paragraphe */
-    text-align: center; /* Centrage du texte */
-  }
-
- 
-
-  .welcome {
-    padding: 1rem; /* Ajoutez un peu de rembourrage */
-  }
+input[type="text"] {
+  padding: 10px;
+  border: none;
+  border-top: 1px solid #ccc;
+  border-radius: 0 0 10px 10px;
 }
 </style>
+

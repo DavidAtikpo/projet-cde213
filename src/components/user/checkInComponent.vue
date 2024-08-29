@@ -1,11 +1,16 @@
 <template>
-  <div class="page">
+  <div :class="[theme, 'page']">
     <div class="container">
+       <!-- Description avec l'effet de machine à écrire -->
+      
+        <TypewriterText class="typewriter" text="Avant de definir l'objectif de la journee veillesz verifier si l'objectif hebdomadaire a ete defini.Si non, cliquez sur l'onglet 'Objectifs Heb'et remplir l'objectif de la semaine. et cela se fera une seul fois dans la semaine" />
+      
+<div class="content-wrapper">
       <div class="content">
-        <h2>Remplir l'objectif de la journée</h2>
+        <h2>{{ translatedTitle }}</h2>
         <hr>
         <div class="goal">
-          <p>{{ dailyGoals }}</p> <!-- Display the daily goal dynamically -->
+          <p>{{ dailyGoals }}</p>
         </div>
 
         <div class="input-group">
@@ -27,34 +32,52 @@
           </textarea>
           <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         </div>
-        <button @click="submitForm">Submit</button>
+        <button @click="submitForm"> <i v-if="loading" class="fas fa-circle-notch fa-spin"></i>
+          <span v-else>Submit</span></button>
         <h5 v-if="errorFetchingDate">Erreur lors du chargement de la date. Veuillez vérifier votre connexion Internet.</h5>
       </div>
-      <!-- Popup to display "Created successfully" -->
       <div v-if="showPopup" class="popup">
         <h2>Formulaire soumis avec succès !</h2>
       </div>
     </div>
   </div>
+  </div>
 </template>
-
-
 
 <script>
 import axios from 'axios';
-import {API_BASE_URL}  from '@/config.js';
+import { mapState } from 'vuex';
+import { API_BASE_URL } from '@/config.js';
+import TypewriterText from '@/components/TypewriterText.vue';
+
 export default {
+  components: {
+    TypewriterText
+  },
   data() {
     return {
+      loading:false,
       arrivalTime: '',
       date: '',
       dailyGoal: '',
-      dailyGoals:'',
+      dailyGoals: '',
       errorFetchingDate: false,
-      showPopup: false, // Initialize popup visibility to false
-      weeklyGoals: {} ,// Store weekly goals fetched from backend
-      errorMessage:''
+      showPopup: false,
+      weeklyGoals: {},
+      errorMessage: ''
     };
+  },
+  computed: {
+    ...mapState(['theme']),
+    ...mapState(['theme', 'language']),
+    translatedTitle() {
+      // Logique simple de traduction
+      const titles = {
+        en: 'Fill in the daily goal',
+        fr: "Remplir l'objectif de la journée"
+      };
+      return titles[this.language];
+    }
   },
   mounted() {
     this.arrivalTime = this.getCurrentTime();
@@ -80,13 +103,9 @@ export default {
         'Authorization': `Bearer ${token}`
       };
 
-      // Fetch all weekly goals from the backend
       axios.get(`${API_BASE_URL}/week/getweekly`, { headers })
         .then(response => {
-          // Store the fetched weekly goals in the weeklyGoals object
-          console.log('Weekly goals:', this.weeklyGoals);
           this.weeklyGoals = response.data;
-          // Set the dailyGoal based on the current day of the week
           this.setDailyGoal();
         })
         .catch(error => {
@@ -95,37 +114,19 @@ export default {
         });
     },
     setDailyGoal() {
-  // Get the current day of the week (0=Sunday, 1=Monday, ..., 6=Saturday)
-  const currentDayOfWeek = new Date().getDay();
-  // console.log('Current day of week:', currentDayOfWeek);
-  // console.log('Weekly goals:', this.weeklyGoals);
-
-  // Get the data object from the weeklyGoals proxy
-  const weeklyGoalsData = this.weeklyGoals.data;
-
-  // Filter out non-day keys (e.g., 'postedBy')
-  // Filter out non-day keys (e.g., 'postedBy', 'createdAt', 'updatedAt', etc.)
-const dayKeys = Object.keys(weeklyGoalsData).filter(key => ['sunday','monday','tuesday', 'wednesday', 'thursday', 'friday', 'saturday'].includes(key.toLowerCase()));
-
-  console.log('Filtered day keys:', dayKeys);
-
-  // Get the key corresponding to the current day of the week
-  const dayKey = dayKeys[currentDayOfWeek];
-  console.log('Day key:', dayKey);
-
-  // Check if the day key exists
-  if (dayKey) {
-    // Set the dailyGoal based on the weekly goal for the current day of the week
-    this.dailyGoals = weeklyGoalsData[dayKey];
-  } else {
-    console.log('Day key not found for current day of week:', currentDayOfWeek);
-  }
-},
-
-
-
+      const currentDayOfWeek = new Date().getDay();
+      const weeklyGoalsData = this.weeklyGoals.data;
+      const dayKeys = Object.keys(weeklyGoalsData).filter(key => 
+        ['sunday','monday','tuesday', 'wednesday', 'thursday', 'friday', 'saturday'].includes(key.toLowerCase())
+      );
+      const dayKey = dayKeys[currentDayOfWeek];
+      if (dayKey) {
+        this.dailyGoals = weeklyGoalsData[dayKey];
+      } else {
+        console.log('Day key not found for current day of week:', currentDayOfWeek);
+      }
+    },
     submitForm() {
-      
       if (!this.dailyGoal) {
         this.errorMessage = "Le champ 'Objectif de la journée' est requis.";
         this.shakeInput();
@@ -142,25 +143,26 @@ const dayKeys = Object.keys(weeklyGoalsData).filter(key => ['sunday','monday','t
         date: this.date,
         dailyGoal: this.dailyGoal
       };
-
+      this.loading = true
       axios.post(`${API_BASE_URL}/user/entre`, formData, { headers })
         .then(response => {
           console.log('Form submitted successfully:', response.data);
           this.arrivalTime = '';
           this.date = '';
           this.dailyGoal = '';
-          this.showPopup = true; // Show the popup
-          this.errorMessage=''
-          // Hide the popup after 3 seconds
+          this.showPopup = true;
+          this.errorMessage = '';
           setTimeout(() => {
-            this.showPopup = false; // Hide the popup
+            this.showPopup = false;
             this.$router.push('/user/analytics');
-          }, 3000);
-          // Save daily goal in local storage
+          },500);
           localStorage.setItem('dailyGoal', formData.dailyGoal);
         })
         .catch(error => {
           console.error('Error submitting form:', error);
+        })
+        .finally(()=>{
+          this.loading = false
         });
     },
     shakeInput() {
@@ -172,27 +174,62 @@ const dayKeys = Object.keys(weeklyGoalsData).filter(key => ['sunday','monday','t
 };
 </script>
 
-
-
-
 <style scoped>
 .page {
   background-color: #c4c1c1;
+}
+.dark.page {
+  background-color:#858282;
+  color: #fff;
+}
+.light.page {
+  background-color: #fff;
+  color: #333;
+}
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 .container {
   width: 100%;
   height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  /* justify-content: center; */
+  /* align-items: center; */
+}
+.content-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1200px;
 }
 .content {
-  width: 90%;
+  width: 65%;
   max-width: 800px;
   padding: 39px;
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.typewriter {
+  position: absolute;
+  width: 20%;
+  padding: 39px;
+  margin-left: 900px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.dark .content {
+  background-color: #444;
+}
+.light .content {
+  background-color: #fff;
 }
 .input-group {
   margin-bottom: 20px;
@@ -262,25 +299,26 @@ p {
   border-radius: 20px;
   text-align: center;
 }
-/* Styles pour les téléphones mobiles */
 @media only screen and (max-width: 768px) {
   .content {
-    width: 80%; /* Ajustez la largeur pour les petits écrans */
+    width: 80%;
     margin-top: -185px;
   }
   input,
   textarea {
-    font-size: 14px; /* Réduisez la taille de la police pour une meilleure lisibilité */
+    font-size: 14px;
   }
   label {
-    font-size: 12px; /* Ajustez la taille de la police pour les étiquettes */
+    font-size: 12px;
   }
   h2 {
-    font-size: 14px; /* Ajustez la taille de la police pour les titres */
+    font-size: 14px;
   }
   h5 {
-    font-size: 10px; /* Ajustez la taille de la police pour les messages */
+    font-size: 10px;
+  }
+  .typewriter {
+    display: none; /* Masquer le composant */
   }
 }
 </style>
-

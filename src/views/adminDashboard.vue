@@ -38,7 +38,7 @@ import uploadPictureComponent from '@/components/uploadPictureComponent.vue';
 import absentComponent from '@/components/absentComponent.vue';
 import listOfChildComponent from '@/components/listOfChildComponent.vue';
 import userEditInfoComponent from '@/components/user/userEditInfoComponent.vue';
-import createActivityComponent from '@/components/createActivityComponent.vue';
+import createActivityComponent from '@/components/admin/createActivityComponent.vue';
 import weekGoalComponent from '@/components/admin/weekGoalComponent.vue';
 import uploadChildPictureComponent from '@/components/uploadChildPictureComponent.vue';
 import messageComponent from '@/components/messageComponent.vue';

@@ -219,7 +219,7 @@ button {
 .typewriter {
   position: absolute;
   width: 20%;
-  padding: 40px;
+  padding: 39px;
   margin-left: 900px;
   background-color: #fff;
   border-radius: 10px;
@@ -316,6 +316,9 @@ p {
   }
   h5 {
     font-size: 10px;
+  }
+  .typewriter {
+    display: none; /* Masquer le composant */
   }
 }
 </style>

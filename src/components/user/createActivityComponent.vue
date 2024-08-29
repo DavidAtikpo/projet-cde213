@@ -14,7 +14,8 @@
           </div>
         </div>
 
-        <button @click="submitForm">Soumettre</button>
+        <button @click="submitForm"> <i v-if="loading" class="fas fa-circle-notch fa-spin"></i>
+          <span v-else>Submit</span></button>
       </div>
       <!-- Popup pour afficher "Créé avec succès" -->
       <div v-if="showPopup" class="popup">
@@ -34,6 +35,7 @@ import { API_BASE_URL } from '@/config.js';
 export default {
   data() {
     return {
+      loading: false,
       days: [
         { label: 'Objectif du Mardi', goal: '' },
         { label: 'Objectif du Mercredi', goal: '' },
@@ -57,7 +59,7 @@ export default {
         'Authorization': `Bearer ${token}`
       };
 
-      axios.get(`${API_BASE_URL}/week/getTheWeekGoal`, { headers })
+      axios.get(`${API_BASE_URL}/week/getgoal`, { headers })
         .then(response => {
           this.goalOfWeek = response.data.data.weeklyGoal;
           console.log('Objectif de la semaine :', response.data);
@@ -98,7 +100,7 @@ export default {
         friday: this.days[3].goal,
         saturday: this.days[4].goal
       };
-
+       this.loading = true
       axios.post(`${API_BASE_URL}/week/weeks`, goalsData, { headers })
         .then(response => {
           console.log('Formulaire soumis avec succès :', response.data);
@@ -107,13 +109,16 @@ export default {
           // Masquer le popup après 3 secondes
           setTimeout(() => {
             this.showPopup = false; // Masquer le popup
-            this.$router.push('/user/analytics');
+            this.$router.push('/admin/analytics');
           }, 3000);
         })
         .catch(error => {
           console.error('Erreur lors de la soumission du formulaire :', error);
           this.shakeInput();
-        });
+        })
+        .finally(()=>{
+         this.loading = false
+        })
     },
     shakeInput() {
       this.errors.forEach((error, index) => {

@@ -574,7 +574,7 @@ export default {
         // Introduce delay to ensure the spinner appears
         setTimeout(() => {
           if (res.data.role === 'Coordinateur') {
-            this.$router.push(`/admin/adminDashboard`);
+            this.$router.push(`/admin/analytics`);
           } else {
             this.$router.push(`/user/suivi`);
           }
