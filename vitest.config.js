@@ -13,30 +13,19 @@
 //   })
 // )
 
-import { fileURLToPath } from 'node:url';
+
+import { fileURLToPath, URL } from 'node:url';
 import { mergeConfig, defineConfig, configDefaults } from 'vitest/config';
-import vue from '@vitejs/plugin-vue';
+import viteConfig from './vite.config';
 
-const viteBaseConfig = defineConfig({
-  plugins: [vue()],
-  server: {
-    proxy: {
-      '/api': {
-        target: 'https://backend-vercel-flax.vercel.app',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
-      }
-    }
-  }
-});
-
+// Export de la configuration de Vitest fusionnée avec la configuration de Vite
 export default mergeConfig(
-  viteBaseConfig,
+  viteConfig,
   defineConfig({
     test: {
-      environment: 'jsdom',
-      exclude: [...configDefaults.exclude, 'e2e/**'],
-      root: fileURLToPath(new URL('./', import.meta.url))
+      environment: 'jsdom', // Environnement de test
+      exclude: [...configDefaults.exclude, 'e2e/**'], // Exclure les tests e2e
+      root: fileURLToPath(new URL('./', import.meta.url)) // Répertoire racine des tests
     }
   })
 );
