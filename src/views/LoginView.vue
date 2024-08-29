@@ -473,7 +473,7 @@ label {
     <!-- Removed the login-pic-container -->
     <div class="login-container">
       <div>
-        <a href="http://localhost:5173/">
+        <a href="https://projet-cde213.vercel.app/">
           <img class="login-logo" src="@/assets/images/logo.jpeg" alt="logo" />
         </a>
       </div>
