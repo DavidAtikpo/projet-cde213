@@ -563,7 +563,7 @@ export default {
   this.errorMessage = '';  // Clear previous error messages
 
   console.log("response",this.loginData);
-  axios.post(`${API_BASE_URL}/user/login`, this.loginData,)
+  axios.post(`${API_BASE_URL}/user/login`, this.loginData, { withCredentials: true })
     .then((res) => {
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', res.data.firstName);
