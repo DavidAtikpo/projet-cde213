@@ -1,11 +1,16 @@
-<template>
+<!-- <template>
   <div :class="[theme, 'page']">
-    <!-- <div class="header">
+    <div class="header">
       <p>Liste des enfants inscrits dans le serveur</p>
       <p>Veuillez sélectionner les noms des enfants qui sont présents au rendez-vous aujourd'hui</p>
       <em>Effectif total: {{ children.length }}</em>
-    </div> -->
+    </div>
     <div class="child-list">
+      
+      <div v-if="loading" class="loading-indicator">
+        <i class="fas fa-circle-notch fa-spin"></i> Chargement des données...
+      </div>
+      <div v-else></div>
       <div class="child-item" v-for="child in children" :key="child._id">
         <router-link :to="{ name: 'ChildPicture', params: { id: child._id } }">
           <img :src="child.profilePhotoURL" alt="Profile Icon" class="profile-icon">
@@ -74,9 +79,62 @@
 
   </div>
   
+</template> -->
+
+<template>
+  <div :class="[theme, 'page']">
+    <div v-if="loading" class="loading-spinner">
+      <!-- Indicateur de chargement -->
+      <i class="fas fa-circle-notch fa-spin"></i>
+      Chargement des données...
+    </div>
+
+    <div v-else>
+      <div class="child-list">
+        <div class="child-item" v-for="child in children" :key="child._id">
+          <router-link :to="{ name: 'ChildPicture', params: { id: child._id } }">
+            <img :src="child.profilePhotoURL" alt="Profile Icon" class="profile-icon">
+          </router-link>
+          <div class="info">
+            <div class="profile-info" @click="toggleDropdown(child._id)">
+              <span class="name">{{ child.firstName }}</span>
+              <span class="class">Class: {{ child.class }}</span>
+              <span class="tel">Tel: {{ child.phoneNumber }}</span>
+            </div>
+            <!-- Checkbox with proper binding -->
+            <input
+              type="checkbox"
+              v-model="selectedChildren"
+              :value="child._id"
+              @click.stop
+            >
+          </div>
+          <div v-if="isDropdownOpen === child._id" class="dropdown">
+            <template v-if="editableChildId === child._id">
+              <div class="editable-child-form" @click="preventDropdownClose($event)">
+                <button class="valider" @click.stop="saveChanges(child._id)">Valider</button>
+              </div>
+            </template>
+            <template v-else>
+              <div class="child-info">
+                <button class="update" @click.stop="editChild(child._id)">Modifier</button>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Validation button appears only when children are selected -->
+      <button
+        v-if="children.length > 0 && selectedChildren.length > 0"
+        @click="submitSelectedChildren"
+      >
+        <i v-if="submitLoading" class="fas fa-circle-notch fa-spin"></i>
+        <span v-else>Valider la sélection</span>
+      </button>
+    </div>
+  </div>
 </template>
-
-
 
 <script>
 import { mapState } from 'vuex';
@@ -87,62 +145,57 @@ export default {
   data() {
     return {
       children: [],
-      selectedChildren: [],
+      selectedChildren: [], // Manages selected children IDs
       isDropdownOpen: null,
-      selectedFile: null,
       editableChildId: null,
-      showSubmitButton: true,
+      loading: true, // Loading state
+      submitLoading: false,  
     };
   },
   computed: {
-    ...mapState(['theme', 'userId']), // Assuming `userId` is stored in Vuex
+    ...mapState(['theme', 'userId']),
   },
   created() {
     this.fetchChildren();
   },
-  beforeUnmount() {
-    document.removeEventListener('click', this.handleClickOutside);
-  },
   methods: {
-    async editChild(childId) {
-      this.editableChildId = childId;
+    async fetchChildren() {
+      const token = localStorage.getItem('token');
+      const headers = { Authorization: `Bearer ${token}` };
+      try {
+        const response = await axios.get(`${API_BASE_URL}/child/allchildren`, { headers });
+        const children = await Promise.all(response.data.map(async (child) => {
+          const profilePhotoURL = await this.fetchProfilePicture(child._id);
+          return { ...child, profilePhotoURL };
+        }));
+        this.children = children.sort((a, b) => a.firstName.localeCompare(b.firstName));
+      } catch (error) {
+        console.error('Error fetching children:', error);
+      } finally {
+        this.loading = false; // Turn off loading indicator
+      }
+    },
+
+    async submitSelectedChildren() {
+      this.submitLoading = true; // Enable loading indicator for submission
+      try {
+        const response = await axios.post(`${API_BASE_URL}/absent/present`, { ids: this.selectedChildren });
+        console.log('Submitted selected children:', response.data);
+        this.selectedChildren = []; // Clear the selected children after submission
+      } catch (error) {
+        console.error('Error submitting selected children:', error);
+      } finally {
+        this.submitLoading = false; // Turn off loading indicator after submission
+      }
     },
 
     async fetchProfilePicture(childId) {
       try {
         const res = await axios.get(`${API_BASE_URL}/child/getprofilepicture/${childId}`);
-        console.log('profile',res.data.profilePhotoUrl);
-        return res.data.profilePhotoUrl; // Assuming the response contains the profile photo URL
+        return res.data.profilePhotoUrl;
       } catch (error) {
         console.error('Error fetching profile picture:', error);
-        return ''; // Return an empty string if there's an error
-      }
-    },
-
-    async saveChanges(childId) {
-      try {
-        const token = localStorage.getItem('token');
-        const headers = {
-          Authorization: `Bearer ${token}`,
-        };
-        // Retrieve the child data to update
-        const childToUpdate = { ...this.children.find((child) => child._id === childId) };
-
-        // Remove unnecessary properties
-        delete childToUpdate.createdAt;
-        delete childToUpdate.postedBy;
-        delete childToUpdate.updatedAt;
-        delete childToUpdate._id;
-
-        console.log('formData before sending:', childToUpdate);
-
-        // Send a PUT request to the appropriate API URL with the updated data
-        await axios.put(`${API_BASE_URL}/child/update/${childId}`, childToUpdate, { headers });
-
-        // Handle the response
-        this.editableChildId = null; // Reset the editable child ID
-      } catch (error) {
-        console.error('Error updating child:', error);
+        return '';
       }
     },
 
@@ -150,69 +203,20 @@ export default {
       this.isDropdownOpen = this.isDropdownOpen === childId ? null : childId;
     },
 
+    async saveChanges(childId) {
+      // Save changes
+    },
+
     preventDropdownClose(event) {
-      // Prevent the dropdown from closing when clicking on the profile icon
       event.stopPropagation();
     },
 
-    updateSubmitVisibility() {
-      // Check if at least one child has been selected
-      this.showSubmitButton = this.selectedChildren.length > 0;
-    },
-
-    async fetchChildren() {
-      const token = localStorage.getItem('token');
-      const headers = {
-        Authorization: `Bearer ${token}`,
-      };
-      try {
-        const response = await axios.get(`${API_BASE_URL}/child/allchildren`, { headers });
-        const children = await Promise.all(response.data.map(async (child) => {
-          const profilePhotoURL = await this.fetchProfilePicture(child._id);
-          return {
-            ...child,
-            profilePhotoURL,
-          };
-        }));
-        this.children = children.sort((a, b) => {
-          const nameA = a.firstName.toUpperCase();
-          const nameB = b.firstName.toUpperCase();
-          if (nameA < nameB) {
-            return -1;
-          }
-          if (nameA > nameB) {
-            return 1;
-          }
-          return 0;
-        });
-      } catch (error) {
-        console.error('Error fetching children:', error);
-      }
-    },
-
-    async submitSelectedChildren() {
-      try {
-        console.log('Selected children:', this.selectedChildren);
-        const response = await axios.post(`${API_BASE_URL}/absent/present`, { ids: this.selectedChildren });
-        console.log('Submitted selected children:', response.data);
-        this.selectedChildren = [];
-      } catch (error) {
-        console.error('Error submitting selected children:', error);
-      }
-    },
-
-    handleClickOutside(event) {
-      if (!this.$el.contains(event.target)) {
-        this.isDropdownOpen = null;
-      }
-    },
-  },
+    editChild(childId) {
+      this.editableChildId = childId;
+    }
+  }
 };
 </script>
-
-
-
-
 
 
 

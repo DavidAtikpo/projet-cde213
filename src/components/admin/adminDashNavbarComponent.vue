@@ -1,9 +1,9 @@
 <template>
   <nav class="navigation">
-    <!-- "More" button for navigation items -->
+    
     <button class="menu-btn" @click="toggleMenu">More</button>
 
-    <!-- List of navigation items -->
+   
     <ul :class="{ 'show-menu': isMenuOpen }">
       <li>
         <router-link to="/admin/analytics" class="nav-link" active-class="active">{{ getTranslatedTitle('dashboard') }}</router-link>
@@ -89,9 +89,7 @@
     </div>
     <div :class="['side-bar', { 'hide-menu': isMobile && !menuVisible }]">
       <div class="content">
-        <!-- <div class="logo">
-          <img class="logo-rr" src="@/assets/images/bm_prime_capital_llc_logo.jpeg" alt="CDE koinonia" />
-        </div> -->
+       
         <div class="side-buttons">
           <router-link to="/admin/userActivity" active-class="active" exact-active-class="exact-active" class="default-link">
             <div class="nav">{{ getTranslatedTitle('board') }}</div>
@@ -229,15 +227,22 @@ export default {
       console.log('Selected result info:', result);
     },
     async logout() {
-      try {
-        await axios.post(`${API_BASE_URL}/user/logout`, {}, { withCredentials: true });
-        localStorage.removeItem('authToken');
-        sessionStorage.removeItem('authToken');
-        this.$router.push('/login');
-      } catch (error) {
-        console.error('Error during logout:', error);
-      }
-    },
+  try {
+    const token = localStorage.getItem('token');
+    await axios.post(`${API_BASE_URL}/user/logout`, {}, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      withCredentials: true,
+    });
+    localStorage.removeItem('authToken');
+    sessionStorage.removeItem('authToken');
+    this.$router.push('/login');
+  } catch (error) {
+    console.error('Error during logout:', error);
+  }
+},
+
     confirmLogout() {
       if (confirm('Are you sure you want to log out?')) {
         this.logout();
