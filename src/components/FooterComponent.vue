@@ -135,7 +135,7 @@ h4{
       <div class="contact-info">
         <p>Email: coordinateurtg213@gmail.com</p>
         <p>Téléphone: +228 90 70 74 35</p>
-        <p>Adresse: Rue N2, Aneho, LOme-Togo</p>
+        <p>Adresse: Rue N2, Aneho, Lome-Togo</p>
       </div>
     </div>
   </footer>
