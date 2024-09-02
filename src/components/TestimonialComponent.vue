@@ -99,10 +99,10 @@
   </div>
 </template>
 
-<script>
+<!-- <script>
 // import VueMagnificPopup from 'vue-magnific-popup';
 // import 'magnific-popup/dist/magnific-popup.css';
-
+import visuel from '@/assets/images/379063963_653750866864321_1198646998069922534_n.jpg'
 import TypewriterText from '@/components/TypewriterText.vue';
 export default {
   name: "MainContent",
@@ -115,6 +115,7 @@ export default {
   data() {
     return {
       currentText :0,
+      image:visuel,
 
             testimonials: [
         {
@@ -189,7 +190,95 @@ export default {
     
   } 
 };
+</script> -->
+<script>
+import TypewriterText from '@/components/TypewriterText.vue';
+import image1 from '@/assets/images/Screenshot from 2024-08-16 03-50-44.png';
+import image2 from '@/assets/images/Screenshot from 2024-08-16 03-50-01.png';
+import image3 from '@/assets/images/309430577_431589382413805_5270125874633532938_n.jpg';
+import image4 from '@/assets/images/379063963_653750866864321_1198646998069922534_n.jpg';
+
+import programImage1 from '@/assets/images/Screenshot from 2024-08-16 03-54-36.png';
+import programImage2 from '@/assets/images/Screenshot from 2024-08-16 03-50-44.png';
+import programImage3 from '@/assets/images/419124740_719134673659273_130166699053893667_n.jpg';
+
+import photo1 from '@/assets/images/309084922_431587569080653_7848551493997462143_n.jpg';
+import photo2 from '@/assets/images/414067493_709542027951871_8960487969138995909_n.jpg';
+import photo3 from '@/assets/images/348955217_778152960616511_1981663321848763521_n.jpg';
+import photo4 from '@/assets/images/351383360_263196149601539_6741866346631895392_n.jpg';
+import photo5 from '@/assets/images/309430577_431589382413805_5270125874633532938_n.jpg';
+import photo6 from '@/assets/images/419124740_719134673659273_130166699053893667_n.jpg';
+
+export default {
+  name: "MainContent",
+  components: {
+    TypewriterText
+  },
+  data() {
+    return {
+      currentText: 0,
+      testimonials: [
+        {
+          name: "Yayra POLO",
+          message: "Grâce à Compassion Togo, j'ai découvert mon talent pour la musique...",
+          image: image1,
+        },
+        {
+          name: "Pauline GBETOUNOU",
+          message: "Compassion Togo m'a donné l'opportunité de développer mes talents...",
+          image: image2,
+        },
+        {
+          name: "Kofi Mensah",
+          message: "Participer aux ateliers de musique organisés par Compassion Togo...",
+          image: image3,
+        },
+        {
+          name: "Adjoa Agbeko",
+          message: "Compassion Togo m'a appris à jouer de la guitare...",
+          image: image4,
+        },
+      ],
+      programs: [
+        {
+          title: "Atelier de Musique",
+          description: "Apprenez à jouer d'un instrument...",
+          image: programImage1,
+        },
+        {
+          title: "Entraînement Vocal",
+          description: "Développez vos compétences vocales...",
+          image: programImage2,
+        },
+        {
+          title: "Foot",
+          description: "Une équipe féminine très compétente...",
+          image: programImage3,
+        },
+      ],
+      photos: [
+        { src: photo1 },
+        { src: photo2 },
+        { src: photo3 },
+        { src: photo4 },
+        { src: photo5 },
+        { src: photo6 },
+      ],
+    };
+  },
+  mounted() {
+    setInterval(() => {
+      this.currentText = (this.currentText + 1) % 3;
+    }, 5000);
+  },
+  methods: {
+    signIn() {
+      this.$router.push('/login');
+    }
+  }
+};
 </script>
+
 
 <style scoped>
 .page-content {
