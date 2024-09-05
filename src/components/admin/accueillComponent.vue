@@ -128,7 +128,14 @@ export default {
   background-color: #F5F5F5;
   color: #2E2E2E;
 }
-
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background: transparent;
+ } 
 /* Section de bienvenue */
 .welcome {
   height: 10rem;

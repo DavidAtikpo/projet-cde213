@@ -1,7 +1,15 @@
 <template>
-  
+   <div class="container">
+    <div class="text">
+      <!-- First Text -->
+      <h2 v-if="currentText == 0"><TypewriterText class="typewriter" text="CDE 213 Aneho Togo Nlessi" /></h2>
+      <!-- Second Text -->
+      <p v-if="currentText == 2">Délivrer les enfants de la pauvrete</p>
+      <!-- Third Text -->
+      <h3 v-if="currentText == 1"> CDE KOINONIA </h3>
+    </div>
+  </div>
   <div class="page-content">
-  
     <h1>Réalisations Musicales de Compassion Togo Aneho Nlessi</h1>
     <div class="content">
       <div class="rows">
@@ -68,7 +76,7 @@
           <p>Date: {{ event.date }}</p>
           <p>Lieu: {{ event.location }}</p>
           <button class="event-button">
-            <a href="#" @click.prevent="signIn">S'inscrire</a>
+            <a href="#" @click="signIn">S'inscrire</a>
           </button>
         </div>
       </div>
@@ -212,12 +220,12 @@ export default {
       testimonials: [
         {
           name: "Yayra POLO",
-          message: "Grâce à Compassion Togo, j'ai découvert mon talent pour la musique. Ils m'ont aidé à m'entraîner et à améliorer mes compétences. Aujourd'hui, je suis capable de chanter devant un public.",
+          message: "Grâce à Compassion Togo, j'ai découvert mon talent pour la musique...",
           image: image1,
         },
         {
           name: "Pauline GBETOUNOU",
-          message: "Compassion Togo m'a donné l'opportunité de développer mes talents en chant. Leur soutien et encouragement m'ont permis de chanter avec confiance devant un public.",
+          message: "Compassion Togo m'a donné l'opportunité de développer mes talents...",
           image: image2,
         },
         {
@@ -233,13 +241,13 @@ export default {
       ],
       programs: [
         {
-          title: "Competition de chant",
-          description: "Participation des competitions Gospel des enfants...",
+          title: "Atelier de Musique",
+          description: "Apprenez à jouer d'un instrument...",
           image: programImage1,
         },
         {
-          title: "Entraînement",
-          description: "Développez vos compétences ...",
+          title: "Entraînement Vocal",
+          description: "Développez vos compétences vocales...",
           image: programImage2,
         },
         {
@@ -255,18 +263,6 @@ export default {
         { src: photo4 },
         { src: photo5 },
         { src: photo6 },
-      ],
-      events: [
-        {
-          title: "Concert de Noël",
-          date: "20 Décembre 2024",
-          location: "Centre Culturel de Lomé",
-        },
-        {
-          title: "Atelier de Composition",
-          date: "15 Janvier 2025",
-          location: "Salle de Musique Aneho",
-        },
       ],
     };
   },
@@ -285,6 +281,14 @@ export default {
 
 
 <style scoped>
+ html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background: transparent;
+ } 
 .page-content {
   background-image: url("@/assets/images/images.jpeg");
   background-size: cover;
@@ -295,7 +299,6 @@ export default {
   min-height: 200vh;
 }
 
-
 h1 {
   padding-bottom: 2rem;
   padding-top: 3rem;
@@ -304,13 +307,79 @@ h1 {
   text-align: center;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
-body, html {
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden; 
+
+@keyframes backgroundCycle {
+  0% {
+    background-image: url('@/assets/images/20220902_080000.jpg');
+  }
+  33% {
+    background-image: url('@/assets/images/2022-09-07.jpg');
+  }
+  66% {
+    background-image: url('@/assets/images/419124740_719134673659273_130166699053893667_n.jpg');
+  }
+  100% {
+    background-image: url('@/assets/images/2024-08-07.jpg');
+  }
 }
 
+@keyframes slideUp {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(200%);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 2;
+    transform: translateY(0);
+  }
+}
 
+.typewriter {
+  position: absolute;
+  font-size: 3rem;
+  width: 23%;
+  padding: 40px;
+  color: #f8f9fa;
+  margin-left: 900px;
+  /* border-radius: 10px; */
+  /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); */
+}
+
+.container {
+  margin-top: 5rem;
+  width: 100%;
+  height: 100vh;
+  background-size: cover;
+  /* background-position: center; */
+  animation: backgroundCycle 15s infinite;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  /* flex-direction: column; */
+  /* align-items: center; */
+  padding: 2.3rem;
+}
+
+.text {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+}
+
+.text h2,
+.text h3,
+.text p {
+  margin-top: -300px;
+  font-size: 3rem;
+  color: white;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+  animation: slideUp 2s ease forwards;
+  transform: translateY(100%);
+}
 
 .content {
   display: flex;
@@ -514,6 +583,30 @@ body, html {
 /* Responsive Styles */
 @media only screen and (max-width: 600px) {
 
+  .container {
+    padding:  0rem;
+    height: 40vh;
+  display: flex;
+  }
+
+  .text h2,
+  .text h3,
+  .text p {
+    font-size: 1rem;
+    margin-top: 0;
+  }
+
+  h1 {
+    font-size: 1rem;
+  }
+
+  .typewriter {
+    font-size: 1.5rem;
+    width: 90%;
+    margin: 0;
+    padding: 1rem;
+    text-align: center;
+  }
 
   .rows {
     gap: 1rem;
@@ -569,4 +662,12 @@ body, html {
   animation: fade 1.5s;
 }
 
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 </style>

@@ -134,7 +134,7 @@ export default {
       searchResults: [],
       isNotificationDropdownOpen: false,
       isProfileDropdownOpen: false,
-      profilePhotoURL: ''
+      profilePhotoURL:''
     };
   },
   computed: {
@@ -282,6 +282,7 @@ export default {
 
 <style scoped>
 /* Votre style ici */
+
 .navigation {
   background-color:#1d1c1c;
   padding: 10px;

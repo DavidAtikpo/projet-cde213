@@ -124,17 +124,29 @@ export default {
   .container {
     height: 40vh;
   }
+  .container {
+    padding:  0rem;
+    height: 40vh;
+  display: flex;
+  }
 
   h2, h3, p {
     font-size: 1.5rem;
   }
-
   .typewriter {
+    font-size: 1.5rem;
+    width: 90%;
+    margin: 0;
+    padding: 1rem;
+    text-align: center;
+  }
+  
+}
+.typewriter {
     font-size: 1.5rem;
     padding: 1rem;
     width: 90%;
     text-align: center;
   }
-}
 </style>
 
