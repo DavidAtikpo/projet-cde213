@@ -1,204 +1,257 @@
 <template>
-  <div class="side-bar" >
-    <div class="menu-toggle" @click="toggleMenu">
-      <div class="hamburger"></div>
-      </div>
-    <div class="content"  :class="{'hide-menu': isMobile}">
+  <div class="sidebar" :class="{ 'collapsed': isCollapsed }">
+    <div class="sidebar-header">
       <div class="logo">
-        <img class="logo-rr" src="@/assets/images/logo.jpeg" alt="CDE koinonia" />
+        <img src="@/assets/images/logo.jpeg" alt="CDE koinonia" />
       </div>
-      
-      <div class="side-buttons" >
-        <router-link to="/user/analytics" active-class="active" exact-active-class="exact-active" class="default-link">
-          <div class="nav">
-            Dashboard
-          </div></router-link
-        >
-       
-        <router-link
-          to="/user/review"
-          :active-class="'active'"
-          :exact-active-class="'exact-active'"
-          class="default-link"
-          ><div class="nav">
-            Review
-          </div></router-link
-        >
-        <router-link
-          to="/user/feedback"
-          :active-class="'active'"
-          :exact-active-class="'exact-active'"
-          class="default-link"
-          ><div class="nav">
-          feedback
-          </div></router-link
-        >
-        <router-link
-          to="/user/Message"
-          :active-class="'active'"
-          :exact-active-class="'exact-active'"
-          class="default-link"
-          ><div class="nav">
-          Message
-          </div></router-link
-        >
-        <router-link
-          to="/user/statistic"
-          :active-class="'active'"
-          :exact-active-class="'exact-active'"
-          class="default-link"
-          ><div class="nav">
-            Statistique
-          </div></router-link
-        >
-        <router-link to="/user/setting" 
-          :active-class="'active'"
-          :exact-active-class="'exact-active'"
-          class="default-link"
-          ><div class="nav">
-           Paramettre
-          </div></router-link
-        >
+      <button class="toggle-button" @click="toggleSidebar">
+        <i :class="['fas', isCollapsed ? 'fa-chevron-right' : 'fa-chevron-left']"></i>
+      </button>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <router-link 
+        v-for="(item, index) in menuItems" 
+        :key="index"
+        :to="item.path"
+        class="nav-item"
+        :class="{ 'active': isActive(item.path) }"
+      >
+        <i :class="['fas', item.icon]"></i>
+        <span class="nav-text">{{ item.title }}</span>
+      </router-link>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <img :src="userAvatar" alt="User Avatar" class="user-avatar" />
+        <div class="user-details">
+          <span class="user-name">{{ userName }}</span>
+          <span class="user-role">{{ userRole }}</span>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
-data(){
-  return{
-    isMobile:false
-  };
-},
-mounted(){
-  this.isMobile = window.innerWidth<768;
-  window.addEventListener('resize', this.handleResize);
-},
-beforeMount() {
-  window.addEventListener('resize', this.handleResize);
-},
-
-methods:{
-  handleResize(){
-    this.isMobile = window.innerWidth<768;
+  data() {
+    return {
+      isCollapsed: false,
+      menuItems: [
+        { title: 'Tableau de bord', path: '/user/analytics', icon: 'fa-chart-line' },
+        { title: 'Revue', path: '/user/review', icon: 'fa-clipboard-check' },
+        { title: 'Feedback', path: '/user/feedback', icon: 'fa-comment-alt' },
+        { title: 'Messages', path: '/user/Message', icon: 'fa-envelope' },
+        { title: 'Statistiques', path: '/user/statistic', icon: 'fa-chart-bar' },
+        { title: 'Paramètres', path: '/user/setting', icon: 'fa-cog' }
+      ]
+    };
   },
-toggleMenu() {
-  this.isMobile =!this.isMobile;
-}
-}
-
-}
+  computed: {
+    ...mapState(['theme']),
+    userAvatar() {
+      return localStorage.getItem('userAvatar') || '@/assets/images/default-avatar.png';
+    },
+    userName() {
+      return localStorage.getItem('user') || 'Utilisateur';
+    },
+    userRole() {
+      return localStorage.getItem('userRole') || 'Membre';
+    }
+  },
+  methods: {
+    toggleSidebar() {
+      this.isCollapsed = !this.isCollapsed;
+    },
+    isActive(path) {
+      return this.$route.path === path;
+    }
+  }
+};
 </script>
 
-<style lang="css" scoped>
-* {
-    margin:0;
-    padding:0;
-    box-sizing: border-box;
-  
-  }
-  .side-bar {
-    margin-top: 50px;
-    width:100%;
-    height: 100vh;
-    background-color:rgb(6, 6, 83);
-    border-right: 3.5px solid rgb(158, 6, 6);
-  } 
-  .side-buttons {
-    width: 100%;
-    height: 100vh;
-    padding-top: 1rem;
-  }
-  .logo{
-    text-align: center;
-  }
-  .logo-rr {
-    height: 2.5rem;
-    margin-top: 1rem;
-  }
-  .svgs {
-    margin-right: 1.5rem;
-    margin-left: 1rem;
-  }
-  .default-link {
-    color: white;
-    text-decoration: none;
-  }
-  .nav {
-    height: 2rem;
-    font-size: 15px;
-   color:white; 
-    vertical-align: middle;
-    display: flex;
-    margin-left: 40px;
-    /* text-align: center; */
-    align-items: center;
-  }
-  .nav:hover {
-    color: #090b29;
-  }
-  
-  .active,
-  .exact-active {
-    background-color: #0014cc;
-  }
-  
-  @media screen and (max-width: 768px) {
-    .hide-menu {
+<style lang="scss" scoped>
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 260px;
+  background: linear-gradient(180deg, #db2323 0%, #ff4d4d 100%);
+  color: white;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+
+  &.collapsed {
+    width: 80px;
+
+    .nav-text,
+    .user-details,
+    .toggle-button i {
       display: none;
     }
-    .side-bar{
-      height: 139vh;
+
+    .logo img {
+      width: 40px;
     }
-    .nav {
-    height: 2rem;
-    font-size: 10px;
-   color:white; 
-    vertical-align: middle;
-    display: flex;
-    margin-left: 2px;
-  
+
+    .nav-item {
+      padding: 1rem;
+      justify-content: center;
+    }
+
+    .user-info {
+      justify-content: center;
+    }
   }
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+  img {
+    width: 120px;
+    height: auto;
+    transition: all 0.3s ease;
   }
-  
-  .menu-toggle {
-    display: none;
-    cursor: pointer;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
   }
-  
-  .menu-toggle .hamburger {
-    background: #333;
-    display: block;
-    height: 2px;
-    position: relative;
-    transition: background 0.2s ease-out;
+
+  i {
+    font-size: 1rem;
+  }
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 1rem 0;
+  overflow-y: auto;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  margin: 0.5rem 0;
+  border-radius: 0.5rem;
+  margin: 0.5rem 1rem;
+
+  i {
+    font-size: 1.2rem;
+    margin-right: 1rem;
     width: 20px;
-    margin-left: 30%;
-    margin-top: 15px;
+    text-align: center;
   }
-  
-  .menu-toggle .hamburger::before,
-  .menu-toggle .hamburger::after {
-    content: '';
-    display: block;
-    width: 100%;
-    height: 100%;
-    background-color: black;
-    margin: 3px 0;
-    position: absolute;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
   }
-  .menu-toggle .hamburger::before{
-    top: 8px;
+
+  &.active {
+    background: rgba(255, 255, 255, 0.2);
+    font-weight: 500;
   }
-  .menu-toggle .hamburger::after{
-    bottom: -8px;
+}
+
+.sidebar-footer {
+  padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
   }
-  /* Show hamburger button only on mobile */
-  @media screen and (max-width: 768px) {
-    .menu-toggle {
-      display: block;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.user-role {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* Dark theme */
+:deep(.dark) {
+  .sidebar {
+    background: linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+
+    &.collapsed {
+      transform: translateX(0);
+      width: 260px;
     }
   }
 
+  .nav-text,
+  .user-details,
+  .toggle-button i {
+    display: block !important;
+  }
+
+  .nav-item {
+    padding: 1rem 1.5rem !important;
+    justify-content: flex-start !important;
+  }
+
+  .user-info {
+    justify-content: flex-start !important;
+  }
+}
 </style>

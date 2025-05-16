@@ -1,43 +1,113 @@
 <template>
-  <div :class="[theme, 'page']">
-    <div class="container">
-      <TypewriterText class="typewriter" text="Remplissez l'objectif de la journée en suivant ces étapes..." />
-      <div class="content-wrapper">
-        <div class="content">
-          <h2>Rapport journalier</h2><br>
-          <div class="goal">
+  <div class="check-out-page" :class="theme">
+    <div class="check-out-container">
+      <!-- En-tête -->
+      <div class="check-out-header">
+        <h1>Rapport journalier</h1>
+        <div class="info-card">
+          <TypewriterText 
+            class="typewriter-text" 
+            text="Remplissez l'objectif de la journée en suivant ces étapes..." 
+          />
+        </div>
+      </div>
+
+      <!-- Contenu principal -->
+      <div class="check-out-content">
+        <!-- Objectif du jour -->
+        <div class="daily-goal-card">
+          <div class="card-header">
+            <i class="fas fa-bullseye"></i>
+            <h3>Objectif du jour</h3>
+          </div>
+          <div class="card-content">
             <p>{{ dailyGoal }}</p>
           </div>
-          <h4>Est-ce que l'objectif quotidien a été réalisé ?</h4>
-          <div class="check">
-            <label for="oui">Oui :</label>
-            <input type="radio" id="oui" value="oui" v-model="choix" :class="{'error': errors.choix}" ref="choixField" />
+        </div>
+
+        <!-- Formulaire de rapport -->
+        <div class="report-form">
+          <div class="form-group">
+            <h4>Est-ce que l'objectif quotidien a été réalisé ?</h4>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input 
+                  type="radio" 
+                  value="oui" 
+                  v-model="choix" 
+                  :class="{'error': errors.choix}" 
+                  ref="choixField"
+                >
+                <span class="radio-text">Oui</span>
+              </label>
+              <label class="radio-label">
+                <input 
+                  type="radio" 
+                  value="non" 
+                  v-model="choix" 
+                  :class="{'error': errors.choix}" 
+                  ref="choixField"
+                >
+                <span class="radio-text">Non</span>
+              </label>
+            </div>
           </div>
-          <div class="check">
-            <label for="non">Non:</label>
-            <input type="radio" id="non" value="non" v-model="choix" :class="{'error': errors.choix}" ref="choixField" />
-          </div>
-          <div>
-            <label for="pourcentage">Pourcentage de travail effectué:</label>
-            <select id="pourcentage" v-model="pourcentage" :class="{'error': errors.pourcentage}" ref="pourcentageField">
+
+          <div class="form-group">
+            <label>
+              <i class="fas fa-percentage"></i>
+              Pourcentage de travail effectué
+            </label>
+            <select 
+              v-model="pourcentage" 
+              :class="['form-control', {'error': errors.pourcentage}]" 
+              ref="pourcentageField"
+            >
               <option value="">Sélectionner le pourcentage</option>
               <option v-for="i in 11" :key="i" :value="i * 10">{{ i * 10 }}%</option>
             </select>
           </div>
-          <div class="input-group">
-            <label for="justification">Commentaire ou justification</label>
-            <textarea id="justification" v-model="justification" rows="4" :class="{'error': errors.justification}" ref="justificationField"></textarea>
+
+          <div class="form-group">
+            <label>
+              <i class="fas fa-comment-alt"></i>
+              Commentaire ou justification
+            </label>
+            <textarea 
+              v-model="justification" 
+              rows="4" 
+              :class="['form-control', {'error': errors.justification}]" 
+              ref="justificationField"
+              placeholder="Décrivez les détails de votre travail..."
+            ></textarea>
           </div>
-          <h5>Bon travail ! Passez une agréable soirée sous la protection de Dieu</h5><br>
-          <button @click="submitForm"> <i v-if="loading" class="fas fa-circle-notch fa-spin"></i>
-            <span v-else>Submit</span></button>
-        </div>
-        <div class="popup" ref="popup">
-          <img class="check" src="@/assets/images/check.png" />
-          <h2>Rapport soumis avec succès !</h2>
-          <button @click="closePopup" type="button">OK</button>
+
+          <div class="message">
+            <i class="fas fa-heart"></i>
+            <p>Bon travail ! Passez une agréable soirée sous la protection de Dieu</p>
+          </div>
+
+          <button 
+            @click="submitForm" 
+            :disabled="loading"
+            class="submit-button"
+          >
+            <i v-if="loading" class="fas fa-circle-notch fa-spin"></i>
+            <span v-else>Soumettre le rapport</span>
+          </button>
         </div>
       </div>
+
+      <!-- Popup de succès -->
+      <transition name="fade">
+        <div v-if="showPopup" class="success-popup">
+          <div class="popup-content">
+            <i class="fas fa-check-circle"></i>
+            <h2>Rapport soumis avec succès !</h2>
+            <p>Redirection en cours...</p>
+          </div>
+        </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -59,6 +129,7 @@ export default {
       choix: '',
       pourcentage: '',
       dailyGoal: '',
+      showPopup: false,
       errors: {
         justification: false,
         choix: false,
@@ -73,13 +144,6 @@ export default {
     this.dailyGoal = localStorage.getItem('dailyGoal');
   },
   methods: {
-    openPopup() {
-      this.$refs.popup.classList.add('open-popup');
-    },
-    closePopup() {
-      this.$refs.popup.classList.remove('open-popup');
-      this.$router.push('/user/analytics');
-    },
     submitForm() {
       // Réinitialiser les erreurs
       this.errors.justification = !this.justification;
@@ -104,21 +168,23 @@ export default {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       };
-      this.loading = true
+
+      this.loading = true;
       axios.post(`${API_BASE_URL}/user/rapport`, formData, { headers })
         .then(res => {
           if (res.status === 201) {
-            this.openPopup();
+            this.showPopup = true;
             setTimeout(() => {
-              this.closePopup();
+              this.showPopup = false;
+              this.$router.push('/user/analytics');
             }, 3000);
           }
         })
         .catch(error => {
           console.error(error);
         })
-        .finally(()=>{
-          this.loading = false
+        .finally(() => {
+          this.loading = false;
         });
     },
     shakeInput() {
@@ -146,184 +212,350 @@ export default {
 };
 </script>
 
-<style scoped>
-.page {
-  background-color: #c4c1c1;
+<style lang="scss" scoped>
+.check-out-page {
+  min-height: 100vh;
+  padding: 2rem;
+  background: #f8f9fa;
 }
-.dark.page {
-  background-color: #636060;
-  color: #fff;
-}
-.light.page {
-  background-color: #fff;
-  color: #333;
-}
-.container {
-  width: 100%;
-  height: 70vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-button {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-.content-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  width: 100%;
+
+.check-out-container {
   max-width: 1200px;
+  margin: 0 auto;
 }
-.content {
-  width: 60%;
-  max-width: 800px;
-  padding: 39px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-.typewriter {
-  position: absolute;
-  width: 20%;
-  padding: 40px;
-  margin-left: 900px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-.popup {
-  width: 300px;
-  height: 150px;
-  background-color: #fff;
-  border-radius: 8px;
+
+.check-out-header {
   text-align: center;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  z-index: 9999;
-  display: none;
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
+  }
 }
-.popup.open-popup {
-  display: block;
+
+.info-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
 }
-.popup img.check {
-  width: 50px;
-  margin-top: 5px;
+
+.check-out-content {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
 }
-.popup h2 {
-  margin-top: 5px;
-  color: #333;
-  font-size: 18px;
-  margin-bottom: 5px;
+
+.daily-goal-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  height: fit-content;
 }
-.popup button {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+
+  i {
+    color: #db2323;
+    font-size: 1.2rem;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+  }
+}
+
+.card-content {
+  p {
+    margin: 0;
+    color: #666;
+    line-height: 1.5;
+  }
+}
+
+.report-form {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+
+  h4 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-weight: 500;
+
+    i {
+      color: #db2323;
+    }
+  }
+}
+
+.radio-group {
+  display: flex;
+  gap: 2rem;
+  margin-top: 0.5rem;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   cursor: pointer;
-  outline: none;
-  margin-top: 10px;
+
+  input[type="radio"] {
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
+  }
+
+  .radio-text {
+    color: #333;
+  }
 }
-.popup button:hover {
-  background-color: #0056b3;
-}
-.goal {
+
+.form-control {
   width: 100%;
-  background-color: rgb(247, 247, 247);
-  height: 5vh;
-  border-radius: 20px;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #db2323;
+  }
+
+  &.error {
+    border-color: #dc3545;
+  }
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.message {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin: 1.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  i {
+    color: #db2323;
+    font-size: 1.2rem;
+  }
+
+  p {
+    margin: 0;
+    color: #666;
+  }
+}
+
+.submit-button {
+  width: 100%;
+  background: #db2323;
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+
+  &:hover {
+    background: darken(#db2323, 10%);
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.success-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
   text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  i {
+    font-size: 3rem;
+    color: #28a745;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: #666;
+    margin: 0;
+  }
 }
-p {
-  color: #0056b3;
-  font-size: 20px;
-}
-h2 {
-  color: rgb(187, 4, 4);
-}
-input,
-textarea,
-select {
-  width: 90%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-textarea {
-  height: 70px;
-}
-input.error,
-textarea.error,
-select.error {
-  border-color: red;
-}
+
 .shake {
   animation: shake 0.5s;
 }
+
 @keyframes shake {
-  0% { transform: translateX(0); }
+  0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  75% { transform: translateX(-5px); }
-  100% { transform: translateX(0); }
+  75% { transform: translateX(5px); }
 }
-label {
-  font-size: 90%;
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
 }
-@media only screen and (max-width: 768px) {
-  .popup {
-    width: 60px;
-    height: 80px;
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Dark theme */
+:deep(.dark) {
+  .check-out-page {
+    background: #1a1a1a;
   }
-  .popup h2 {
-    font-size: 10px;
+
+  .info-card,
+  .daily-goal-card,
+  .report-form {
+    background: #2d2d2d;
   }
-  .popup img.check {
-    width: 20px;
+
+  .check-out-header h1 {
+    color: #fff;
   }
-  .popup button {
-    padding: 3px 9px;
-    font-size: 8px;
-    text-align: center;
+
+  .card-header h3 {
+    color: #fff;
   }
-  .content1 {
-    width: 80%;
+
+  .card-content p {
+    color: #ccc;
   }
-  input,
-  textarea {
-    font-size: 14px;
+
+  .form-group {
+    h4 {
+      color: #fff;
+    }
+
+    label {
+      color: #fff;
+    }
   }
-  label {
-    font-size: 13px;
+
+  .radio-label .radio-text {
+    color: #fff;
   }
-  h2 {
-    font-size: 14px;
+
+  .form-control {
+    background: #1a1a1a;
+    border-color: #404040;
+    color: #fff;
+
+    &:focus {
+      border-color: #db2323;
+    }
   }
-  h5 {
-    font-size: 10px;
+
+  .message {
+    background: #1a1a1a;
+
+    p {
+      color: #ccc;
+    }
   }
-  .typewriter {
-    display: none; /* Masquer le composant */
+
+  .popup-content {
+    background: #2d2d2d;
+
+    h2 {
+      color: #fff;
+    }
+
+    p {
+      color: #ccc;
+    }
   }
 }
-.check {
-  position: relative;
-  margin-right: 10%;
-}
-h5 {
-  color: #006eff;
-}
-h4 {
-  color: blue;
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .check-out-page {
+    padding: 1rem;
+  }
+
+  .check-out-content {
+    grid-template-columns: 1fr;
+  }
+
+  .check-out-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .info-card {
+    padding: 1rem;
+  }
+
+  .report-form {
+    padding: 1.5rem;
+  }
+
+  .radio-group {
+    flex-direction: column;
+    gap: 1rem;
+  }
 }
 </style>

@@ -1,46 +1,104 @@
 <template>
-  <div :class="[theme, 'page']">
-    <div class="container">
-       <!-- Description avec l'effet de machine à écrire -->
-      
-        <TypewriterText class="typewriter" text="Avant de definir l'objectif de la journee veillesz verifier si l'objectif hebdomadaire a ete defini.Si non, cliquez sur l'onglet 'Objectifs Heb'et remplir l'objectif de la semaine. et cela se fera une seul fois dans la semaine" />
-      
-<div class="content-wrapper">
-      <div class="content">
-        <h2>{{ translatedTitle }}</h2>
-        <hr>
-        <div class="goal">
-          <p>{{ dailyGoals }}</p>
+  <div class="check-in-page" :class="theme">
+    <div class="check-in-container">
+      <!-- En-tête -->
+      <div class="check-in-header">
+        <h1>{{ translatedTitle }}</h1>
+        <div class="info-card">
+          <TypewriterText 
+            class="typewriter-text" 
+            text="Avant de définir l'objectif de la journée, veillez vérifier si l'objectif hebdomadaire a été défini. Si non, cliquez sur l'onglet 'Objectifs Heb' et remplir l'objectif de la semaine. Cela se fera une seule fois dans la semaine." 
+          />
+        </div>
+      </div>
+
+      <!-- Contenu principal -->
+      <div class="check-in-content">
+        <!-- Objectif hebdomadaire -->
+        <div class="weekly-goal-card">
+          <div class="card-header">
+            <i class="fas fa-bullseye"></i>
+            <h3>Objectif hebdomadaire</h3>
+          </div>
+          <div class="card-content">
+            <p>{{ dailyGoals }}</p>
+          </div>
         </div>
 
-        <div class="input-group">
-          <label for="arrivalTime">Temps d'arrivée au service:</label><br>
-          <input type="text" id="arrivalTime" v-model="arrivalTime" readonly>
+        <!-- Formulaire de check-in -->
+        <div class="check-in-form">
+          <div class="form-group">
+            <label>
+              <i class="fas fa-clock"></i>
+              Heure d'arrivée
+            </label>
+            <input 
+              type="text" 
+              v-model="arrivalTime" 
+              readonly 
+              class="form-control"
+            >
+          </div>
+
+          <div class="form-group">
+            <label>
+              <i class="fas fa-calendar"></i>
+              Date
+            </label>
+            <input 
+              type="date" 
+              v-model="date" 
+              readonly 
+              class="form-control"
+            >
+          </div>
+
+          <div class="form-group">
+            <label>
+              <i class="fas fa-tasks"></i>
+              Objectif de la journée
+            </label>
+            <textarea 
+              v-model="dailyGoal" 
+              :class="['form-control', { 'error': errorMessage }]"
+              rows="4" 
+              ref="dailyGoalInput"
+              placeholder="Décrivez vos objectifs pour aujourd'hui..."
+            ></textarea>
+            <div v-if="errorMessage" class="error-message">
+              <i class="fas fa-exclamation-circle"></i>
+              {{ errorMessage }}
+            </div>
+          </div>
+
+          <button 
+            @click="submitForm" 
+            :disabled="loading"
+            class="submit-button"
+          >
+            <i v-if="loading" class="fas fa-circle-notch fa-spin"></i>
+            <span v-else>Enregistrer le check-in</span>
+          </button>
         </div>
-        <div class="input-group">
-          <label for="date">Date:</label><br>
-          <input type="date" id="date" v-model="date" readonly>
-        </div>
-        <div class="input-group">
-          <label for="dailyGoal">Objectif de la journée:</label><br>
-          <textarea 
-            id="dailyGoal" 
-            v-model="dailyGoal" 
-            :class="{'error': errorMessage}" 
-            rows="4" 
-            ref="dailyGoalInput">
-          </textarea>
-          <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-        </div>
-        <button @click="submitForm"> <i v-if="loading" class="fas fa-circle-notch fa-spin"></i>
-          <span v-else>Submit</span></button>
-        <h5 v-if="errorFetchingDate">Erreur lors du chargement de la date. Veuillez vérifier votre connexion Internet.</h5>
       </div>
-      <div v-if="showPopup" class="popup">
-        <h2>Formulaire soumis avec succès !</h2>
+
+      <!-- Message d'erreur de chargement -->
+      <div v-if="errorFetchingDate" class="error-alert">
+        <i class="fas fa-exclamation-triangle"></i>
+        Erreur lors du chargement de la date. Veuillez vérifier votre connexion Internet.
       </div>
+
+      <!-- Popup de succès -->
+      <transition name="fade">
+        <div v-if="showPopup" class="success-popup">
+          <div class="popup-content">
+            <i class="fas fa-check-circle"></i>
+            <h2>Check-in enregistré avec succès !</h2>
+            <p>Redirection en cours...</p>
+          </div>
+        </div>
+      </transition>
     </div>
-  </div>
   </div>
 </template>
 
@@ -56,7 +114,7 @@ export default {
   },
   data() {
     return {
-      loading:false,
+      loading: false,
       arrivalTime: '',
       date: '',
       dailyGoal: '',
@@ -68,15 +126,13 @@ export default {
     };
   },
   computed: {
-    ...mapState(['theme']),
     ...mapState(['theme', 'language']),
     translatedTitle() {
-      // Logique simple de traduction
       const titles = {
-        en: 'Fill in the daily goal',
-        fr: "Remplir l'objectif de la journée"
+        en: 'Daily Check-in',
+        fr: 'Check-in quotidien'
       };
-      return titles[this.language];
+      return titles[this.language] || titles.fr;
     }
   },
   mounted() {
@@ -122,8 +178,6 @@ export default {
       const dayKey = dayKeys[currentDayOfWeek];
       if (dayKey) {
         this.dailyGoals = weeklyGoalsData[dayKey];
-      } else {
-        console.log('Day key not found for current day of week:', currentDayOfWeek);
       }
     },
     submitForm() {
@@ -143,26 +197,27 @@ export default {
         date: this.date,
         dailyGoal: this.dailyGoal
       };
-      this.loading = true
+
+      this.loading = true;
       axios.post(`${API_BASE_URL}/user/entre`, formData, { headers })
         .then(response => {
-          console.log('Form submitted successfully:', response.data);
           this.arrivalTime = '';
           this.date = '';
           this.dailyGoal = '';
           this.showPopup = true;
           this.errorMessage = '';
+          localStorage.setItem('dailyGoal', formData.dailyGoal);
           setTimeout(() => {
             this.showPopup = false;
             this.$router.push('/user/analytics');
-          },500);
-          localStorage.setItem('dailyGoal', formData.dailyGoal);
+          }, 3000);
         })
         .catch(error => {
           console.error('Error submitting form:', error);
+          this.errorMessage = "Une erreur est survenue lors de l'enregistrement.";
         })
-        .finally(()=>{
-          this.loading = false
+        .finally(() => {
+          this.loading = false;
         });
     },
     shakeInput() {
@@ -174,151 +229,303 @@ export default {
 };
 </script>
 
-<style scoped>
-.page {
-  background-color: #c4c1c1;
+<style lang="scss" scoped>
+.check-in-page {
+  min-height: 100vh;
+  padding: 2rem;
+  background: #f8f9fa;
 }
-.dark.page {
-  background-color:#858282;
-  color: #fff;
-}
-.light.page {
-  background-color: #fff;
-  color: #333;
-}
-button {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-.container {
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  /* justify-content: center; */
-  /* align-items: center; */
-}
-.content-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  width: 100%;
+
+.check-in-container {
   max-width: 1200px;
+  margin: 0 auto;
 }
-.content {
-  width: 65%;
-  max-width: 800px;
-  padding: 39px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+.check-in-header {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
+  }
 }
-.typewriter {
-  position: absolute;
-  width: 20%;
-  padding: 39px;
-  margin-left: 900px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+.info-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
 }
-.dark .content {
-  background-color: #444;
+
+.check-in-content {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
 }
-.light .content {
-  background-color: #fff;
+
+.weekly-goal-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  height: fit-content;
 }
-.input-group {
-  margin-bottom: 20px;
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+
+  i {
+    color: #db2323;
+    font-size: 1.2rem;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+  }
 }
-label {
-  display: block;
-  font-weight: bold;
+
+.card-content {
+  p {
+    margin: 0;
+    color: #666;
+    line-height: 1.5;
+  }
 }
-input,
-textarea {
+
+.check-in-form {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-weight: 500;
+
+    i {
+      color: #db2323;
+    }
+  }
+}
+
+.form-control {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #db2323;
+  }
+
+  &.error {
+    border-color: #dc3545;
+  }
 }
-textarea {
-  height: 70px;
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 100px;
 }
-input.error,
-textarea.error {
-  border-color: red;
-}
+
 .error-message {
-  color: red;
-  font-size: 12px;
+  color: #dc3545;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
+
+.submit-button {
+  width: 100%;
+  background: #db2323;
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+
+  &:hover {
+    background: darken(#db2323, 10%);
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.error-alert {
+  background: #fff3cd;
+  color: #856404;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.success-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  i {
+    font-size: 3rem;
+    color: #28a745;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: #666;
+    margin: 0;
+  }
+}
+
 .shake {
   animation: shake 0.5s;
 }
+
 @keyframes shake {
-  0% { transform: translateX(0); }
+  0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  75% { transform: translateX(-5px); }
-  100% { transform: translateX(0); }
+  75% { transform: translateX(5px); }
 }
-h5 {
-  color: blue;
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
 }
-h2 {
-  color: rgb(187, 4, 4);
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
-p {
-  color: #0056b3;
-  font-size: 25px;
-}
-.popup {
-  position: fixed;
-  top: 10%;
-  left: 80%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(45, 214, 29, 0.7);
-  color: #fff;
-  padding: 20px;
-  border-radius: 5px;
-  z-index: 999;
-}
-.popup h2 {
-  font-size: 15px;
-  margin-bottom: 10px;
-  color: #fff;
-}
-.goal {
-  width: 100%;
-  background-color: rgb(247, 247, 247);
-  height: 5vh;
-  border-radius: 20px;
-  text-align: center;
-}
-@media only screen and (max-width: 768px) {
-  .content {
-    width: 80%;
-    margin-top: -185px;
+
+/* Dark theme */
+:deep(.dark) {
+  .check-in-page {
+    background: #1a1a1a;
   }
-  input,
-  textarea {
-    font-size: 14px;
+
+  .info-card,
+  .weekly-goal-card,
+  .check-in-form {
+    background: #2d2d2d;
   }
-  label {
-    font-size: 12px;
+
+  .check-in-header h1 {
+    color: #fff;
   }
-  h2 {
-    font-size: 14px;
+
+  .card-header h3 {
+    color: #fff;
   }
-  h5 {
-    font-size: 10px;
+
+  .card-content p {
+    color: #ccc;
   }
-  .typewriter {
-    display: none; /* Masquer le composant */
+
+  .form-group label {
+    color: #fff;
+  }
+
+  .form-control {
+    background: #1a1a1a;
+    border-color: #404040;
+    color: #fff;
+
+    &:focus {
+      border-color: #db2323;
+    }
+  }
+
+  .error-alert {
+    background: #2d2d2d;
+    color: #ffc107;
+  }
+
+  .popup-content {
+    background: #2d2d2d;
+
+    h2 {
+      color: #fff;
+    }
+
+    p {
+      color: #ccc;
+    }
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .check-in-page {
+    padding: 1rem;
+  }
+
+  .check-in-content {
+    grid-template-columns: 1fr;
+  }
+
+  .check-in-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .info-card {
+    padding: 1rem;
+  }
+
+  .check-in-form {
+    padding: 1.5rem;
   }
 }
 </style>

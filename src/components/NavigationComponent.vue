@@ -1,202 +1,23 @@
-<!-- <template>
-  <header class="header">
-    <a href="#" class="logo">
-      <img src="../assets/images/logo.jpeg" class="logoimage" alt="CDE koinonia" />
-    </a>
-    <input class="menu-btn" type="checkbox" id="menu-btn" />
-    <label class="menu-icon" for="menu-btn">
-      <span class="navicon"></span>
-    </label>
-    <ul class="menu">
-      <li class="Home"><a href="#" @click="goToHomePage">Home</a></li>
-      <li><a href="#" @click="signIn">Sign In</a></li>
-      <li><a href="#" @click="register">Sign Up</a></li>
-    </ul>
-  </header>
-</template>
-
-<script>
-export default {
-  methods: {
-    goToHomePage() {
-      this.$router.push('/');
-      this.closeMenu(); 
-    },
-    signIn() {
-      this.$router.push('/login');
-      this.closeMenu();  
-    },
-    register() {
-      this.$router.push('/user/signup');
-      this.closeMenu(); 
-    },
-    closeMenu() {
-      const menuBtn = document.getElementById('menu-btn');
-      if (menuBtn) menuBtn.checked = false;
-    }
-  }
-}
-</script>
-
-<style scoped>
-/* header */
-.header {
-  background-image: url('@/assets/images/Screenshot from 2024-08-10 08-42-50.png');
-  background-size: cover;
-  width: 100%;
-  z-index: 3;
-  position: fixed;
-  top: 0;
-  left: 0;
-  box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid red;
-  border-radius: 0px 0px 20px 20px;
-}
-
-.header ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  overflow: hidden;
-  background-color: transparent;
-}
-
-.header li a {
-  display: block;
-  padding: 20px 20px;
-  text-decoration: none;
-  font-weight: bold;
-  color: #0a0a0a;
-}
-
-.header li a:hover,
-.header .menu-btn:hover {
-  color: #db2323;
-}
-
-.header .logo {
-  display: block;
-  float: left;
-  padding: 10px 10px;
-  text-decoration: none;
-}
-
-.logoimage {
-  width: 50px;
-  border-radius: 50px 50px;
-}
-
-/* menu */
-.header .menu {
-  clear: both;
-  max-height: 0;
-  transition: max-height 0.2s ease-out;
-}
-
-/* menu icon */
-.header .menu-icon {
-  cursor: pointer;
-  display: inline-block;
-  padding: 28px 20px;
-  position: relative;
-  user-select: none;
-}
-
-.header .menu-icon .navicon {
-  background: #e5e0e0;
-  display: block;
-  height: 2px;
-  transition: background 0.2s ease-out;
-  width: 18px;
-}
-
-.header .menu-icon .navicon:before,
-.header .menu-icon .navicon:after {
-  background: #333;
-  content: '';
-  display: block;
-  height: 100%;
-  position: absolute;
-  transition: all 0.2s ease-out;
-  width: 100%;
-}
-
-.header .menu-icon .navicon:before {
-  top: 5px;
-}
-
-.header .menu-icon .navicon:after {
-  top: -5px;
-}
-
-
-.header .menu-btn {
-  display: none;
-}
-
-.header .menu-btn:checked ~ .menu {
-  max-height: 240px;
-}
-
-.header .menu-btn:checked ~ .menu-icon .navicon {
-  background: transparent;
-}
-
-.header .menu-btn:checked ~ .menu-icon .navicon:before {
-  transform: rotate(-45deg);
-}
-
-.header .menu-btn:checked ~ .menu-icon .navicon:after {
-  transform: rotate(45deg);
-}
-
-.header .menu-btn:checked ~ .menu-icon:not(.steps) .navicon:before,
-.header .menu-btn:checked ~ .menu-icon:not(.steps) .navicon:after {
-  top: 0;
-}
-
-
-@media (min-width: 40em) {
-  .header li {
-    float: left;
-  }
-  .header li a {
-    padding: 20px 30px;
-  }
-  .header .menu {
-    clear: none;
-    float: right;
-    max-height: none;
-  }
-  .header .menu-icon {
-    display: none;
-  }
-}
-
-@media only screen and (max-width: 600px) {
-  .menu {
-    display: flex;
-    flex-direction: column;
-    align-items:right; 
-  }
-  .header {
-    padding: 0 30px; 
-  }
-}
-</style> -->
-
 <template>
-  <header class="header">
-    <a href="#" class="logo" @click="toggleMenu">
-      <img src="../assets/images/logo.jpeg" class="logoimage" alt="CDE koinonia" />
-    </a>
-    <ul class="menu" :class="{ 'menu-open': isMenuOpen }">
-      <li class="Home"><a href="#" @click="goToHomePage">Home</a></li>
-      <li><a href="#" @click.prevent="signIn">Sign In</a></li>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <router-link to="/" class="navbar-logo" @click="closeMenu">
+        <img src="../assets/images/logo.jpeg" alt="CDE koinonia" />
+      </router-link>
+      
+      <div class="menu-toggle" @click="toggleMenu" :class="{ 'active': isMenuOpen }">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
 
-      <li><a href="#" @click.prevent="signIn">Sign Up</a></li>
-    </ul>
-  </header>
+      <div class="navbar-menu" :class="{ 'active': isMenuOpen }">
+        <router-link to="/" class="nav-item" @click="closeMenu">Accueil</router-link>
+        <router-link to="/login" class="nav-item" @click="closeMenu">Connexion</router-link>
+        <router-link to="/user/signup" class="nav-item" @click="closeMenu">Inscription</router-link>
+      </div>
+    </div>
+  </nav>
 </template>
 
 <script>
@@ -210,107 +31,130 @@ export default {
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
     },
-    goToHomePage() {
-      this.$router.push('/');
-      this.isMenuOpen = false; // Close menu after clicking
-    },
-    signIn() {
-      this.$router.push('/login');
-      this.isMenuOpen = false; // Close menu after clicking
-    },
-    register() {
-      this.$router.push('/user/signup');
-      this.isMenuOpen = false; // Close menu after clicking
+    closeMenu() {
+      this.isMenuOpen = false;
     }
   }
 }
 </script>
 
 <style scoped>
-/* header */
-.header {
-  background-image: url('@/assets/images/Screenshot from 2024-08-10 08-42-50.png');
-  background-size: cover;
-  width: 100%;
-  z-index: 3;
+.navbar {
   position: fixed;
   top: 0;
   left: 0;
-  box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid red;
-  border-radius: 0px 0px 20px 20px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
 
-.header ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  overflow: hidden;
-  background-color: transparent;
-  display: none;
-}
-
-.header .menu.menu-open {
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
   display: flex;
-  justify-content: center; /* Align menu items horizontally in front of the logo */
-  position: absolute;
-  top: 70px; /* Adjust based on the height of your header */
-  left: 10px; /* Adjust to position the menu relative to the logo */
-  width: auto;
-  background: white; /* Optional: set a background color */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: add shadow for better visibility */
+  justify-content: space-between;
+  align-items: center;
+  height: 70px;
 }
 
-.header li a {
-  display: block;
-  padding: 20px 20px;
-  text-decoration: none;
-  font-weight: bold;
-  color: #0a0a0a;
+.navbar-logo {
+  display: flex;
+  align-items: center;
 }
 
-.header li a:hover {
-  color: #db2323;
-}
-
-.header .logo {
-  display: block;
-  float: left;
-  padding: 10px 10px;
-  text-decoration: none;
-}
-
-.logoimage {
+.navbar-logo img {
+  height: 50px;
   width: 50px;
-  border-radius: 50px 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
-/* Responsive Design */
-@media (min-width: 40em) {
-  .header li {
-    float: left;
-  }
-  .header li a {
-    padding: 20px 30px;
-  }
-  .header .menu {
-    display: flex;
-    justify-content: flex-end;
-    position: static;
-    background: transparent;
-    box-shadow: none;
-  }
+.navbar-logo img:hover {
+  transform: scale(1.05);
 }
 
-@media only screen and (max-width: 600px) {
-  .header .menu.menu-open {
+.navbar-menu {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.nav-item {
+  color: #333;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.nav-item:hover {
+  color: #db2323;
+  background: rgba(219, 35, 35, 0.1);
+}
+
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.menu-toggle span {
+  display: block;
+  width: 25px;
+  height: 2px;
+  background-color: #333;
+  transition: all 0.3s ease;
+}
+
+.menu-toggle.active span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.menu-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.active span:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+@media (max-width: 768px) {
+  .menu-toggle {
     display: flex;
-    /* flex-direction: column; */
-    position: absolute;
-    top: 60px;
+  }
+
+  .navbar-menu {
+    position: fixed;
+    top: 70px;
     left: 0;
     width: 100%;
-    background: white;
+    background: rgba(255, 255, 255, 0.98);
+    padding: 2rem;
+    flex-direction: column;
+    gap: 1rem;
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .navbar-menu.active {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .nav-item {
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
   }
 }
 </style>

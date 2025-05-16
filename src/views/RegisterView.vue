@@ -1,121 +1,167 @@
- <template>
-  <div v-if="popupVisible" class="popup-overlay">
-    <div class="popup-content">
-      <div class="nav">
-        <a href="/">
-          <img class="logo" src="../assets/images/logo.jpeg" alt="Logo" />
-        </a>
+<template>
+  <div class="register-page">
+    <div class="register-container">
+      <div class="register-content">
+        <div class="register-header">
+          <router-link to="/" class="logo-link">
+            <img class="register-logo" src="@/assets/images/logo.jpeg" alt="CDE Koinonia" />
+          </router-link>
+          <h1 class="register-title">Créer un compte</h1>
+          <p class="register-subtitle">Rejoignez notre communauté</p>
+        </div>
 
-      </div>
-     
-
-      <form @submit.prevent="registerStudent">
-        <div class="form-field">
-          <div class="top-content">
-            <h2>Enregistrez</h2>
-          </div>
-          <div class="full-name">
-            <div>
-              <label class="last-name" for="lName">Nom<span>*</span></label>
-              <input
-                class="input-field name"
-                type="text"
-                id="lName"
-                required
-                placeholder="Doe"
-                v-model="data.lastName"
-                @input="clearError('lastNameError')"
-                :class="{ 'is-invalid': lastNameError }"
-              />
-              <div class="error" v-if="lastNameError">{{ lastNameError }}</div>
+        <form class="register-form" @submit.prevent="registerStudent">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="lastName">Nom<span class="required">*</span></label>
+              <div class="input-wrapper">
+                <i class="fas fa-user"></i>
+                <input
+                  id="lastName"
+                  type="text"
+                  v-model="data.lastName"
+                  placeholder="Entrez votre nom"
+                  @input="clearError('lastNameError')"
+                  :class="{ 'is-invalid': lastNameError }"
+                  required
+                />
+              </div>
+              <div class="error-message" v-if="lastNameError">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ lastNameError }}
+              </div>
             </div>
-            <div>
-              <label class="first-name" for="fName">Prénom<span>*</span></label>
-              <input
-                class="input-field name"
-                type="text"
-                id="fName"
-                required
-                placeholder="John"
-                v-model="data.firstName"
-                @input="clearError('firstNameError')"
-                :class="{ 'is-invalid': firstNameError }"
-              />
-              <div class="error" v-if="firstNameError">{{ firstNameError }}</div>
+
+            <div class="form-group">
+              <label for="firstName">Prénom<span class="required">*</span></label>
+              <div class="input-wrapper">
+                <i class="fas fa-user"></i>
+                <input
+                  id="firstName"
+                  type="text"
+                  v-model="data.firstName"
+                  placeholder="Entrez votre prénom"
+                  @input="clearError('firstNameError')"
+                  :class="{ 'is-invalid': firstNameError }"
+                  required
+                />
+              </div>
+              <div class="error-message" v-if="firstNameError">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ firstNameError }}
+              </div>
             </div>
           </div>
-          <div>
-  <label for="role">Role<span>*</span></label>
-  <input
-    type="text"
-    class="input-field"
-    id="role"
-    required
-    placeholder="ex: Sante, Comptable..."
-    v-model="data.role"
-    @input="clearError('roleExistError')"
-    :class="{ 'is-invalid': roleExistError }"
-  />
-  <div class="error" v-if="roleExistError">{{ roleExistError }}</div>
-</div>
 
-          <div>
-  <label for="email">Email<span>*</span></label>
-  <input
-    type="email"
-    class="input-field"
-    id="email"
-    required
-    placeholder="example@email.com"
-    v-model="data.email"
-    @input="clearError('emailFormatError', 'emailExistError')"
-    :class="{ 'is-invalid': emailFormatError || emailExistError }"
-  />
-  <div class="error" v-if="emailFormatError">{{ emailFormatError }}</div>
-  <div class="error" v-else-if="emailExistError">{{ emailExistError }}</div>
-</div>
-          <div>
-            <label for="phone">Téléphone<span>*</span></label>
-            <input
-              class="input-field"
-              type="tel"
-              id="phone"
-              required
-              placeholder="0123456789"
-              v-model="data.phoneNumber"
-              @input="clearError('phoneNumberError')"
-              :class="{ 'is-invalid': phoneNumberError }"
-            />
-            <div class="error" v-if="phoneNumberError">{{ phoneNumberError }}</div>
-          </div>
-          <div>
-            <label for="password">Mot de passe<span>*</span></label>
-            <div class="password-container">
+          <div class="form-group">
+            <label for="role">Rôle<span class="required">*</span></label>
+            <div class="input-wrapper">
+              <i class="fas fa-briefcase"></i>
               <input
-                class="input-field"
-                :type="passwordFieldType"
+                id="role"
+                type="text"
+                v-model="data.role"
+                placeholder="ex: Santé, Comptable..."
+                @input="clearError('roleExistError')"
+                :class="{ 'is-invalid': roleExistError }"
+                required
+              />
+            </div>
+            <div class="error-message" v-if="roleExistError">
+              <i class="fas fa-exclamation-circle"></i>
+              {{ roleExistError }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email<span class="required">*</span></label>
+            <div class="input-wrapper">
+              <i class="fas fa-envelope"></i>
+              <input
+                id="email"
+                type="email"
+                v-model="data.email"
+                placeholder="exemple@email.com"
+                @input="clearError('emailFormatError', 'emailExistError')"
+                :class="{ 'is-invalid': emailFormatError || emailExistError }"
+                required
+              />
+            </div>
+            <div class="error-message" v-if="emailFormatError || emailExistError">
+              <i class="fas fa-exclamation-circle"></i>
+              {{ emailFormatError || emailExistError }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Téléphone<span class="required">*</span></label>
+            <div class="input-wrapper">
+              <i class="fas fa-phone"></i>
+              <input
+                id="phone"
+                type="tel"
+                v-model="data.phoneNumber"
+                placeholder="0123456789"
+                @input="clearError('phoneNumberError')"
+                :class="{ 'is-invalid': phoneNumberError }"
+                required
+              />
+            </div>
+            <div class="error-message" v-if="phoneNumberError">
+              <i class="fas fa-exclamation-circle"></i>
+              {{ phoneNumberError }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Mot de passe<span class="required">*</span></label>
+            <div class="input-wrapper">
+              <i class="fas fa-lock"></i>
+              <input
                 id="password"
-                placeholder="Enter password"
+                :type="passwordFieldType"
                 v-model="data.password"
+                placeholder="Créez votre mot de passe"
                 @input="clearError('passwordError')"
                 :class="{ 'is-invalid': passwordError }"
+                required
               />
               <i
-                class="toggle-password-icon"
+                class="password-toggle"
                 :class="{ 'fas fa-eye-slash': !showPassword, 'fas fa-eye': showPassword }"
                 @click="togglePasswordVisibility"
               ></i>
             </div>
-            <div class="error" v-if="passwordError">{{ passwordError }}</div>
+            <div class="error-message" v-if="passwordError">
+              <i class="fas fa-exclamation-circle"></i>
+              {{ passwordError }}
+            </div>
           </div>
-          <button type="submit" :disabled="loading">
-            <i v-if="loading" class="fas fa-circle-notch fa-spin"></i>
-              <span v-else>Submit</span>
-            </button>
-          <span class="login">Avez-vous déjà un compte? <a @click.prevent="goToLogin" href="#">Connectez</a></span>
+
+          <button 
+            class="register-button" 
+            type="submit" 
+            :disabled="loading"
+            :class="{ 'loading': loading }"
+          >
+            <span v-if="!loading">S'inscrire</span>
+            <i v-else class="fas fa-circle-notch fa-spin"></i>
+          </button>
+
+          <div class="login-link">
+            Vous avez déjà un compte ?
+            <router-link to="/login">Se connecter</router-link>
+          </div>
+        </form>
+      </div>
+
+      <div class="register-image">
+        <img src="@/assets/images/309430577_431589382413805_5270125874633532938_n.jpg" alt="CDE Koinonia" />
+        <div class="image-overlay">
+          <h2>CDE Koinonia</h2>
+          <p>Rejoignez notre mission</p>
         </div>
-      </form>
-      <button @click="closePopup" class="close-button">Fermer</button>
+      </div>
     </div>
   </div>
 </template>
@@ -125,11 +171,11 @@ import axios from 'axios';
 import { API_BASE_URL } from '@/config.js';
 
 export default {
+  name: 'RegisterView',
   data() {
     return {
-      popupVisible: true,
       showPassword: false,
-      loading:false,
+      loading: false,
       data: {
         lastName: '',
         firstName: '',
@@ -153,227 +199,272 @@ export default {
     },
   },
   methods: {
-  togglePasswordVisibility() {
-    this.showPassword = !this.showPassword;
-  },
-  registerStudent() {
-    this.loading = true;
-    axios
-      .post(`${API_BASE_URL}/user/register`, this.data)
-      .then((res) => {
-        if (res.status === 201) {
-          this.popupVisible = false; // Masquer la popup après l'inscription
-          this.$router.push('/login'); // Redirection vers la page de connexion
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        if (error.response) {
-          // Gérer les erreurs de validation du serveur (statut 403)
-          if (error.response.status === 403) {
-            const serverErrors = error.response.data.errors;
-
-            if (serverErrors) {
-              if (serverErrors.lastName) {
-                this.lastNameError = serverErrors.lastName;
+    togglePasswordVisibility() {
+      this.showPassword = !this.showPassword;
+    },
+    registerStudent() {
+      this.loading = true;
+      axios
+        .post(`${API_BASE_URL}/user/register`, this.data)
+        .then((res) => {
+          if (res.status === 201) {
+            this.$router.push('/login');
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          if (error.response) {
+            if (error.response.status === 403) {
+              const serverErrors = error.response.data.errors;
+              if (serverErrors) {
+                if (serverErrors.lastName) this.lastNameError = serverErrors.lastName;
+                if (serverErrors.firstName) this.firstNameError = serverErrors.firstName;
+                if (serverErrors.role) this.roleExistError = serverErrors.role;
+                if (serverErrors.email) this.emailFormatError = serverErrors.email;
+                if (serverErrors.phoneNumber) this.phoneNumberError = serverErrors.phoneNumber;
+                if (serverErrors.password) this.passwordError = serverErrors.password;
               }
-              if (serverErrors.firstName) {
-                this.firstNameError = serverErrors.firstName;
-              }
-              if (serverErrors.role) {
-                this.roleExistError = serverErrors.role;
-              }
-              if (serverErrors.email) {
-                this.emailFormatError = serverErrors.email;
-              }
-              if (serverErrors.phoneNumber) {
-                this.phoneNumberError = serverErrors.phoneNumber;
-              }
-              if (serverErrors.password) {
-                this.passwordError = serverErrors.password;
+            } else if (error.response.status === 400) {
+              if (error.response.data.email === 'Email already exists') {
+                this.emailExistError = 'Cet email est déjà enregistré.';
+              } else if (error.response.data.role === 'Role already exists') {
+                this.roleExistError = 'Ce rôle est déjà enregistré.';
               }
             }
-          } 
-          // Gérer l'erreur email déjà existant (statut 400)
-          else if (error.response.status === 400 && error.response.data.email === 'Email already exists') {
-            this.emailExistError = 'This email is already registered.';
-          } 
-          else if (error.response.status === 400 && error.response.data.role === 'Role already exists') {
-            this.roleExistError = 'This Role already registered.';
-          } 
-          // Gérer d'autres erreurs
-          else {
-            console.error("Une erreur inattendue s'est produite", error);
           }
-        }
-      })
-      .finally(() => {
-        this.loading = false;  // Fin du chargement
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+    clearError(...errors) {
+      errors.forEach((error) => {
+        this[error] = '';
       });
-  },
-  // La méthode closePopup n'est plus nécessaire ici si vous redirigez depuis registerStudent
-  closePopup() {
-    this.popupVisible = false;
-    this.resetForm();
-  },
-  resetForm() {
-    this.data = {
-      lastName: '',
-      firstName: '',
-      role: '',
-      email: '',
-      phoneNumber: '',
-      password: '',
-    };
-    this.clearAllErrors();
-  },
-  clearError(...errors) {
-    errors.forEach((error) => {
-      this[error] = '';
-    });
-  },
-  clearAllErrors() {
-    this.lastNameError = '';
-    this.firstNameError = '';
-    this.roleExistError = '';
-    this.phoneNumberError = '';
-    this.emailFormatError = '';
-    this.emailExistError = '';
-    this.passwordError = '';
-    this.confirmPasswordError = '';
-  },
-  goToLogin() {
-    this.$router.push('/login');
+    },
   }
-}
-
 };
 </script>
 
 <style scoped>
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url("@/assets/images/pngtree-abstract-white-and-red-geometric-background-picture-image_1867378.jpg");
+.register-page {
+  min-height: 100vh;
   display: flex;
-  background-size: cover;
   align-items: center;
   justify-content: center;
-}
-
-.popup-content {
-  background: white;
+  background-color: #f8f9fa;
   padding: 2rem;
-  border-radius: 8px;
-  max-width: 500px;
-  width: 100%;
-  position: relative;
 }
 
-.nav {
+.register-container {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  /* margin-bottom: 0px; */
+  background: white;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1200px;
+  min-height: 600px;
 }
 
-.nav img {
-  height: 60px;
-  width: 60px;
-  border-radius: 50%;
-}
-
-.form-field {
+.register-content {
+  flex: 1;
+  padding: 3rem;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  justify-content: center;
 }
 
-h2 {
+.register-header {
   text-align: center;
-  margin-bottom: 20px;
-  font-size: 1.8rem;
+  margin-bottom: 2rem;
 }
 
-label {
-  font-size: 1rem;
-  margin-bottom: 5px;
+.logo-link {
+  display: inline-block;
+  margin-bottom: 1rem;
 }
 
-.input-field {
-  width: 100%;
-  padding: 10px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.register-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
-.password-container {
+.register-title {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.register-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.required {
+  color: #dc3545;
+  margin-left: 0.25rem;
+}
+
+.input-wrapper {
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
-.password-container i {
+.input-wrapper i {
   position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
+  left: 1rem;
+  color: #666;
 }
 
-.error {
-  color: red;
+.input-wrapper input {
+  width: 100%;
+  padding: 0.8rem 1rem 0.8rem 2.5rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.input-wrapper input:focus {
+  border-color: #db2323;
+  box-shadow: 0 0 0 2px rgba(219, 35, 35, 0.1);
+  outline: none;
+}
+
+.input-wrapper input.is-invalid {
+  border-color: #dc3545;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 1rem;
+  cursor: pointer;
+  color: #666;
+}
+
+.error-message {
+  background-color: #fff5f5;
+  color: #dc3545;
+  padding: 0.8rem;
+  border-radius: 0.5rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 0.9rem;
 }
 
-button {
+.register-button {
   width: 100%;
-  padding: 10px;
-  font-size: 1rem;
-  background: #090255;
+  padding: 1rem;
+  background-color: #db2323;
   color: white;
   border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-button:hover {
-  background: #1fdf5f;
-}
-
-.login {
-  text-align: center;
-  margin-top: 10px;
+  border-radius: 0.5rem;
   font-size: 1rem;
-}
-
-.login a {
-  color: blue;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
 }
 
-.close-button {
+.register-button:hover:not(:disabled) {
+  background-color: #b31b1b;
+  transform: translateY(-2px);
+}
+
+.register-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.login-link {
+  text-align: center;
+  color: #666;
+}
+
+.login-link a {
+  color: #db2323;
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: 0.5rem;
+}
+
+.register-image {
+  flex: 1;
+  position: relative;
+  display: none;
+}
+
+.register-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-overlay {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #333;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  padding: 2rem;
+  text-align: center;
 }
 
-.close-button:hover {
-  color: red;
+.image-overlay h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
 }
-.fas.fa-circle-notch.fa-spin {
-  margin-right: 8px; /* Adds space between the spinner and text */
-  font-size: 16px;   /* Adjusts the size of the spinner */
-  color: #ffffff;    /* Ensures the spinner matches your button text color */
-  display: inline-block;
-  vertical-align: middle;
+
+@media (min-width: 768px) {
+  .register-image {
+    display: block;
+  }
+}
+
+@media (max-width: 767px) {
+  .register-container {
+    flex-direction: column;
+  }
+
+  .register-content {
+    padding: 2rem;
+  }
+
+  .register-image {
+    display: none;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
