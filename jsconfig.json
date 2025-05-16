@@ -7,6 +7,9 @@
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "@views/*": [
+        "src/views/*"
       ]
     },
     "lib": [
@@ -15,5 +18,8 @@
       "dom.iterable",
       "scripthost"
     ]
-  }
+  },
+  "exclude": [
+    "src/views/admin/adminDashboard.vue"
+  ]
 }

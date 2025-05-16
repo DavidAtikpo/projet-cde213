@@ -128,7 +128,7 @@ export default {
             this.popupVisible = true;
             setTimeout(() => {
               if (res.data.role === 'Coordinateur') {
-                this.$router.push(`/admin/adminDashboard`);
+                this.$router.push(`/adminDashboard`);
               } else {
                 this.$router.push(`/user/userDashboard`);
               }
