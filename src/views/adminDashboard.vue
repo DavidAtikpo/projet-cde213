@@ -26,54 +26,172 @@
       <nav class="sidebar-nav">
         <div class="nav-section">
           <h2 v-if="!isCollapsed" class="section-title">{{ getTranslatedTitle('mainMenu') }}</h2>
-          <router-link to="/admin/statisticComponent" class="nav-item" active-class="active">
+          <router-link to="/admin/dashboard" class="nav-item" active-class="active">
             <i class="fas fa-home"></i>
             <span v-if="!isCollapsed">{{ getTranslatedTitle('dashboard') }}</span>
           </router-link>
-          <router-link to="/admin/users" class="nav-item" active-class="active">
+          <div class="nav-item" @click="toggleSubmenu('users')">
             <i class="fas fa-users-cog"></i>
             <span v-if="!isCollapsed">{{ getTranslatedTitle('userManagement') }}</span>
-          </router-link>
-          <router-link to="/admin/children" class="nav-item" active-class="active">
+            <i class="fas fa-chevron-right" :class="{ 'rotated': activeSubmenu === 'users' }"></i>
+          </div>
+          <div class="submenu" v-if="activeSubmenu === 'users' && !isCollapsed">
+            <router-link :to="`/admin/${$route.params.id}/users/list`" class="submenu-item" active-class="active">
+              <i class="fas fa-list"></i>
+              <span>{{ getTranslatedTitle('userList') }}</span>
+            </router-link>
+            <router-link :to="`/admin/${$route.params.id}/users/roles`" class="submenu-item" active-class="active">
+              <i class="fas fa-user-tag"></i>
+              <span>{{ getTranslatedTitle('roleManagement') }}</span>
+            </router-link>
+            <router-link :to="`/admin/${$route.params.id}/users/permissions`" class="submenu-item" active-class="active">
+              <i class="fas fa-key"></i>
+              <span>{{ getTranslatedTitle('permissions') }}</span>
+            </router-link>
+          </div>
+        </div>
+
+        <div class="nav-section">
+          <h2 v-if="!isCollapsed" class="section-title">{{ getTranslatedTitle('children') }}</h2>
+          <div class="nav-item" @click="toggleSubmenu('children')">
             <i class="fas fa-child"></i>
             <span v-if="!isCollapsed">{{ getTranslatedTitle('childrenManagement') }}</span>
-          </router-link>
+            <i class="fas fa-chevron-right" :class="{ 'rotated': activeSubmenu === 'children' }"></i>
+          </div>
+          <div class="submenu" v-if="activeSubmenu === 'children' && !isCollapsed">
+            <router-link :to="`/admin/${$route.params.id}/ListeEnfant`" class="submenu-item" active-class="active">
+              <i class="fas fa-list"></i>
+              <span>{{ getTranslatedTitle('listOfChildren') }}</span>
+            </router-link>
+            <router-link :to="`/admin/${$route.params.id}/Registration`" class="submenu-item" active-class="active">
+              <i class="fas fa-user-plus"></i>
+              <span>{{ getTranslatedTitle('inscription') }}</span>
+            </router-link>
+            <router-link :to="`/admin/${$route.params.id}/children/groups`" class="submenu-item" active-class="active">
+              <i class="fas fa-users"></i>
+              <span>{{ getTranslatedTitle('groups') }}</span>
+            </router-link>
+          </div>
+
+          <div class="nav-item" @click="toggleSubmenu('attendance')">
+            <i class="fas fa-calendar-check"></i>
+            <span v-if="!isCollapsed">{{ getTranslatedTitle('attendance') }}</span>
+            <i class="fas fa-chevron-right" :class="{ 'rotated': activeSubmenu === 'attendance' }"></i>
+          </div>
+          <div class="submenu" v-if="activeSubmenu === 'attendance' && !isCollapsed">
+            <router-link :to="`/admin/${$route.params.id}/attendance/present`" class="submenu-item" active-class="active">
+              <i class="fas fa-check-circle"></i>
+              <span>{{ getTranslatedTitle('present') }}</span>
+            </router-link>
+            <router-link :to="`/admin/${$route.params.id}/attendance/absent`" class="submenu-item" active-class="active">
+              <i class="fas fa-times-circle"></i>
+              <span>{{ getTranslatedTitle('absent') }}</span>
+            </router-link>
+            <router-link :to="`/admin/${$route.params.id}/attendance/history`" class="submenu-item" active-class="active">
+              <i class="fas fa-history"></i>
+              <span>{{ getTranslatedTitle('attendanceHistory') }}</span>
+            </router-link>
+          </div>
         </div>
 
         <div class="nav-section">
           <h2 v-if="!isCollapsed" class="section-title">{{ getTranslatedTitle('activities') }}</h2>
-          <router-link to="/admin/activities" class="nav-item" active-class="active">
-            <i class="fas fa-calendar-check"></i>
+          <div class="nav-item" @click="toggleSubmenu('activities')">
+            <i class="fas fa-calendar-alt"></i>
             <span v-if="!isCollapsed">{{ getTranslatedTitle('activityManagement') }}</span>
-          </router-link>
-          <router-link to="/admin/staff" class="nav-item" active-class="active">
+            <i class="fas fa-chevron-right" :class="{ 'rotated': activeSubmenu === 'activities' }"></i>
+          </div>
+          <div class="submenu" v-if="activeSubmenu === 'activities' && !isCollapsed">
+            <router-link :to="`/admin/${$route.params.id}/activities/schedule`" class="submenu-item" active-class="active">
+              <i class="fas fa-clock"></i>
+              <span>{{ getTranslatedTitle('schedule') }}</span>
+            </router-link>
+            <router-link :to="`/admin/${$route.params.id}/activities/calendar`" class="submenu-item" active-class="active">
+              <i class="fas fa-calendar"></i>
+              <span>{{ getTranslatedTitle('calendar') }}</span>
+            </router-link>
+            <router-link :to="`/admin/${$route.params.id}/activities/create`" class="submenu-item" active-class="active">
+              <i class="fas fa-plus-circle"></i>
+              <span>{{ getTranslatedTitle('createActivity') }}</span>
+            </router-link>
+          </div>
+
+          <div class="nav-item" @click="toggleSubmenu('staff')">
             <i class="fas fa-user-tie"></i>
             <span v-if="!isCollapsed">{{ getTranslatedTitle('staffManagement') }}</span>
-          </router-link>
+            <i class="fas fa-chevron-right" :class="{ 'rotated': activeSubmenu === 'staff' }"></i>
+          </div>
+          <div class="submenu" v-if="activeSubmenu === 'staff' && !isCollapsed">
+            <router-link :to="`/admin/${$route.params.id}/staff/list`" class="submenu-item" active-class="active">
+              <i class="fas fa-list"></i>
+              <span>{{ getTranslatedTitle('staffList') }}</span>
+            </router-link>
+            <router-link :to="`/admin/${$route.params.id}/staff/schedule`" class="submenu-item" active-class="active">
+              <i class="fas fa-calendar-alt"></i>
+              <span>{{ getTranslatedTitle('staffSchedule') }}</span>
+            </router-link>
+            <router-link :to="`/admin/${$route.params.id}/staff/performance`" class="submenu-item" active-class="active">
+              <i class="fas fa-chart-line"></i>
+              <span>{{ getTranslatedTitle('staffPerformance') }}</span>
+            </router-link>
+          </div>
         </div>
 
         <div class="nav-section">
-          <h2 v-if="!isCollapsed" class="section-title">{{ getTranslatedTitle('finance') }}</h2>
-          <router-link to="/admin/finance" class="nav-item" active-class="active">
-            <i class="fas fa-chart-pie"></i>
-            <span v-if="!isCollapsed">{{ getTranslatedTitle('financeManagement') }}</span>
-          </router-link>
-          <router-link to="/admin/reports" class="nav-item" active-class="active">
-            <i class="fas fa-file-alt"></i>
+          <h2 v-if="!isCollapsed" class="section-title">{{ getTranslatedTitle('reports') }}</h2>
+          <div class="nav-item" @click="toggleSubmenu('reports')">
+            <i class="fas fa-chart-line"></i>
             <span v-if="!isCollapsed">{{ getTranslatedTitle('reportsAndStats') }}</span>
-          </router-link>
+            <i class="fas fa-chevron-right" :class="{ 'rotated': activeSubmenu === 'reports' }"></i>
+          </div>
+          <div class="submenu" v-if="activeSubmenu === 'reports' && !isCollapsed">
+            <div class="submenu-item" @click="toggleNestedSubmenu('daily')">
+              <i class="fas fa-calendar-day"></i>
+              <span>{{ getTranslatedTitle('daily') }}</span>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="submenu daily-submenu" v-if="activeNestedSubmenu === 'daily'">
+              <router-link :to="`/admin/${$route.params.id}/objectif`" class="submenu-item" active-class="active">
+                <i class="fas fa-bullseye"></i>
+                <span>{{ getTranslatedTitle('objectives') }}</span>
+              </router-link>
+              <router-link :to="`/admin/${$route.params.id}/rapport`" class="submenu-item" active-class="active">
+                <i class="fas fa-file-alt"></i>
+                <span>{{ getTranslatedTitle('reports') }}</span>
+              </router-link>
+            </div>
+            <router-link :to="`/admin/${$route.params.id}/Weekly`" class="submenu-item" active-class="active">
+              <i class="fas fa-calendar-week"></i>
+              <span>{{ getTranslatedTitle('weekly') }}</span>
+            </router-link>
+            <router-link :to="`/admin/${$route.params.id}/monthly`" class="submenu-item" active-class="active">
+              <i class="fas fa-calendar-alt"></i>
+              <span>{{ getTranslatedTitle('monthly') }}</span>
+            </router-link>
+          </div>
         </div>
 
         <div class="nav-section">
-          <h2 v-if="!isCollapsed" class="section-title">{{ getTranslatedTitle('system') }}</h2>
-          <router-link to="/admin/settings" class="nav-item" active-class="active">
-            <i class="fas fa-cogs"></i>
+          <h2 v-if="!isCollapsed" class="section-title">{{ getTranslatedTitle('settings') }}</h2>
+          <div class="nav-item" @click="toggleSubmenu('settings')">
+            <i class="fas fa-cog"></i>
             <span v-if="!isCollapsed">{{ getTranslatedTitle('systemSettings') }}</span>
-          </router-link>
-          <router-link to="/admin/permissions" class="nav-item" active-class="active">
-            <i class="fas fa-shield-alt"></i>
-            <span v-if="!isCollapsed">{{ getTranslatedTitle('permissionManagement') }}</span>
-          </router-link>
+            <i class="fas fa-chevron-right" :class="{ 'rotated': activeSubmenu === 'settings' }"></i>
+          </div>
+          <div class="submenu" v-if="activeSubmenu === 'settings' && !isCollapsed">
+            <router-link :to="`/admin/${$route.params.id}/settings/general`" class="submenu-item" active-class="active">
+              <i class="fas fa-sliders-h"></i>
+              <span>{{ getTranslatedTitle('generalSettings') }}</span>
+            </router-link>
+            <router-link :to="`/admin/${$route.params.id}/settings/security`" class="submenu-item" active-class="active">
+              <i class="fas fa-shield-alt"></i>
+              <span>{{ getTranslatedTitle('securitySettings') }}</span>
+            </router-link>
+            <router-link :to="`/admin/${$route.params.id}/settings/backup`" class="submenu-item" active-class="active">
+              <i class="fas fa-database"></i>
+              <span>{{ getTranslatedTitle('backupSettings') }}</span>
+            </router-link>
+          </div>
         </div>
       </nav>
 
@@ -180,91 +298,7 @@
 
       <!-- Dashboard Content -->
       <div class="dashboard-content">
-        <div class="dashboard-header">
-          <h1>{{ getTranslatedTitle('dashboard') }}</h1>
-        </div>
-
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-header">
-              <h3>{{ getTranslatedTitle('totalUsers') }}</h3>
-              <i class="fas fa-users"></i>
-            </div>
-            <div class="stat-value">1,234</div>
-            <div class="stat-change positive">
-              <i class="fas fa-arrow-up"></i>
-              +12.5%
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-header">
-              <h3>{{ getTranslatedTitle('totalChildren') }}</h3>
-              <i class="fas fa-child"></i>
-            </div>
-            <div class="stat-value">567</div>
-            <div class="stat-change positive">
-              <i class="fas fa-arrow-up"></i>
-              +8.3%
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-header">
-              <h3>{{ getTranslatedTitle('totalActivities') }}</h3>
-              <i class="fas fa-calendar-check"></i>
-            </div>
-            <div class="stat-value">89</div>
-            <div class="stat-change negative">
-              <i class="fas fa-arrow-down"></i>
-              -2.1%
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-header">
-              <h3>{{ getTranslatedTitle('totalStaff') }}</h3>
-              <i class="fas fa-user-tie"></i>
-            </div>
-            <div class="stat-value">45</div>
-            <div class="stat-change positive">
-              <i class="fas fa-arrow-up"></i>
-              +5.7%
-            </div>
-          </div>
-        </div>
-
-        <div class="recent-activity">
-          <h2>{{ getTranslatedTitle('recentActivity') }}</h2>
-          <div class="activity-list">
-            <div class="activity-item">
-              <i class="fas fa-user-plus"></i>
-              <div class="activity-content">
-                <h4>{{ getTranslatedTitle('newStaffMember') }}</h4>
-                <p>{{ getTranslatedTitle('newStaffMemberDesc') }}</p>
-              </div>
-              <span class="activity-time">5 min ago</span>
-            </div>
-
-            <div class="activity-item">
-              <i class="fas fa-child"></i>
-              <div class="activity-content">
-                <h4>{{ getTranslatedTitle('newChildRegistration') }}</h4>
-                <p>{{ getTranslatedTitle('newChildRegistrationDesc') }}</p>
-              </div>
-              <span class="activity-time">1 hour ago</span>
-            </div>
-
-            <div class="activity-item">
-              <i class="fas fa-calendar-check"></i>
-              <div class="activity-content">
-                <h4>{{ getTranslatedTitle('newActivityScheduled') }}</h4>
-                <p>{{ getTranslatedTitle('newActivityScheduledDesc') }}</p>
-              </div>
-              <span class="activity-time">2 hours ago</span>
-            </div>
-          </div>
-        </div>
+        <router-view></router-view>
       </div>
     </div>
   </div>
@@ -286,6 +320,8 @@ export default {
       showNotifications: false,
       showUserMenu: false,
       unreadNotifications: 3,
+      activeSubmenu: null,
+      activeNestedSubmenu: null,
       notifications: [
         {
           id: 1,
@@ -313,62 +349,28 @@ export default {
       userRole: 'Administrateur',
       userAvatar: 'https://via.placeholder.com/40',
       translatedTitles: {
-        fr: {
-          adminPanel: 'Panneau Administrateur',
-          mainMenu: 'Menu Principal',
-          dashboard: 'Tableau de Bord',
-          userManagement: 'Gestion des Utilisateurs',
-          childrenManagement: 'Gestion des Enfants',
-          activities: 'Activités',
-          activityManagement: 'Gestion des Activités',
-          staffManagement: 'Gestion du Personnel',
-          finance: 'Finances',
-          financeManagement: 'Gestion Financière',
-          reportsAndStats: 'Rapports & Statistiques',
-          system: 'Système',
-          systemSettings: 'Configuration Système',
-          permissionManagement: 'Gestion des Permissions',
-          toggleTheme: 'Changer le Thème',
-          searchPlaceholder: 'Rechercher...',
-          notifications: 'Notifications',
-          markAllAsRead: 'Tout marquer comme lu',
-          profile: 'Profil',
-          settings: 'Paramètres',
-          logout: 'Déconnexion',
-          totalUsers: 'Utilisateurs Totaux',
-          totalChildren: 'Enfants Totaux',
-          totalActivities: 'Activités Totales',
-          totalStaff: 'Personnel Total',
-          recentActivity: 'Activité Récente',
-          newStaffMember: 'Nouveau Membre du Personnel',
-          newStaffMemberDesc: 'Un nouveau membre a rejoint l\'équipe',
-          newChildRegistration: 'Nouvelle Inscription',
-          newChildRegistrationDesc: 'Un nouvel enfant a été inscrit',
-          newActivityScheduled: 'Nouvelle Activité',
-          newActivityScheduledDesc: 'Une nouvelle activité a été planifiée'
-        },
         en: {
           adminPanel: 'Admin Panel',
           mainMenu: 'Main Menu',
           dashboard: 'Dashboard',
           userManagement: 'User Management',
           childrenManagement: 'Children Management',
+          listOfChildren: 'List of Children',
+          presence: 'Presence',
+          absence: 'Absence',
+          inscription: 'Registration',
           activities: 'Activities',
           activityManagement: 'Activity Management',
           staffManagement: 'Staff Management',
+          attendance: 'Attendance',
+          reportsAndStats: 'Reports & Statistics',
+          daily: 'Daily',
+          objectives: 'Objectives',
+          reports: 'Reports',
+          weekly: 'Weekly',
+          monthly: 'Monthly',
           finance: 'Finance',
           financeManagement: 'Finance Management',
-          reportsAndStats: 'Reports & Statistics',
-          system: 'System',
-          systemSettings: 'System Settings',
-          permissionManagement: 'Permission Management',
-          toggleTheme: 'Toggle Theme',
-          searchPlaceholder: 'Search...',
-          notifications: 'Notifications',
-          markAllAsRead: 'Mark all as read',
-          profile: 'Profile',
-          settings: 'Settings',
-          logout: 'Logout',
           totalUsers: 'Total Users',
           totalChildren: 'Total Children',
           totalActivities: 'Total Activities',
@@ -379,7 +381,69 @@ export default {
           newChildRegistration: 'New Registration',
           newChildRegistrationDesc: 'A new child has been registered',
           newActivityScheduled: 'New Activity',
-          newActivityScheduledDesc: 'A new activity has been scheduled'
+          newActivityScheduledDesc: 'A new activity has been scheduled',
+          hebdomadaire: 'Weekly',
+          userList: 'User List',
+          roleManagement: 'Role Management',
+          permissions: 'Permissions',
+          groups: 'Groups',
+          staffList: 'Staff List',
+          staffSchedule: 'Staff Schedule',
+          staffPerformance: 'Staff Performance',
+          generalSettings: 'General Settings',
+          securitySettings: 'Security Settings',
+          backupSettings: 'Backup Settings',
+          schedule: 'Schedule',
+          calendar: 'Calendar',
+          createActivity: 'Create Activity',
+        },
+        fr: {
+          adminPanel: 'Panneau Administrateur',
+          mainMenu: 'Menu Principal',
+          dashboard: 'Tableau de Bord',
+          userManagement: 'Gestion des Utilisateurs',
+          childrenManagement: 'Gestion des Enfants',
+          listOfChildren: 'Liste des Enfants',
+          presence: 'Présence',
+          absence: 'Absence',
+          inscription: 'Inscription',
+          activities: 'Activités',
+          activityManagement: 'Gestion des Activités',
+          staffManagement: 'Gestion du Personnel',
+          attendance: 'Présence',
+          reportsAndStats: 'Rapports & Statistiques',
+          daily: 'Journalier',
+          objectives: 'Objectifs',
+          reports: 'Rapports',
+          weekly: 'Hebdomadaire',
+          monthly: 'Mensuel',
+          finance: 'Finances',
+          financeManagement: 'Gestion Financière',
+          totalUsers: 'Utilisateurs Totaux',
+          totalChildren: 'Enfants Totaux',
+          totalActivities: 'Activités Totales',
+          totalStaff: 'Personnel Total',
+          recentActivity: 'Activité Récente',
+          newStaffMember: 'Nouveau Membre du Personnel',
+          newStaffMemberDesc: 'Un nouveau membre a rejoint l\'équipe',
+          newChildRegistration: 'Nouvelle Inscription',
+          newChildRegistrationDesc: 'Un nouvel enfant a été inscrit',
+          newActivityScheduled: 'Nouvelle Activité',
+          newActivityScheduledDesc: 'Une nouvelle activité a été planifiée',
+          hebdomadaire: 'Hebdomadaire',
+          userList: 'Liste des Utilisateurs',
+          roleManagement: 'Gestion des Rôles',
+          permissions: 'Permissions',
+          groups: 'Groupes',
+          staffList: 'Liste du Personnel',
+          staffSchedule: 'Emploi du Temps du Personnel',
+          staffPerformance: 'Performance du Personnel',
+          generalSettings: 'Paramètres Généraux',
+          securitySettings: 'Paramètres de Sécurité',
+          backupSettings: 'Paramètres de Sauvegarde',
+          schedule: 'Emploi du Temps',
+          calendar: 'Calendrier',
+          createActivity: 'Créer une Activité',
         }
       }
     };
@@ -451,6 +515,21 @@ export default {
     logout() {
       this.$store.dispatch('logout');
       this.$router.push('/login');
+    },
+    toggleSubmenu(submenu) {
+      if (this.activeSubmenu === submenu) {
+        this.activeSubmenu = null;
+        this.activeNestedSubmenu = null;
+      } else {
+        this.activeSubmenu = submenu;
+      }
+    },
+    toggleNestedSubmenu(submenu) {
+      if (this.activeNestedSubmenu === submenu) {
+        this.activeNestedSubmenu = null;
+      } else {
+        this.activeNestedSubmenu = submenu;
+      }
     }
   },
   mounted() {
@@ -491,8 +570,8 @@ export default {
 .admin-dashboard {
   display: flex;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e2e8f0 100%);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #f5f7fa;
+  transition: all 0.3s ease;
 }
 
 .main-content {
@@ -510,18 +589,15 @@ export default {
 }
 
 .sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
   width: 280px;
   background: white;
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 1001;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  border-right: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  z-index: 1000;
 
   &.collapsed {
     width: 80px;
@@ -531,33 +607,39 @@ export default {
     padding: 1.5rem;
     background: linear-gradient(135deg, #db2323 0%, #b31b1b 100%);
     color: white;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 
-    .logo-container {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      padding: 0.8rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
     }
 
-    .sidebar-title {
-      color: white;
+    h1 {
       font-size: 1.4rem;
-      margin-top: 1rem;
-      font-weight: 600;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+      margin: 0;
+      white-space: nowrap;
     }
   }
 
-  .nav-section {
+  .sidebar-nav {
+    flex: 1;
     padding: 1rem 0;
+    overflow-y: auto;
 
-    .section-title {
-      color: #666;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 0 1.5rem;
-      margin-bottom: 0.5rem;
+    .nav-section {
+      padding: 1rem 0;
+
+      h2 {
+        color: #666;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0 1.5rem;
+        margin-bottom: 0.5rem;
+      }
     }
 
     .nav-item {
@@ -568,6 +650,7 @@ export default {
       text-decoration: none;
       transition: all 0.3s ease;
       border-left: 3px solid transparent;
+      cursor: pointer;
 
       &:hover {
         background: rgba(219, 35, 35, 0.05);
@@ -583,6 +666,47 @@ export default {
       i {
         font-size: 1.2rem;
         margin-right: 1rem;
+        width: 24px;
+        text-align: center;
+      }
+
+      .fa-chevron-right {
+        margin-left: auto;
+        transition: transform 0.3s ease;
+        
+        &.rotated {
+          transform: rotate(90deg);
+        }
+      }
+    }
+  }
+
+  .sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.8rem;
+      border: none;
+      background: none;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 0.5rem;
+
+      &:hover {
+        background: rgba(219, 35, 35, 0.05);
+        color: #db2323;
+      }
+
+      i {
+        font-size: 1.2rem;
         width: 24px;
         text-align: center;
       }
@@ -739,7 +863,7 @@ export default {
     }
 
     &.negative {
-      color: #dc3545;
+      color: #4035dc;
     }
 
     i {
@@ -818,7 +942,7 @@ export default {
 /* Dark theme */
 :deep(.dark) {
   .admin-dashboard {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    background: #1a1a1a;
   }
 
   .main-content {
@@ -826,63 +950,54 @@ export default {
   }
 
   .sidebar {
-    background: #1e293b;
+    background: #2d2d2d;
     box-shadow: 4px 0 10px rgba(0, 0, 0, 0.3);
-  }
 
-  .navbar {
-    background: #1e293b;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
+    .nav-item {
+      color: #e2e8f0;
 
-  .stat-card {
-    background: #1e293b;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      &:hover {
+        background: rgba(219, 35, 35, 0.1);
+      }
 
-    &:hover {
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    }
-
-    .stat-header {
-      h3 {
-        color: #94a3b8;
+      &.active {
+        background: rgba(219, 35, 35, 0.15);
       }
     }
 
-    .stat-value {
-      color: #e2e8f0;
-    }
-  }
+    .sidebar-footer {
+      border-color: rgba(255, 255, 255, 0.1);
 
-  .recent-activity {
-    background: #1e293b;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-
-    h2 {
-      color: #e2e8f0;
-    }
-  }
-
-  .activity-item {
-    border-color: rgba(255, 255, 255, 0.1);
-
-    &:hover {
-      background: #0f172a;
-    }
-
-    .activity-content {
-      h4 {
+      button {
         color: #e2e8f0;
-      }
 
-      p {
-        color: #94a3b8;
+        &:hover {
+          background: rgba(219, 35, 35, 0.1);
+        }
       }
     }
+  }
 
-    .activity-time {
+  .submenu {
+    background: rgba(255, 255, 255, 0.05);
+
+    .submenu-item {
       color: #94a3b8;
+
+      &:hover {
+        background: rgba(219, 35, 35, 0.1);
+        color: #db2323;
+      }
+
+      &.active {
+        background: rgba(219, 35, 35, 0.15);
+        color: #db2323;
+      }
     }
+  }
+
+  .daily-submenu {
+    background: rgba(255, 255, 255, 0.03);
   }
 }
 
@@ -984,6 +1099,215 @@ export default {
   .sidebar-overlay {
     display: block;
     opacity: 1;
+  }
+}
+
+.nav-submenu {
+  .nav-item {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1.5rem;
+    color: #333;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+
+    &:hover {
+      background: rgba(219, 35, 35, 0.05);
+      color: #db2323;
+    }
+
+    i.fa-chevron-down {
+      font-size: 0.8rem;
+      transition: transform 0.3s ease;
+    }
+
+    &.active i.fa-chevron-down {
+      transform: rotate(180deg);
+    }
+  }
+
+  .submenu {
+    background: rgba(0, 0, 0, 0.02);
+    padding: 0.5rem 0;
+
+    .submenu-item {
+      display: flex;
+      align-items: center;
+      padding: 0.6rem 1.5rem 0.6rem 3.5rem;
+      color: #333;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+
+      &:hover {
+        background: rgba(219, 35, 35, 0.05);
+        color: #db2323;
+      }
+
+      &.active {
+        background: rgba(219, 35, 35, 0.1);
+        color: #db2323;
+      }
+
+      i {
+        font-size: 1rem;
+        margin-right: 0.8rem;
+        width: 20px;
+        text-align: center;
+      }
+    }
+
+    .daily-submenu {
+      background: rgba(0, 0, 0, 0.03);
+      padding: 0.5rem 0;
+
+      .submenu-item {
+        padding-left: 4.5rem;
+      }
+    }
+  }
+}
+
+// Dark theme adjustments
+:deep(.dark) {
+  .nav-submenu {
+    .submenu {
+      background: rgba(255, 255, 255, 0.05);
+
+      .daily-submenu {
+        background: rgba(255, 255, 255, 0.03);
+      }
+    }
+  }
+}
+
+.submenu {
+  background: rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  margin-left: 1rem;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+
+  .submenu-item {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    color: #666;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    font-size: 0.9rem;
+
+    &:hover {
+      background: rgba(219, 35, 35, 0.05);
+      color: #db2323;
+    }
+
+    &.active {
+      background: rgba(219, 35, 35, 0.1);
+      color: #db2323;
+      border-left-color: #db2323;
+    }
+
+    i {
+      font-size: 1rem;
+      margin-right: 0.8rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    .fa-chevron-right {
+      margin-left: auto;
+      font-size: 0.8rem;
+      transition: transform 0.3s ease;
+    }
+  }
+}
+
+.daily-submenu {
+  background: rgba(0, 0, 0, 0.02);
+  margin-left: 1rem;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+
+  .submenu-item {
+    padding-left: 2rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* Dark theme */
+:deep(.dark) {
+  .submenu {
+    background: rgba(255, 255, 255, 0.05);
+    border-left-color: rgba(255, 255, 255, 0.1);
+
+    .submenu-item {
+      color: #94a3b8;
+
+      &:hover {
+        background: rgba(219, 35, 35, 0.1);
+        color: #db2323;
+      }
+
+      &.active {
+        background: rgba(219, 35, 35, 0.15);
+        color: #db2323;
+      }
+    }
+  }
+
+  .daily-submenu {
+    background: rgba(255, 255, 255, 0.03);
+    border-left-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Animation pour les sous-menus */
+.submenu-enter-active,
+.submenu-leave-active {
+  transition: all 0.3s ease;
+  max-height: 500px;
+  opacity: 1;
+}
+
+.submenu-enter-from,
+.submenu-leave-to {
+  max-height: 0;
+  opacity: 0;
+  padding: 0;
+}
+
+/* Ajustement pour le mode collapsed */
+.sidebar.collapsed {
+  .submenu {
+    position: absolute;
+    left: 80px;
+    top: 0;
+    width: 200px;
+    background: white;
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+    border-left: none;
+    border-radius: 0 4px 4px 0;
+    margin-left: 0;
+
+    .submenu-item {
+      padding: 0.8rem 1rem;
+    }
+  }
+
+  .daily-submenu {
+    left: 200px;
+    width: 180px;
+  }
+}
+
+:deep(.dark) .sidebar.collapsed {
+  .submenu {
+    background: #2d2d2d;
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.3);
   }
 }
 </style> 

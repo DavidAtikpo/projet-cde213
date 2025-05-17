@@ -1,137 +1,145 @@
-<!-- <template>
-  <div :class="[theme, 'page']">
-    <div class="header">
-      <p>Liste des enfants inscrits dans le serveur</p>
-      <p>Veuillez sélectionner les noms des enfants qui sont présents au rendez-vous aujourd'hui</p>
-      <em>Effectif total: {{ children.length }}</em>
-    </div>
-    <div class="child-list">
-      
-      <div v-if="loading" class="loading-indicator">
-        <i class="fas fa-circle-notch fa-spin"></i> Chargement des données...
-      </div>
-      <div v-else></div>
-      <div class="child-item" v-for="child in children" :key="child._id">
-        <router-link :to="{ name: 'ChildPicture', params: { id: child._id } }">
-          <img :src="child.profilePhotoURL" alt="Profile Icon" class="profile-icon">
-        </router-link>
-        <div class="info">
-          <div class="profile-info" @click="toggleDropdown(child._id)">
-            <span class="name">{{ child.firstName }}</span>
-            <span class="class">Class: {{ child.class }}</span>
-            <span class="tel">Tel: {{ child.phoneNumber }}</span>
-          </div>
-          <input type="checkbox" v-model="selectedChildren" :value="child._id" @click.stop>
-        </div>
-        <div v-if="isDropdownOpen === child._id" class="dropdown">
-          <template v-if="editableChildId === child._id">
-            <div class="editable-child-form" @click="preventDropdownClose($event)">
-              <div class="form-group">
-                <label for="firstName">Nom:</label>
-                <input id="firstName" v-model="child.firstName" placeholder="Prénom">
-              </div>
-              <div class="form-group">
-                <label for="lastName">Prenom:</label>
-                <input id="lastName" v-model="child.lastName" placeholder="Nom">
-              </div>
-              <div class="form-group">
-                <label for="sex">Sexe:</label>
-                <input id="sex" v-model="child.sex" placeholder="Sexe">
-              </div>
-              <div class="form-group">
-                <label for="class">Class:</label>
-                <input id="class" v-model="child.class" placeholder="Classe">
-              </div>
-              <div class="form-group">
-                <label for="school">Etablissement:</label>
-                <input id="school" v-model="child.school" placeholder="Ecole">
-              </div>
-           
-              <button class="valider" @click.stop="saveChanges(child._id)">Valider</button>
-            </div>
-          </template>
-          <template v-else>
-            <div class="child-info">
-              <p><strong>Nom:</strong><em class="data">{{ child.lastName }}</em></p>
-              <p><strong>Prénom:</strong><em class="data">{{ child.firstName }}</em></p>
-              <p><strong>Sexe:</strong><em class="data">{{ child.sex }}</em></p>
-              <p><strong>Classe:</strong><em class="data">{{ child.class }}</em></p>
-              <p><strong>Etablissement:</strong><em class="data">{{ child.school }}</em></p>
-              <p><strong>Date de naissance:</strong><em class="data">{{ child.birthDate }}</em></p>
-              <p><strong>Lieu de naissance:</strong><em class="data">{{ child.birthPlace }}</em></p>
-              <p><strong>Quartier:</strong><em class="data">{{ child.live }}</em></p>
-              <p><strong>Nom du père/tuteur:</strong><em class="data">{{ child.fatherName }}</em></p>
-              <p><strong>Nom de la mère:</strong><em class="data">{{ child.motherName }}</em></p>
-              <p><strong>Numéro de téléphone:</strong><em class="data">{{ child.phoneNumber }}</em></p>
-              <p><strong>Profession:</strong><em class="data">{{ child.occupation }}</em></p>
-              <p><strong>Date de mise à jour:</strong><em class="data">{{ child.createdAt }}</em></p>
-              <p><strong>Inscrit par:</strong><em class="data">{{ child.postedBy.firstName }}</em></p>
-              <p><strong>Autre information:</strong><em class="data">{{ child.otherInfo }}</em></p>
-              <button class="update" @click.stop="editChild(child._id)">Modifier</button>
-            </div>
-          </template>
-        </div>
-      </div>
-    </div>
-    <button @click="submitForm"> <i v-if="loading" class="fas fa-circle-notch fa-spin"></i>
-      <span v-if="showSubmitButton" class="submit-button" @click="submitSelectedChildren">Valider la sélection</span></button>
-    <div class="typewriter">Bienvenue à la gestion des présences</div>
-
-  </div>
-  
-</template> -->
-
 <template>
   <div :class="[theme, 'page']">
-    <div v-if="loading" class="loading-spinner">
-      <!-- Indicateur de chargement -->
-      <i class="fas fa-circle-notch fa-spin"></i>
-      Chargement des données...
+    <div class="header">
+      <h2>Liste des enfants</h2>
+      <p>Effectif total: {{ children.length }}</p>
     </div>
 
-    <div v-else>
+    <!-- Loading State -->
+    <div v-if="loading" class="loading-spinner">
+      <i class="fas fa-circle-notch fa-spin"></i>
+      <span>Chargement des données...</span>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" class="error-message">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>{{ error }}</span>
+    </div>
+
+    <!-- Main Content -->
+    <div v-else class="content">
+      <!-- Search and Filter -->
+      <div class="search-filter-container">
+        <div class="search-filter">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input 
+              type="text" 
+              v-model="searchQuery" 
+              placeholder="Rechercher un enfant..."
+              @input="filterChildren"
+            >
+          </div>
+          <div class="filter-box">
+            <select v-model="classFilter" @change="filterChildren">
+              <option value="">Toutes les classes</option>
+              <option v-for="classOption in uniqueClasses" :key="classOption" :value="classOption">
+                {{ classOption }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Children List -->
       <div class="child-list">
-        <div class="child-item" v-for="child in children" :key="child._id">
-          <router-link :to="{ name: 'ChildPicture', params: { id: child._id } }">
-            <img :src="child.profilePhotoURL" alt="Profile Icon" class="profile-icon">
-          </router-link>
-          <div class="info">
+        <div v-for="child in filteredChildren" 
+             :key="child._id" 
+             class="child-item"
+             :class="{ 'selected': selectedChildren.includes(child._id) }">
+          <!-- Profile Section -->
+          <div class="profile-section">
+            <router-link :to="{ name: 'ChildPicture', params: { id: child._id } }">
+              <img :src="child.profilePhotoURL" :alt="child.firstName" class="profile-icon">
+            </router-link>
             <div class="profile-info" @click="toggleDropdown(child._id)">
-              <span class="name">{{ child.firstName }}</span>
-              <span class="class">Class: {{ child.class }}</span>
-              <span class="tel">Tel: {{ child.phoneNumber }}</span>
+              <h3>{{ child.firstName }} {{ child.lastName }}</h3>
+              <p class="class">Classe: {{ child.class }}</p>
+              <p class="tel">Tél: {{ child.phoneNumber }}</p>
             </div>
-            <!-- Checkbox with proper binding -->
+          </div>
+
+          <!-- Action Section -->
+          <div class="action-section">
             <input
               type="checkbox"
               v-model="selectedChildren"
               :value="child._id"
               @click.stop
+              class="select-checkbox"
             >
+            <button class="action-button" @click="toggleDropdown(child._id)">
+              <i class="fas" :class="isDropdownOpen === child._id ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+            </button>
           </div>
+
+          <!-- Dropdown Content -->
           <div v-if="isDropdownOpen === child._id" class="dropdown">
-            <template v-if="editableChildId === child._id">
-              <div class="editable-child-form" @click="preventDropdownClose($event)">
-                <button class="valider" @click.stop="saveChanges(child._id)">Valider</button>
+            <div class="child-details">
+              <div class="detail-group">
+                <h4>Informations personnelles</h4>
+                <p><strong>Date de naissance:</strong> {{ formatDate(child.birthDate) }}</p>
+                <p><strong>Lieu de naissance:</strong> {{ child.birthPlace }}</p>
+                <p><strong>Quartier:</strong> {{ child.live }}</p>
               </div>
-            </template>
-            <template v-else>
-              <div class="child-info">
-                <button class="update" @click.stop="editChild(child._id)">Modifier</button>
+
+              <div class="detail-group">
+                <h4>Informations scolaires</h4>
+                <p><strong>Établissement:</strong> {{ child.school }}</p>
+                <p><strong>Classe:</strong> {{ child.class }}</p>
               </div>
-            </template>
+
+              <div class="detail-group">
+                <h4>Informations parentales</h4>
+                <p><strong>Père/Tuteur:</strong> {{ child.fatherName }}</p>
+                <p><strong>Mère:</strong> {{ child.motherName }}</p>
+                <p><strong>Profession:</strong> {{ child.occupation }}</p>
+              </div>
+
+              <div class="detail-group">
+                <h4>Autres informations</h4>
+                <p><strong>Date d'inscription:</strong> {{ formatDate(child.createdAt) }}</p>
+                <p><strong>Inscrit par:</strong> {{ child.postedBy?.firstName }}</p>
+                <p><strong>Notes:</strong> {{ child.otherInfo || 'Aucune' }}</p>
+              </div>
+            </div>
+
+            <div class="dropdown-actions">
+              <button class="edit-button" @click="editChild(child._id)">
+                <i class="fas fa-edit"></i> Modifier
+              </button>
+              <button class="delete-button" @click="confirmDelete(child._id)">
+                <i class="fas fa-trash"></i> Supprimer
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Validation button appears only when children are selected -->
-      <button
-        v-if="children.length > 0 && selectedChildren.length > 0"
-        @click="submitSelectedChildren"
-      >
-        <i v-if="submitLoading" class="fas fa-circle-notch fa-spin"></i>
-        <span v-else>Valider la sélection</span>
-      </button>
+      <!-- Submit Button -->
+      <div v-if="selectedChildren.length > 0" class="submit-section">
+        <button 
+          class="submit-button" 
+          @click="submitSelectedChildren"
+          :disabled="submitLoading"
+        >
+          <i v-if="submitLoading" class="fas fa-circle-notch fa-spin"></i>
+          <span v-else>Valider la sélection ({{ selectedChildren.length }})</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div v-if="showDeleteModal" class="modal">
+      <div class="modal-content">
+        <h3>Confirmer la suppression</h3>
+        <p>Êtes-vous sûr de vouloir supprimer cet enfant ?</p>
+        <div class="modal-actions">
+          <button class="cancel-button" @click="showDeleteModal = false">Annuler</button>
+          <button class="confirm-button" @click="deleteChild">Confirmer</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -142,50 +150,61 @@ import axios from 'axios';
 import { API_BASE_URL } from '@/config.js';
 
 export default {
+  name: 'ListOfChildComponent',
+  
   data() {
     return {
       children: [],
-      selectedChildren: [], // Manages selected children IDs
+      filteredChildren: [],
+      selectedChildren: [],
       isDropdownOpen: null,
       editableChildId: null,
-      loading: true, // Loading state
-      submitLoading: false,  
+      loading: true,
+      submitLoading: false,
+      error: null,
+      searchQuery: '',
+      classFilter: '',
+      showDeleteModal: false,
+      childToDelete: null
     };
   },
+
   computed: {
     ...mapState(['theme', 'userId']),
+    
+    uniqueClasses() {
+      return [...new Set(this.children.map(child => child.class))].sort();
+    }
   },
+
   created() {
     this.fetchChildren();
   },
+
   methods: {
     async fetchChildren() {
-      const token = localStorage.getItem('token');
-      const headers = { Authorization: `Bearer ${token}` };
+      this.loading = true;
+      this.error = null;
+      
       try {
+        const token = localStorage.getItem('token');
+        const headers = { Authorization: `Bearer ${token}` };
+        
         const response = await axios.get(`${API_BASE_URL}/child/allchildren`, { headers });
-        const children = await Promise.all(response.data.map(async (child) => {
-          const profilePhotoURL = await this.fetchProfilePicture(child._id);
-          return { ...child, profilePhotoURL };
-        }));
+        const children = await Promise.all(
+          response.data.map(async (child) => {
+            const profilePhotoURL = await this.fetchProfilePicture(child._id);
+            return { ...child, profilePhotoURL };
+          })
+        );
+        
         this.children = children.sort((a, b) => a.firstName.localeCompare(b.firstName));
+        this.filteredChildren = [...this.children];
       } catch (error) {
         console.error('Error fetching children:', error);
+        this.error = 'Erreur lors du chargement des données';
       } finally {
-        this.loading = false; // Turn off loading indicator
-      }
-    },
-
-    async submitSelectedChildren() {
-      this.submitLoading = true; // Enable loading indicator for submission
-      try {
-        const response = await axios.post(`${API_BASE_URL}/absent/present`, { ids: this.selectedChildren });
-        console.log('Submitted selected children:', response.data);
-        this.selectedChildren = []; // Clear the selected children after submission
-      } catch (error) {
-        console.error('Error submitting selected children:', error);
-      } finally {
-        this.submitLoading = false; // Turn off loading indicator after submission
+        this.loading = false;
       }
     },
 
@@ -199,319 +218,461 @@ export default {
       }
     },
 
+    filterChildren() {
+      this.filteredChildren = this.children.filter(child => {
+        const matchesSearch = 
+          child.firstName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          child.lastName.toLowerCase().includes(this.searchQuery.toLowerCase());
+        
+        const matchesClass = !this.classFilter || child.class === this.classFilter;
+        
+        return matchesSearch && matchesClass;
+      });
+    },
+
     toggleDropdown(childId) {
       this.isDropdownOpen = this.isDropdownOpen === childId ? null : childId;
     },
 
-    async saveChanges(childId) {
-      // Save changes
+    formatDate(date) {
+      if (!date) return 'Non spécifié';
+      return new Date(date).toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
     },
 
-    preventDropdownClose(event) {
-      event.stopPropagation();
+    async submitSelectedChildren() {
+      if (this.selectedChildren.length === 0) return;
+      
+      this.submitLoading = true;
+      try {
+        const response = await axios.post(
+          `${API_BASE_URL}/absent/present`, 
+          { ids: this.selectedChildren }
+        );
+        console.log('Submitted selected children:', response.data);
+        this.selectedChildren = [];
+        this.$emit('submission-success');
+      } catch (error) {
+        console.error('Error submitting selected children:', error);
+        this.error = 'Erreur lors de la soumission';
+      } finally {
+        this.submitLoading = false;
+      }
     },
 
     editChild(childId) {
       this.editableChildId = childId;
+      // Implement edit functionality
+    },
+
+    confirmDelete(childId) {
+      this.childToDelete = childId;
+      this.showDeleteModal = true;
+    },
+
+    async deleteChild() {
+      if (!this.childToDelete) return;
+      
+      try {
+        await axios.delete(`${API_BASE_URL}/child/${this.childToDelete}`);
+        this.children = this.children.filter(child => child._id !== this.childToDelete);
+        this.filterChildren();
+        this.showDeleteModal = false;
+        this.childToDelete = null;
+      } catch (error) {
+        console.error('Error deleting child:', error);
+        this.error = 'Erreur lors de la suppression';
+      }
     }
   }
 };
 </script>
 
-
-
-
-
 <style scoped>
-
 .page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  padding: 2rem;
   min-height: 100vh;
-  background-color: #f4f4f4;
-}
-
-.content {
-  max-width: 800px;
-  background-color: #fff;
-  padding: 20px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-  margin: 0 15px;
-  position: relative;
-}
-
-.header {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.child-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.child-item {
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  padding: 15px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.profile-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  margin-right: 15px;
-  object-fit: cover;
-}
-
-.info {
-  display: flex;
-  flex-grow: 1;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.profile-info {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.name {
-  font-weight: bold;
-  font-size: 1.2em;
-}
-
-.class, .tel {
-  color: #666;
-}
-
-.checkbox {
-  margin-left: auto;
-}
-
-.dropdown {
-  margin-top: 10px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-button.update, button.valider {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button.update:hover, button.valider:hover {
-  background-color: #45a049;
-}
-
-.editable-child-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-label {
-  font-weight: bold;
-}
-
-input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.submit-button {
-  display: block;
-  margin: 20px auto;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.submit-button:hover {
-  background-color: #0056b3;
-}
-
-.typewriter {
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 1.2em;
-  color: #333;
-  white-space: nowrap;
-  overflow: hidden;
-  border-right: 3px solid #333;
-  width: 14ch; /* Number of characters to display */
-  animation: typing 2s steps(14), blink 0.5s step-end infinite alternate;
-}
-
-@keyframes typing {
-  from { width: 0; }
-  to { width: 14ch; }
-}
-
-@keyframes blink {
-  from { border-color: transparent; }
-  to { border-color: #333; }
-}
-/* .page {
-  padding: 20px;
+  background-color: #f5f7fa;
 }
 
 .dark.page {
-  background-color: #636060;
+  background-color: #1a1a1a;
   color: #fff;
-}
-
-.light.page {
-  background-color: #fff;
-  color: #333;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 2rem;
+}
+
+.header h2 {
+  font-size: 1.8rem;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.dark .header h2 {
+  color: #fff;
+}
+
+.search-filter-container {
+  background-color: #fff;
+  padding: 0.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+.dark .search-filter-container {
+  background-color: #2d3748;
+}
+
+.search-filter {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  padding: 0.5rem;
+}
+
+.search-box {
+  flex: 1;
+  position: relative;
+  min-width: 300px;
+  max-width: 900px;
+  margin-right: 1rem;
+}
+
+.search-box i {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #718096;
+  z-index: 1;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #fff;
+}
+
+.dark .search-box input {
+  background-color: #1a202c;
+  border-color: #4a5568;
+  color: #fff;
+}
+
+.filter-box {
+  min-width: 200px;
+  position: relative;
+  z-index: 2;
+  margin-left: 1rem;
+}
+
+.filter-box select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
+  padding-right: 0.5rem;
+}
+
+.dark .filter-box select {
+  background-color: #1a202c;
+  border-color: #4a5568;
+  color: #fff;
 }
 
 .child-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  display: grid;
+  gap: 1rem;
 }
 
 .child-item {
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  padding: 15px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
+  background-color: #fff;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.dark .child-item {
+  background-color: #2d3748;
 }
 
 .child-item:hover {
-  background-color: #e0e0e0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .profile-icon {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  margin-right: 15px;
   object-fit: cover;
 }
 
-.info {
-  flex-grow: 1;
-}
-
 .profile-info {
+  flex: 1;
+}
+
+.profile-info h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #2d3748;
+}
+
+.dark .profile-info h3 {
+  color: #fff;
+}
+
+.profile-info p {
+  margin: 0.25rem 0;
+  color: #718096;
+  font-size: 0.9rem;
+}
+
+.action-section {
   display: flex;
-  flex-direction: column;
-  gap: 5px;
+  align-items: center;
+  gap: 1rem;
 }
 
-.name {
-  font-weight: bold;
-  font-size: 1.2em;
+.select-checkbox {
+  width: 1.2rem;
+  height: 1.2rem;
+  cursor: pointer;
 }
 
-.class, .tel {
-  color: #666;
+.action-button {
+  background: none;
+  border: none;
+  color: #718096;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.action-button:hover {
+  color: #4a5568;
 }
 
 .dropdown {
-  margin-top: 10px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
+  padding: 1rem;
+  border-top: 1px solid #e2e8f0;
 }
 
-.child-info p {
-  margin: 5px 0;
+.dark .dropdown {
+  border-color: #4a5568;
 }
 
-.data {
-  color: #1e88e5;
+.child-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
 }
 
-button.update, button.valider {
-  background-color: #4caf50;
-  color: white;
+.detail-group h4 {
+  color: #4a5568;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+.dark .detail-group h4 {
+  color: #a0aec0;
+}
+
+.detail-group p {
+  margin: 0.5rem 0;
+  color: #718096;
+  font-size: 0.9rem;
+}
+
+.dropdown-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.dark .dropdown-actions {
+  border-color: #4a5568;
+}
+
+.edit-button, .delete-button {
+  padding: 0.5rem 1rem;
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  border-radius: 0.5rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button.update:hover, button.valider:hover {
-  background-color: #45a049;
-}
-
-.editable-child-form {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+.edit-button {
+  background-color: #4299e1;
+  color: white;
 }
 
-label {
-  font-weight: bold;
+.delete-button {
+  background-color: #f56565;
+  color: white;
 }
 
-input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.submit-section {
+  margin-top: 2rem;
+  text-align: center;
 }
 
 .submit-button {
-  display: block;
-  margin: 20px auto;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: #fff;
+  padding: 1rem 2rem;
+  background-color: #48bb78;
+  color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 0.5rem;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .submit-button:hover {
-  background-color: #0056b3;
-} */
+  background-color: #38a169;
+}
+
+.submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  color: #718096;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  color: #f56565;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.75rem;
+  max-width: 400px;
+  width: 90%;
+}
+
+.dark .modal-content {
+  background-color: #2d3748;
+  color: #fff;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.cancel-button, .confirm-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-button {
+  background-color: #e2e8f0;
+  color: #4a5568;
+}
+
+.confirm-button {
+  background-color: #f56565;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .search-filter {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0.5rem;
+  }
+
+  .search-box {
+    max-width: 100%;
+    min-width: 100%;
+    margin-right: 0;
+  }
+
+  .filter-box {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .child-details {
+    grid-template-columns: 1fr;
+  }
+
+  .dropdown-actions {
+    flex-direction: column;
+  }
+}
 </style>
 

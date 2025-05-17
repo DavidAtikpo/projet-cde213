@@ -1,274 +1,37 @@
-<!-- <template>
-  <div class="container">
-    <h1>Messages</h1>
-    <div>
-      <h2>Users</h2>
-      <ul class="user-list">
-        <li v-for="user in users" :key="user._id" @click="toggleDropdown(user)">
-          <img class="icon" :src="user.profilePhotoURL" alt="profile">{{ user.firstName }}
-          <div v-if="selectedUser && selectedUser._id === user._id && showDropdown" class="dropdown1" @click.stop>
-            <h3>{{ selectedUser.firstName }}</h3>
-            <hr>
-            <ul>
-              <li v-for="msg in userMessages" :key="msg._id" :class="{'sent': msg.type === 'sent', 'received': msg.type === 'received'}">
-                <div :class="{'message-content': true, 'sent-content': msg.type === 'sent', 'received-content': msg.type === 'received'}">
-                  <strong>{{ msg.type === 'sent' ? 'You' : msg.sender_id.firstName }}:</strong> {{ msg.content }}
-                </div>
-              </li>
-            </ul>
-            <div class="message-input">
-              <input type="text" placeholder="Ecrire votre message ici" v-model="content" @click.stop />
-              <button @click="sendMessage" @click.stop>Send</button>
-            </div>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </div>
-</template>
-
-<script>
-import axios from 'axios';
-import { API_BASE_URL } from '@/config.js';
-
-export default {
-  data() {
-    return {
-      users: [],
-      userMessages: [],
-      content: '',
-      selectedUser: null,
-      showDropdown: false,
-      currentUserId: localStorage.getItem('user_id')
-    };
-  },
-  created() {
-    this.fetchUsers();
-  },
-  methods: {
-    async fetchUsers() {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/admin/allusers`, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-        });
-        const mappedUsers = response.data.map(user => ({
-          ...user,
-          profilePhotoURL: `${API_BASE_URL}` + user.profilePhotoURL
-        }));
-        this.users = mappedUsers;
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    },
-    async fetchMessages(userId) {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/message/messages/${userId}`, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-        });
-
-        
-        const transformedMessages = response.data.map(msg => {
-          if (msg.receiver_id._id === this.currentUserId) {
-            return { ...msg, type: 'received' };
-          } else if (msg.sender_id._id === this.currentUserId) {
-            return { ...msg, type: 'sent' };
-          }
-          console.log('message data',response.data);
-          return msg;
-        });
-        this.userMessages = transformedMessages;
-        console.log('get message', this.userMessages);
-      } catch (error) {
-        console.error('Error fetching messages:', error);
-      }
-    },
-    async sendMessage() {
-      if (!this.selectedUser) {
-        alert("Please select a user to send the message to.");
-        return;
-      }
-      try {
-        await axios.post(`${API_BASE_URL}/message/message`, {
-          receiver_id: this.selectedUser._id,
-          content: this.content
-        }, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-        });
-
-        this.content = '';
-        this.fetchMessages(this.selectedUser._id); 
-      } catch (error) {
-        console.error('Error sending message:', error);
-      }
-    },
-    toggleDropdown(user) {
-      if (this.selectedUser && this.selectedUser._id === user._id) {
-        this.showDropdown = !this.showDropdown;
-      } else {
-        this.selectedUser = user;
-        this.showDropdown = true;
-        this.fetchMessages(user._id); 
-      }
-    }
-  }
-};
-</script>
-
-<style>
-
-.container {
-  background-color: #f0f0f0;
-  padding: 20px;
-  border-radius: 10px;
-  max-width: 100%;
-  margin: auto;
-}
-
-h1, h2 {
-  text-align: center;
-  color: #333;
-}
-
-.user-list {
-  list-style-type: none;
-  padding: 0;
-}
-
-.user-list li {
-  padding: 10px;
-  border: 1px solid #ccc;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  background-color: #fff;
-  transition: background-color 0.3s;
-}
-
-.user-list li:hover {
-  background-color: #e0e0e0;
-}
-
-.icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-
-.dropdown1 {
-  position: relative;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  width: 90%;
-  margin-top: 10px;
-}
-
-.dropdown1 h3 {
-  margin-top: 0;
-}
-
-.dropdown1 hr {
-  margin: 10px 0;
-}
-
-.dropdown1 ul {
-  list-style-type: none;
-  padding: 0;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.dropdown1 ul li {
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-}
-
-.sent-content {
-  text-align: right;
-  color: green;
-}
-
-.received-content {
-  text-align: left;
-  color: blue;
-}
-
-.message-input {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.message-input input {
-  flex: 1;
-  padding: 10px;
-  border-radius: 20px;
-  border: 1px solid #ccc;
-}
-
-.message-input button {
-  padding: 10px 20px;
-  border-radius: 20px;
-  border: none;
-  background-color: #333;
-  color: #fff;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.message-input button:hover {
-  background-color: #555;
-}
-
-
-@media only screen and (max-width: 768px) {
-  .container {
-    padding: 10px;
-  }
-
-  .user-list li {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .dropdown1 {
-    width: 100%;
-    margin-left: 0;
-  }
-
-  .message-input {
-    flex-direction: column;
-  }
-
-  .message-input input {
-    margin-bottom: 10px;
-  }
-}
-</style> -->
-
 <template>
   <div class="chat-app">
     <aside class="sidebar">
       <div class="search-bar">
-        <input type="text" placeholder="Search" v-model="searchTerm" @input="searchUsers" />
+        <i class="fas fa-search search-icon"></i>
+        <input 
+          type="text" 
+          placeholder="Rechercher un utilisateur..." 
+          v-model="searchTerm" 
+          @input="searchUsers" 
+        />
       </div>
       <div class="chat-list">
-        <div v-for="user in filteredUsers" :key="user._id" class="chat-item" @click="selectUser(user)">
+        <div v-if="loading" class="loading-state">
+          <i class="fas fa-spinner fa-spin"></i> Chargement...
+        </div>
+        <div v-else-if="error" class="error-state">
+          <i class="fas fa-exclamation-circle"></i> {{ error }}
+        </div>
+        <div v-else-if="filteredUsers.length === 0" class="empty-state">
+          <i class="fas fa-users"></i> Aucun utilisateur trouvé
+        </div>
+        <div v-else v-for="user in filteredUsers" 
+             :key="user._id" 
+             class="chat-item" 
+             :class="{ 'active': activeUser?._id === user._id }"
+             @click="selectUser(user)">
           <div class="avatar">
             <img :src="user.profilePhotoURL" alt="Avatar" />
+            <span class="status-indicator" :class="{ 'online': user.isOnline }"></span>
           </div>
           <div class="chat-info">
             <h4 class="chat-name">{{ user.firstName }} {{ user.lastName }}</h4>
-            <p class="last-message">Last message preview...</p>
+            <p class="last-message">{{ user.lastMessage || 'Aucun message' }}</p>
           </div>
         </div>
       </div>
@@ -276,25 +39,65 @@ h1, h2 {
     
     <main class="chat-window">
       <header class="chat-header">
-        <div class="contact-info" v-if="activeUser">
+        <div v-if="activeUser" class="contact-info">
           <div class="avatar">
             <img :src="activeUser.profilePhotoURL" alt="Avatar" />
+            <span class="status-indicator" :class="{ 'online': activeUser.isOnline }"></span>
           </div>
-          <div class="contact-name">{{ activeUser.firstName }} {{ activeUser.lastName }}</div>
+          <div class="contact-details">
+            <div class="contact-name">{{ activeUser.firstName }} {{ activeUser.lastName }}</div>
+            <div class="contact-status">{{ activeUser.isOnline ? 'En ligne' : 'Hors ligne' }}</div>
+          </div>
+        </div>
+        <div v-else class="welcome-message">
+          <i class="fas fa-comments"></i>
+          <h2>Bienvenue dans la messagerie</h2>
+          <p>Sélectionnez un contact pour commencer à discuter</p>
         </div>
       </header>
 
-      <div class="messages">
-        <div v-for="message in messages" :key="message._id" :class="{'message received': message.senderId !== currentUser.id, 'message sent': message.senderId === currentUser.id}">
-          <div class="message-content">
-            <p>{{ message.content }}</p>
-          </div>
+      <div class="messages" ref="messagesContainer">
+        <div v-if="!activeUser" class="empty-chat">
+          <i class="fas fa-comment-slash"></i>
+          <p>Sélectionnez un contact pour voir vos messages</p>
         </div>
+        <template v-else>
+          <div v-if="loading" class="loading-messages">
+            <i class="fas fa-spinner fa-spin"></i> Chargement des messages...
+          </div>
+          <div v-else-if="error" class="error-messages">
+            <i class="fas fa-exclamation-circle"></i> {{ error }}
+          </div>
+          <div v-else-if="messages.length === 0" class="no-messages">
+            <i class="fas fa-comment-dots"></i>
+            <p>Aucun message. Commencez la conversation !</p>
+          </div>
+          <div v-else v-for="message in messages" 
+               :key="message._id" 
+               :class="{'message received': message.senderId !== currentUser.id, 'message sent': message.senderId === currentUser.id}">
+            <div class="message-content">
+              <p>{{ message.content }}</p>
+              <span class="message-time">{{ formatTime(message.createdAt) }}</span>
+            </div>
+          </div>
+        </template>
       </div>
 
-      <div class="message-input">
-        <input type="text" placeholder="Enter your message" v-model="newMessage" />
-        <button @click="sendMessage">Send</button>
+      <div class="message-input" v-if="activeUser">
+        <input 
+          type="text" 
+          placeholder="Écrivez votre message..." 
+          v-model="newMessage"
+          @keyup.enter="sendMessage"
+          :disabled="loading"
+        />
+        <button 
+          @click="sendMessage" 
+          :disabled="!newMessage.trim() || loading"
+          class="send-button"
+        >
+          <i class="fas fa-paper-plane"></i>
+        </button>
       </div>
     </main>
   </div>
@@ -305,7 +108,28 @@ import axios from "axios";
 import { API_BASE_URL } from '@/config.js';
 
 export default {
+  name: 'MessageComponent',
+  
   data() {
+    // Vérifier toutes les clés possibles pour l'ID utilisateur
+    const userId = localStorage.getItem('user_id') || 
+                  localStorage.getItem('userId') || 
+                  localStorage.getItem('_id') ||
+                  localStorage.getItem('id');
+    
+    console.log('All possible user IDs from localStorage:', {
+      'user_id': localStorage.getItem('user_id'),
+      'userId': localStorage.getItem('userId'),
+      '_id': localStorage.getItem('_id'),
+      'id': localStorage.getItem('id')
+    });
+    
+    // Vérifier si l'utilisateur est connecté
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('No authentication token found');
+    }
+    
     return {
       users: [],
       filteredUsers: [],
@@ -313,93 +137,235 @@ export default {
       messages: [],
       newMessage: '',
       currentUser: {
-        id: localStorage.getItem('id'),
-        profilePhotoURL: localStorage.getItem('profilePhotoURL'),
-        firstName: localStorage.getItem('user')
+        id: userId,
+        profilePhotoURL: localStorage.getItem('profilePhotoURL') || '',
+        firstName: localStorage.getItem('user') || ''
       },
-      searchTerm: ''
+      searchTerm: '',
+      loading: false,
+      error: null
     };
   },
+
   methods: {
-    // Fetch all users
     async getUsers() {
+      this.loading = true;
+      this.error = null;
       try {
-        const response = await axios.get(`${API_BASE_URL}/user/getUsers`);
-        this.users = response.data;
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        console.log('Current user ID before API call:', this.currentUser.id);
         
-        // Map the users for display and search
+        const response = await axios.get(`${API_BASE_URL}/user/getUsers`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        // Filtrer l'utilisateur actuel de la liste
+        this.users = response.data
+          .filter(user => user._id !== this.currentUser.id)
+          .map(user => ({
+            ...user,
+            profilePhotoURL: user.profilePhotoURL ? `${API_BASE_URL}${user.profilePhotoURL}` : '',
+            isOnline: false,
+            lastMessage: null
+          }));
+        
         this.filteredUsers = this.users;
-        console.log("users", this.filteredUsers);
+        console.log("Users loaded:", this.filteredUsers);
+        console.log("Current user ID:", this.currentUser.id);
       } catch (error) {
-        console.error('Failed to fetch users', error);
+        console.error('Failed to fetch users:', error);
+        this.error = error.message === 'No authentication token found' 
+          ? 'Vous devez être connecté pour accéder à la messagerie'
+          : 'Erreur lors du chargement des utilisateurs';
+      } finally {
+        this.loading = false;
       }
     },
 
-    // Filter users based on search term
     searchUsers() {
+      if (!this.searchTerm.trim()) {
+        this.filteredUsers = this.users;
+        return;
+      }
       this.filteredUsers = this.users.filter(user => 
         `${user.firstName} ${user.lastName}`.toLowerCase().includes(this.searchTerm.toLowerCase())
       );
     },
 
-    // Select a user to chat with
     async selectUser(user) {
       this.activeUser = user;
+      this.error = null;
       await this.getMessagesBetweenUsers(user._id);
+      this.scrollToBottom();
     },
 
-    // Fetch messages between the current user and selected user
     async getMessagesBetweenUsers(receiverId) {
+      console.log('Getting messages between users:', {
+        currentUserId: this.currentUser.id,
+        receiverId: receiverId
+      });
+
+      if (!this.currentUser.id) {
+        console.error('Current user ID is missing');
+        this.error = 'Erreur: ID utilisateur manquant. Veuillez vous reconnecter.';
+        return;
+      }
+
+      this.loading = true;
       try {
-        const response = await axios.get(`${API_BASE_URL}/message/getMessage/${this.currentUser.id}/${receiverId}`);
-        this.messages = response.data.data;
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        const response = await axios.get(
+          `${API_BASE_URL}/messages?senderId=${this.currentUser.id}&receiverId=${receiverId}`,
+          { headers: { 'Authorization': `Bearer ${token}` } }
+        );
+        
+        if (response.data && response.data.data) {
+          this.messages = response.data.data;
+        } else {
+          this.messages = [];
+        }
+        this.scrollToBottom();
       } catch (error) {
-        console.error('Failed to fetch messages', error);
+        console.error('Failed to fetch messages:', error);
+        if (error.response && error.response.status === 404) {
+          this.error = 'Aucun message trouvé';
+          this.messages = [];
+        } else {
+          this.error = error.message === 'No authentication token found'
+            ? 'Vous devez être connecté pour accéder aux messages'
+            : 'Erreur lors du chargement des messages';
+        }
+      } finally {
+        this.loading = false;
       }
     },
 
-    // Send a new message
     async sendMessage() {
-      if (this.newMessage.trim() !== '') {
-        try {
-          const response = await axios.post(`${API_BASE_URL}/message/createMessage`, {
+      console.log('Sending message:', {
+        currentUserId: this.currentUser.id,
+        receiverId: this.activeUser?._id,
+        content: this.newMessage
+      });
+
+      if (!this.newMessage.trim() || !this.activeUser || this.loading) return;
+      if (!this.currentUser.id) {
+        console.error('Current user ID is missing');
+        this.error = 'Erreur: ID utilisateur manquant';
+        return;
+      }
+
+      this.loading = true;
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        const response = await axios.post(
+          `${API_BASE_URL}/messages`,
+          {
             senderId: this.currentUser.id,
             receiverId: this.activeUser._id,
-            content: this.newMessage,
-          });
-          console.log("sendId",this.currentUser.id);
+            content: this.newMessage
+          },
+          { headers: { 'Authorization': `Bearer ${token}` } }
+        );
+        
+        if (response.data && response.data.data) {
           this.messages.push(response.data.data);
           this.newMessage = '';
-        } catch (error) {
-          console.error('Failed to send message', error);
+          this.scrollToBottom();
         }
+      } catch (error) {
+        console.error('Failed to send message:', error);
+        this.error = error.message === 'No authentication token found'
+          ? 'Vous devez être connecté pour envoyer des messages'
+          : 'Erreur lors de l\'envoi du message';
+      } finally {
+        this.loading = false;
       }
+    },
+
+    scrollToBottom() {
+      this.$nextTick(() => {
+        const container = this.$refs.messagesContainer;
+        if (container) {
+          container.scrollTop = container.scrollHeight;
+        }
+      });
+    },
+
+    formatTime(date) {
+      if (!date) return '';
+      return new Date(date).toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     }
   },
+
   created() {
     this.getUsers();
+  },
+
+  mounted() {
+    this.scrollToBottom();
   }
 };
 </script>
-
-
-
-
-
 
 <style scoped>
 .chat-app {
   display: flex;
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - 64px);
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar {
   width: 30%;
-  background-color: #f0f0f0;
+  background-color: #f8f9fa;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid #ddd;
+  border-right: 1px solid #dee2e6;
+}
+
+.search-bar {
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+  position: relative;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 1px solid #dee2e6;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.search-icon {
+  position: absolute;
+  left: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
 }
 
 .chat-list {
@@ -409,59 +375,147 @@ export default {
 
 .chat-item {
   display: flex;
-  padding: 10px;
+  padding: 1rem;
   cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #dee2e6;
 }
 
 .chat-item:hover {
-  background-color: #e0e0e0;
+  background-color: #e9ecef;
+}
+
+.chat-item.active {
+  background-color: #e3f2fd;
 }
 
 .avatar {
-  margin-right: 10px;
+  position: relative;
+  margin-right: 1rem;
 }
 
 .avatar img {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #dc3545;
+  border: 2px solid #fff;
+}
+
+.status-indicator.online {
+  background-color: #28a745;
 }
 
 .chat-info {
-  display: flex;
-  flex-direction: column;
+  flex: 1;
+  min-width: 0;
 }
 
 .chat-name {
-  font-weight: bold;
+  margin: 0;
+  font-size: 1rem;
+  color: #212529;
+  font-weight: 500;
 }
 
 .chat-window {
   display: flex;
   flex-direction: column;
   width: 70%;
-  background-color: #ece5dd;
+  background-color: #fff;
 }
 
 .chat-header {
-  padding: 10px;
-  background-color: #f0f0f0;
+  padding: 1rem;
+  background-color: #f8f9fa;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.contact-info {
+  display: flex;
+  align-items: center;
+}
+
+.contact-details {
+  margin-left: 1rem;
+}
+
+.contact-name {
+  font-weight: 500;
+  color: #212529;
+}
+
+.contact-status {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.welcome-message {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+}
+
+.welcome-message i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
 }
 
 .messages {
   flex-grow: 1;
   overflow-y: auto;
-  padding: 20px;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
+  gap: 1rem;
+  background-color: #f8f9fa;
+}
+
+.empty-chat,
+.loading-messages,
+.error-messages,
+.no-messages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #6c757d;
+  text-align: center;
+  padding: 2rem;
+}
+
+.empty-chat i,
+.loading-messages i,
+.error-messages i,
+.no-messages i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
 }
 
 .message {
   display: flex;
-  margin-bottom: 15px;
+  margin-bottom: 0.5rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .message.sent {
@@ -473,38 +527,119 @@ export default {
 }
 
 .message-content {
-  max-width: 60%;
-  padding: 10px;
-  border-radius: 10px;
+  max-width: 70%;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
   background-color: #fff;
-  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.message-content p {
+  margin: 0;
+  color: #212529;
+}
+
+.message-time {
+  font-size: 0.75rem;
+  color: #6c757d;
+  margin-top: 0.25rem;
+  display: block;
 }
 
 .sent .message-content {
-  background-color: #dcf8c6;
+  background-color: #007bff;
+  color: #fff;
+}
+
+.sent .message-content p {
+  color: #fff;
+}
+
+.sent .message-time {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .message-input {
   display: flex;
-  padding: 10px;
-  background-color: #f0f0f0;
-  border-top: 1px solid #ddd;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  gap: 0.5rem;
 }
 
 .message-input input {
-  flex-grow: 1;
-  padding: 10px;
-  border: none;
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #dee2e6;
   border-radius: 20px;
-  margin-right: 10px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
 }
 
-.message-input button {
-  background-color: #34b7f1;
-  color: white;
+.message-input input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.message-input input:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+.send-button {
+  width: 40px;
+  height: 40px;
   border: none;
-  padding: 10px 20px;
-  border-radius: 20px;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: #fff;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.send-button:hover:not(:disabled) {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.send-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+  .chat-app {
+    flex-direction: column;
+    height: calc(100vh - 56px);
+  }
+
+  .sidebar {
+    width: 100%;
+    height: 40%;
+  }
+
+  .chat-window {
+    width: 100%;
+    height: 60%;
+  }
+
+  .message-content {
+    max-width: 85%;
+  }
+
+  .chat-item {
+    padding: 0.75rem;
+  }
+
+  .avatar img {
+    width: 40px;
+    height: 40px;
+  }
 }
 </style>

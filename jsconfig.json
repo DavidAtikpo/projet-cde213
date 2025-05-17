@@ -20,6 +20,7 @@
     ]
   },
   "exclude": [
-    "src/views/admin/adminDashboard.vue"
+    "src/views/adminDashboard.vue",
+    "src/views/userDashboard.vue"
   ]
 }
