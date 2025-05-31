@@ -12,6 +12,12 @@ const store = createStore({
     },
     setLanguage(state, language) { // Ajoutez une mutation pour la langue
       state.language = language;
+    },
+    toggleTheme(state) {
+      state.theme = state.theme === 'light' ? 'dark' : 'light';
+    },
+    toggleLanguage(state) {
+      state.language = state.language === 'en' ? 'fr' : 'en';
     }
   },
   actions: {

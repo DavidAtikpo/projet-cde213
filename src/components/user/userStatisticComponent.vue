@@ -100,12 +100,12 @@
   </div>
 </template>
   
-  <script>
+<script>
 import { Chart } from 'chart.js/auto';
 import { mapState } from 'vuex';
   
-  export default {
-    data() {
+export default {
+  data() {
     return {
       selectedPeriod: 'week',
       timePeriods: [
@@ -129,7 +129,7 @@ import { mapState } from 'vuex';
   computed: {
     ...mapState(['theme'])
   },
-    mounted() {
+  mounted() {
     this.initCharts();
   },
   methods: {
@@ -208,33 +208,42 @@ import { mapState } from 'vuex';
       // Mise à jour des données des graphiques en fonction de la période sélectionnée
       // À implémenter selon les besoins
     }
-    }
-  };
-  </script>
+  }
+};
+</script>
   
 <style lang="scss" scoped>
 .statistics-page {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  }
+  min-height: 100vh;
+  padding: 0;
+  background: #f8f9fa;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
 
 .statistics-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  padding: 1rem;
 
   h1 {
     font-size: 1.8rem;
     color: #333;
-    margin: 0;
+    margin-bottom: 1rem;
   }
 }
 
 .date-filter {
   display: flex;
+  justify-content: center;
   gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding: 0 1rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .period-button {
@@ -245,6 +254,8 @@ import { mapState } from 'vuex';
   color: #666;
   cursor: pointer;
   transition: all 0.3s ease;
+  white-space: nowrap;
+  font-size: 0.9rem;
 
   &:hover {
     background: #f8f9fa;
@@ -259,20 +270,25 @@ import { mapState } from 'vuex';
 
 .statistics-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 0 1rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .stat-card {
   background: white;
   border-radius: 1rem;
-  padding: 1.5rem;
+  padding: 1.2rem;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
 
   &:hover {
     transform: translateY(-2px);
@@ -280,32 +296,40 @@ import { mapState } from 'vuex';
 }
 
 .stat-icon {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
   background: rgba(219, 35, 35, 0.1);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #db2323;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
 }
 
 .stat-content {
   flex: 1;
+  min-width: 0;
 
   h3 {
     margin: 0;
     font-size: 0.9rem;
     color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
 .stat-value {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: #333;
-  margin: 0.5rem 0;
+  margin: 0.3rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .stat-change {
@@ -313,6 +337,7 @@ import { mapState } from 'vuex';
   display: flex;
   align-items: center;
   gap: 0.3rem;
+  white-space: nowrap;
 
   &.positive {
     color: #28a745;
@@ -325,56 +350,74 @@ import { mapState } from 'vuex';
 
 .charts-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 0 1rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .chart-card {
   background: white;
   border-radius: 1rem;
-  padding: 1.5rem;
+  padding: 1.2rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  box-sizing: border-box;
 
   h3 {
     margin: 0 0 1rem 0;
     color: #333;
-}
+    font-size: 1.1rem;
+  }
 }
 
 .chart-wrapper {
-  height: 300px;
+  height: 250px;
+  width: 100%;
+  position: relative;
 }
 
 .recent-activities {
   background: white;
   border-radius: 1rem;
-  padding: 1.5rem;
+  padding: 1.2rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 0 1rem 1rem;
+  width: calc(100% - 2rem);
+  box-sizing: border-box;
 
   h3 {
     margin: 0 0 1rem 0;
     color: #333;
+    font-size: 1.1rem;
   }
 }
 
 .activities-table {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
   .table-header {
     display: grid;
-    grid-template-columns: 1fr 2fr 1fr 1fr;
-    padding: 1rem;
+    grid-template-columns: minmax(100px, 1fr) minmax(200px, 2fr) minmax(80px, 1fr) minmax(100px, 1fr);
+    padding: 0.8rem;
     background: #f8f9fa;
     border-radius: 0.5rem;
     font-weight: 500;
     color: #666;
+    font-size: 0.9rem;
   }
 
   .table-row {
     display: grid;
-    grid-template-columns: 1fr 2fr 1fr 1fr;
-    padding: 1rem;
+    grid-template-columns: minmax(100px, 1fr) minmax(200px, 2fr) minmax(80px, 1fr) minmax(100px, 1fr);
+    padding: 0.8rem;
     border-bottom: 1px solid #eee;
     align-items: center;
+    font-size: 0.9rem;
 
     &:last-child {
       border-bottom: none;
@@ -387,6 +430,7 @@ import { mapState } from 'vuex';
   border-radius: 1rem;
   font-size: 0.8rem;
   font-weight: 500;
+  white-space: nowrap;
 
   &.completed {
     background: rgba(40, 167, 69, 0.1);
@@ -401,6 +445,10 @@ import { mapState } from 'vuex';
 
 /* Dark theme */
 :deep(.dark) {
+  .statistics-page {
+    background: #1a1a1a;
+  }
+
   .statistics-header h1 {
     color: #fff;
   }
@@ -444,30 +492,201 @@ import { mapState } from 'vuex';
 /* Responsive Design */
 @media (max-width: 768px) {
   .statistics-page {
-    padding: 1rem;
+    padding: 0;
   }
 
   .statistics-header {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+
+    h1 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .date-filter {
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding: 0 0.8rem 0.5rem;
+    margin: 0 0 1rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .period-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .statistics-cards {
+    padding: 0 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .stat-card {
+    padding: 1rem;
+  }
+
+  .stat-icon {
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    font-size: 1rem;
+  }
+
+  .stat-content {
+    h3 {
+      font-size: 0.85rem;
+    }
+  }
+
+  .stat-value {
+    font-size: 1.3rem;
+  }
+
+  .stat-change {
+    font-size: 0.75rem;
   }
 
   .charts-container {
-    grid-template-columns: 1fr;
+    padding: 0 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .chart-card {
+    padding: 1rem;
+
+    h3 {
+      font-size: 1rem;
+    }
+  }
+
+  .chart-wrapper {
+    height: 200px;
+  }
+
+  .recent-activities {
+    margin: 0 0.8rem 1rem;
+    width: calc(100% - 1.6rem);
+    padding: 1rem;
+
+    h3 {
+      font-size: 1rem;
+    }
   }
 
   .activities-table {
     .table-header,
     .table-row {
-      grid-template-columns: 1fr 2fr 1fr;
-      font-size: 0.9rem;
-
-      span:last-child {
-        display: none;
-      }
+      padding: 0.6rem;
+      font-size: 0.85rem;
     }
   }
+
+  .status {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+  }
 }
-  </style>
+
+@media (max-width: 480px) {
+  .statistics-page {
+    padding: 0;
+  }
+
+  .statistics-header {
+    padding: 0.5rem;
+    margin-bottom: 0.8rem;
+
+    h1 {
+      font-size: 1.3rem;
+    }
+  }
+
+  .date-filter {
+    padding: 0 0.5rem 0.5rem;
+    margin: 0 0 0.8rem;
+  }
+
+  .period-button {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  .statistics-cards {
+    padding: 0 0.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .stat-card {
+    padding: 0.8rem;
+    gap: 0.8rem;
+  }
+
+  .stat-icon {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    font-size: 0.9rem;
+  }
+
+  .stat-content {
+    h3 {
+      font-size: 0.8rem;
+    }
+  }
+
+  .stat-value {
+    font-size: 1.2rem;
+    margin: 0.2rem 0;
+  }
+
+  .stat-change {
+    font-size: 0.7rem;
+  }
+
+  .charts-container {
+    padding: 0 0.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .chart-card {
+    padding: 0.8rem;
+
+    h3 {
+      font-size: 0.9rem;
+    }
+  }
+
+  .chart-wrapper {
+    height: 180px;
+  }
+
+  .recent-activities {
+    margin: 0 0.5rem 0.8rem;
+    width: calc(100% - 1rem);
+    padding: 0.8rem;
+
+    h3 {
+      font-size: 0.9rem;
+    }
+  }
+
+  .activities-table {
+    .table-header,
+    .table-row {
+      padding: 0.5rem;
+      font-size: 0.8rem;
+    }
+  }
+
+  .status {
+    padding: 0.15rem 0.5rem;
+    font-size: 0.7rem;
+  }
+}
+</style>
   

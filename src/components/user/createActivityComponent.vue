@@ -164,7 +164,8 @@ export default {
           this.showPopup = true;
           setTimeout(() => {
             this.showPopup = false;
-            this.$router.push('/user/analytics');
+            this.$router.push(`/user/${this.$route.params.id}`);
+            this.$parent.activeTab = 'check-in';
           }, 3000);
         })
         .catch(error => {

@@ -31,11 +31,11 @@ const userReportComponent = () => import('@/components/user/userReportComponent.
 const userRevewComponent = () => import('@/components/user/userRevewComponent.vue')
 const userStatisticComponent = () => import('@/components/user/userStatisticComponent.vue')
 const UserView = () => import('@/components/UsersView.vue')
-const ClassManagementComponent = () => import('@/components/admin/ClassManagementComponent.vue')
 const MonitorClassViewComponent = () => import('@/components/monitor/MonitorClassViewComponent.vue')
 const MonitorDashboard = () => import('@/views/MonitorDashboard.vue')
-// const MonitorRegistrationComponent = () => import('@/components/admin/MonitorRegistrationComponent.vue')
-
+const MonitorRegistrationComponent = () => import('@/components/admin/MonitorRegistrationComponent.vue')
+const MonitorReportsAdminComponent = () => import('@/components/admin/MonitorReportsAdminComponent.vue')
+const ClassManagementComponent = () => import('@/components/admin/ClassManagementComponent.vue')
 const router = createRouter({
   history: createWebHistory('/'), 
   routes: [
@@ -54,7 +54,7 @@ const router = createRouter({
       name: 'Register',
       component: Register,
     },
-    
+
     {
       path: '/monitor/:id',
       name: 'monitorDashboard',
@@ -230,15 +230,20 @@ const router = createRouter({
           name: 'classManagement',
           component: ClassManagementComponent
         },
-        // {
-        //   path: 'monitorRegistration',
-        //   name: 'monitorRegistration',
-        //   component: MonitorRegistrationComponent
-        // }
+          {
+            path: 'monitorRegistration',
+            name: 'monitorRegistration',
+            component: MonitorRegistrationComponent
+          },
         {
           path: 'monitorClassView',
           name: 'monitorClassView',
           component: MonitorClassViewComponent
+        },
+        {
+          path: 'monitorReportsAdmin',
+          name: 'monitorReportsAdmin',
+          component: MonitorReportsAdminComponent
         },
       ]
     },
