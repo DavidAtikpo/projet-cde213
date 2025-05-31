@@ -39,11 +39,13 @@
                 @input="clearError"
                 required
               />
-              <i
+              <button 
+                type="button"
                 class="password-toggle"
-                :class="{ 'fas fa-eye-slash': !showPassword, 'fas fa-eye': showPassword }"
                 @click="togglePasswordVisibility"
-              ></i>
+              >
+                <i :class="showPassword ? 'fas fa-eye' : 'fas fa-eye-slash'"></i>
+              </button>
             </div>
           </div>
 
@@ -229,15 +231,16 @@ export default {
   align-items: center;
 }
 
-.input-wrapper i {
+.input-wrapper i:first-child {
   position: absolute;
   left: 1rem;
   color: #666;
+  z-index: 1;
 }
 
 .input-wrapper input {
   width: 100%;
-  padding: 0.8rem 1rem 0.8rem 2.5rem;
+  padding: 0.8rem 3rem 0.8rem 2.5rem;
   border: 1px solid #ddd;
   border-radius: 0.5rem;
   font-size: 1rem;
@@ -256,9 +259,27 @@ export default {
 
 .password-toggle {
   position: absolute;
-  right: 1rem;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0.5rem;
   cursor: pointer;
   color: #666;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+  color: #db2323;
+}
+
+.password-toggle i {
+  font-size: 1rem;
 }
 
 .form-options {

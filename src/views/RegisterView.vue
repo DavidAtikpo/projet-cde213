@@ -1,4 +1,4 @@
- <template>
+<template>
   <div class="register-page">
     <div class="register-container">
       <div class="register-content">
@@ -30,8 +30,8 @@
                 <i class="fas fa-exclamation-circle"></i>
                 {{ lastNameError }}
               </div>
-      </div>
-     
+            </div>
+           
             <div class="form-group">
               <label for="firstName">Prénom<span class="required">*</span></label>
               <div class="input-wrapper">
@@ -91,21 +91,21 @@
               <i class="fas fa-exclamation-circle"></i>
               {{ emailFormatError || emailExistError }}
             </div>
-</div>
+          </div>
 
           <div class="form-group">
             <label for="phone">Téléphone<span class="required">*</span></label>
             <div class="input-wrapper">
               <i class="fas fa-phone"></i>
-  <input
+              <input
                 id="phone"
-              type="tel"
+                type="tel"
                 v-model="data.phoneNumber"
-              placeholder="0123456789"
-              @input="clearError('phoneNumberError')"
-              :class="{ 'is-invalid': phoneNumberError }"
+                placeholder="0123456789"
+                @input="clearError('phoneNumberError')"
+                :class="{ 'is-invalid': phoneNumberError }"
                 required
-            />
+              />
             </div>
             <div class="error-message" v-if="phoneNumberError">
               <i class="fas fa-exclamation-circle"></i>
@@ -126,11 +126,13 @@
                 :class="{ 'is-invalid': passwordError }"
                 required
               />
-              <i
+              <button 
+                type="button"
                 class="password-toggle"
-                :class="{ 'fas fa-eye-slash': !showPassword, 'fas fa-eye': showPassword }"
                 @click="togglePasswordVisibility"
-              ></i>
+              >
+                <i :class="showPassword ? 'fas fa-eye' : 'fas fa-eye-slash'"></i>
+              </button>
             </div>
             <div class="error-message" v-if="passwordError">
               <i class="fas fa-exclamation-circle"></i>
@@ -146,7 +148,7 @@
           >
             <span v-if="!loading">S'inscrire</span>
             <i v-else class="fas fa-circle-notch fa-spin"></i>
-            </button>
+          </button>
 
           <div class="login-link">
             Vous avez déjà un compte ?
@@ -199,24 +201,24 @@ export default {
     },
   },
   methods: {
-  togglePasswordVisibility() {
-    this.showPassword = !this.showPassword;
-  },
-  registerStudent() {
-    this.loading = true;
-    axios
-      .post(`${API_BASE_URL}/user/register`, this.data)
-      .then((res) => {
-        if (res.status === 201) {
+    togglePasswordVisibility() {
+      this.showPassword = !this.showPassword;
+    },
+    registerStudent() {
+      this.loading = true;
+      axios
+        .post(`${API_BASE_URL}/user/register`, this.data)
+        .then((res) => {
+          if (res.status === 201) {
             this.$router.push('/login');
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        if (error.response) {
-          if (error.response.status === 403) {
-            const serverErrors = error.response.data.errors;
-            if (serverErrors) {
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          if (error.response) {
+            if (error.response.status === 403) {
+              const serverErrors = error.response.data.errors;
+              if (serverErrors) {
                 if (serverErrors.lastName) this.lastNameError = serverErrors.lastName;
                 if (serverErrors.firstName) this.firstNameError = serverErrors.firstName;
                 if (serverErrors.role) this.roleExistError = serverErrors.role;
@@ -230,18 +232,18 @@ export default {
               } else if (error.response.data.role === 'Role already exists') {
                 this.roleExistError = 'Ce rôle est déjà enregistré.';
               }
+            }
           }
-        }
-      })
-      .finally(() => {
+        })
+        .finally(() => {
           this.loading = false;
+        });
+    },
+    clearError(...errors) {
+      errors.forEach((error) => {
+        this[error] = '';
       });
-  },
-  clearError(...errors) {
-    errors.forEach((error) => {
-      this[error] = '';
-    });
-  },
+    },
   }
 };
 </script>
@@ -331,15 +333,16 @@ export default {
   align-items: center;
 }
 
-.input-wrapper i {
+.input-wrapper i:first-child {
   position: absolute;
   left: 1rem;
   color: #666;
+  z-index: 1;
 }
 
 .input-wrapper input {
   width: 100%;
-  padding: 0.8rem 1rem 0.8rem 2.5rem;
+  padding: 0.8rem 3rem 0.8rem 2.5rem;
   border: 1px solid #ddd;
   border-radius: 0.5rem;
   font-size: 1rem;
@@ -358,9 +361,27 @@ export default {
 
 .password-toggle {
   position: absolute;
-  right: 1rem;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0.5rem;
   cursor: pointer;
   color: #666;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+  color: #db2323;
+}
+
+.password-toggle i {
+  font-size: 1rem;
 }
 
 .error-message {
