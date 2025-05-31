@@ -50,7 +50,7 @@
           <div class="profile-menu" ref="profileMenu">
             <div class="profile-info" @click.stop="toggleProfileMenu">
               <img :src="monitor.profilePhotoURL || '/default-avatar.png'" alt="Profile" class="profile-photo" />
-              <span class="profile-name">{{ monitor.firstName }} {{ monitor.lastName }}</span>
+              <span class="profile-name">{{ monitor.firstName }}</span>
             </div>
             <div v-if="isProfileMenuOpen" class="profile-dropdown" :class="{ 'show': isProfileMenuOpen }">
               <router-link to="/monitor/profile" class="dropdown-item" @click="isProfileMenuOpen = false">
@@ -492,8 +492,8 @@ export default {
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   transition: all 0.2s ease;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  /* background: #f8fafc; */
+  /* border: 1px solid #e2e8f0; */
   cursor: pointer;
 }
 
@@ -890,64 +890,179 @@ export default {
 
 @media (max-width: 768px) {
   .main-header {
-    padding: 0.75rem;
-    height: 50px;
+    padding: 0.5rem;
+    height: 45px;
   }
 
   .header-left h1 {
-    font-size: 1.1rem;
+    font-size: 1rem;
+    margin-left: 40px;
   }
 
   .welcome-section h1 {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 
-  .profile-name {
-    display: none;
+  .role {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.5rem;
   }
 
   .profile-info {
+    padding: 0.35rem;
+  }
+
+  .profile-photo {
+    width: 32px;
+    height: 32px;
+  }
+
+  .notification-btn {
+    width: 32px;
+    height: 32px;
     padding: 0.5rem;
   }
 
-  .profile-dropdown {
-    position: fixed;
-    top: auto;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    border-radius: 1rem 1rem 0 0;
-    min-width: 60%;
-    max-width: 60%;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
-  }
-
-  .profile-dropdown.show {
-    transform: translateX(0);
-  }
-
-  .dropdown-item {
-    padding: 0.875rem;
-    font-size: 1rem;
-  }
-
-  .dropdown-divider {
-    margin: 0.5rem 0;
+  .notification-badge {
+    font-size: 0.7rem;
+    min-width: 16px;
+    height: 16px;
   }
 
   .monitor-dashboard {
+    padding: 0.75rem;
+  }
+
+  .dashboard-header {
     padding: 1rem;
+    margin-bottom: 0.5rem;
   }
 
   .stat-card {
-    min-width: 140px;
-    max-width: 100%;
+    min-width: 120px;
+    padding: 0.75rem;
   }
 
-  .header-right {
-    gap: 1rem;
+  .stat-card i {
+    font-size: 1.2rem;
+    padding: 0.5rem;
+  }
+
+  .stat-value {
+    font-size: 1.25rem;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+  }
+
+  .section-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .section-header h2 {
+    font-size: 1rem;
+  }
+
+  .section-header h2 i {
+    font-size: 1.1rem;
+  }
+
+  .section-content {
+    padding: 1rem;
+  }
+
+  .report-card {
+    padding: 0.6rem;
+  }
+
+  .report-header h3 {
+    font-size: 0.95rem;
+  }
+
+  .report-date {
+    font-size: 0.75rem;
+  }
+
+  .sub-theme {
+    font-size: 0.85rem;
+  }
+
+  .stat {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.5rem;
+  }
+
+  .dropdown-item {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .mobile-menu-btn {
+    top: 0.2rem;
+    left: 0.5rem;
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-header {
+    height: 40px;
+  }
+
+  .header-left h1 {
+    font-size: 0.9rem;
+    margin-left: 35px;
+  }
+
+  .welcome-section h1 {
+    font-size: 1.1rem;
+  }
+
+  .stat-card {
+    min-width: 100px;
+    padding: 0.6rem;
+  }
+
+  .stat-value {
+    font-size: 1.1rem;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+  }
+
+  .dashboard-header {
+    padding: 0.75rem;
+  }
+
+  .section-header {
+    padding: 0.6rem 0.75rem;
+  }
+
+  .section-content {
+    padding: 0.75rem;
+  }
+
+  .report-card {
+    padding: 0.5rem;
+  }
+
+  .report-header h3 {
+    font-size: 0.9rem;
+  }
+
+  .report-date {
+    font-size: 0.7rem;
+  }
+
+  .sub-theme {
+    font-size: 0.8rem;
+  }
+
+  .stat {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.4rem;
   }
 }
 
