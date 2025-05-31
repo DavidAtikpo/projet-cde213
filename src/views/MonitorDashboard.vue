@@ -185,15 +185,15 @@ export default {
         const headers = { Authorization: `Bearer ${token}` };
 
         // Récupérer les informations du moniteur
-        const monitorRes = await axios.get('http://localhost:8000/monitor/profile', { headers });
+        const monitorRes = await axios.get(`${API_BASE_URL}/monitor/profile`, { headers });
         this.monitor = monitorRes.data;
 
         // Récupérer la classe du moniteur
-        const classRes = await axios.get('http://localhost:8000/class/monitor', { headers });
+        const classRes = await axios.get(`${API_BASE_URL}/class/monitor`, { headers });
         this.classData = classRes.data;
 
         // Récupérer les rapports récents
-        const reportsRes = await axios.get('http://localhost:8000/monitor-report/recent', { headers });
+        const reportsRes = await axios.get(`${API_BASE_URL}/monitor-report/recent`, { headers });
         this.reports = reportsRes.data;
       } catch (err) {
         console.error('Erreur lors du chargement des données:', err);

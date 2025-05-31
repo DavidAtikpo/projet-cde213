@@ -98,7 +98,7 @@ export default {
         const headers = { Authorization: `Bearer ${token}` };
 
         // Récupérer la classe du moniteur avec les données populées
-        const classRes = await axios.get('http://localhost:8000/class/monitor', { headers });
+        const classRes = await axios.get(`${API_BASE_URL}/class/monitor`, { headers });
         if (!classRes.data) {
           throw new Error('Aucune classe trouvée');
         }
@@ -142,7 +142,7 @@ export default {
           date: new Date()
         };
 
-        await axios.post('http://localhost:8000/monitor-report', reportData, { headers });
+        await axios.post(`${API_BASE_URL}/monitor-report`, reportData, { headers });
         alert('Rapport enregistré avec succès !');
         
         // Réinitialiser le formulaire

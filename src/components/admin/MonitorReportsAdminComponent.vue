@@ -104,10 +104,10 @@ export default {
         const headers = { Authorization: `Bearer ${token}` };
 
         const [classesRes, monitorsRes, childrenRes, reportsRes] = await Promise.all([
-          axios.get(`http://localhost:8000/class`, { headers }),
-          axios.get(`http://localhost:8000/monitor`, { headers }),
-          axios.get(`http://localhost:8000/child/allchildren`, { headers }),
-          axios.get(`http://localhost:8000/monitor-report`, { headers })
+          axios.get(`${API_BASE_URL}/class`, { headers }),
+          axios.get(`${API_BASE_URL}/monitor`, { headers }),
+          axios.get(`${API_BASE_URL}/child/allchildren`, { headers }),
+          axios.get(`${API_BASE_URL}/monitor-report`, { headers })
         ]);
         this.classes = classesRes.data;
         this.monitors = monitorsRes.data;

@@ -120,7 +120,7 @@ export default {
     },
     handleLogin() {
       this.loading = true;
-      axios.post('http://localhost:8000/user/login', this.loginData, { withCredentials: true })
+      axios.post(`${API_BASE_URL}/user/login`, this.loginData, { withCredentials: true })
         .then((res) => {
           localStorage.setItem('token', res.data.token);
           localStorage.setItem('user', res.data.firstName);
