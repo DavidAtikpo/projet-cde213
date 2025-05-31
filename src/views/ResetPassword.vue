@@ -15,14 +15,14 @@
             <label for="password">Nouveau mot de passe<span class="required">*</span></label>
             <div class="input-wrapper">
               <i class="fas fa-lock"></i>
-              <input
-                id="password"
+            <input
+              id="password"
                 :type="showPassword ? 'text' : 'password'"
-                v-model="password"
+              v-model="password"
                 placeholder="Entrez votre nouveau mot de passe"
-                required
+              required
                 :class="{ 'is-invalid': passwordError }"
-              />
+            />
               <i 
                 class="fas" 
                 :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"
@@ -35,12 +35,12 @@
             <label for="confirmPassword">Confirmer le mot de passe<span class="required">*</span></label>
             <div class="input-wrapper">
               <i class="fas fa-lock"></i>
-              <input
-                id="confirmPassword"
+            <input
+              id="confirmPassword"
                 :type="showConfirmPassword ? 'text' : 'password'"
-                v-model="confirmPassword"
+              v-model="confirmPassword"
                 placeholder="Confirmez votre nouveau mot de passe"
-                required
+              required
                 :class="{ 'is-invalid': passwordError }"
               />
               <i 
@@ -94,7 +94,7 @@
           >
             <span v-if="!loading">Réinitialiser le mot de passe</span>
             <i v-else class="fas fa-circle-notch fa-spin"></i>
-          </button>
+        </button>
 
           <div class="back-to-login">
             <router-link to="/login">
@@ -112,22 +112,22 @@
           <p>Nous sommes là pour vous aider</p>
         </div>
       </div>
+      </div>
     </div>
-  </div>
-</template>
-
-<script>
-import axios from 'axios';
-import { API_BASE_URL } from '@/config.js';
-
-export default {
+  </template>
+  
+  <script>
+  import axios from 'axios';
+  import { API_BASE_URL } from '@/config.js';
+  
+  export default {
   name: 'ResetPassword',
-  data() {
-    return {
-      loading: false,
-      password: '',
-      confirmPassword: '',
-      passwordError: '',
+    data() {
+      return {
+        loading: false,
+        password: '',
+        confirmPassword: '',
+        passwordError: '',
       successMessage: '',
       showPassword: false,
       showConfirmPassword: false
@@ -144,52 +144,52 @@ export default {
         this.password === this.confirmPassword
       );
     }
-  },
-  methods: {
+    },
+    methods: {
     togglePasswordVisibility() {
       this.showPassword = !this.showPassword;
     },
     toggleConfirmPasswordVisibility() {
       this.showConfirmPassword = !this.showConfirmPassword;
     },
-    async resetPassword() {
+      async resetPassword() {
       if (!this.isPasswordValid) {
         this.passwordError = 'Le mot de passe ne respecte pas les critères requis';
-        return;
-      }
+          return;
+        }
 
-      this.loading = true;
+        this.loading = true;
       this.passwordError = '';
       this.successMessage = '';
-
-      try {
+        
+        try {
         const response = await axios.post(
           `${API_BASE_URL}/user/reset-password/${this.$route.params.token}`,
           { password: this.password }
         );
 
         this.successMessage = 'Votre mot de passe a été réinitialisé avec succès.';
-        this.password = '';
-        this.confirmPassword = '';
+          this.password = '';
+          this.confirmPassword = '';
 
         setTimeout(() => {
           this.$router.push('/login');
         }, 2000);
-      } catch (error) {
-        if (error.response && error.response.data) {
+        } catch (error) {
+          if (error.response && error.response.data) {
           this.passwordError = error.response.data.error || 'Une erreur est survenue. Veuillez réessayer.';
-        } else {
+          } else {
           this.passwordError = 'Le lien de réinitialisation est invalide ou a expiré.';
-        }
-      } finally {
+          }
+        } finally {
         this.loading = false;
+        }
       }
     }
-  }
-};
+  };
 </script>
 
-<style scoped>
+  <style scoped>
 .reset-password-page {
   min-height: 100vh;
   display: flex;
@@ -213,19 +213,19 @@ export default {
 .reset-password-content {
   flex: 1;
   padding: 3rem;
-  display: flex;
+    display: flex;
   flex-direction: column;
-  justify-content: center;
-}
-
+    justify-content: center;
+  }
+  
 .reset-password-header {
-  text-align: center;
+    text-align: center;
   margin-bottom: 2rem;
 }
 
 .logo-link {
   display: inline-block;
-  margin-bottom: 1rem;
+    margin-bottom: 1rem;
 }
 
 .reset-password-logo {
@@ -237,23 +237,23 @@ export default {
 
 .reset-password-title {
   font-size: 2rem;
-  color: #333;
+    color: #333;
   margin-bottom: 0.5rem;
 }
 
 .reset-password-subtitle {
   color: #666;
   font-size: 1.1rem;
-}
-
-.form-group {
+  }
+  
+  .form-group {
   margin-bottom: 1.5rem;
-}
-
+  }
+  
 .form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #333;
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
   font-weight: 500;
 }
 
@@ -271,8 +271,8 @@ export default {
 .input-wrapper i {
   position: absolute;
   color: #666;
-}
-
+  }
+  
 .input-wrapper i:first-child {
   left: 1rem;
 }
@@ -283,20 +283,20 @@ export default {
 }
 
 .input-wrapper input {
-  width: 100%;
+    width: 100%;
   padding: 0.8rem 2.5rem;
   border: 1px solid #ddd;
   border-radius: 0.5rem;
   font-size: 1rem;
   transition: all 0.3s ease;
-}
-
+  }
+  
 .input-wrapper input:focus {
   border-color: #db2323;
   box-shadow: 0 0 0 2px rgba(219, 35, 35, 0.1);
-  outline: none;
-}
-
+    outline: none;
+  }
+  
 .input-wrapper input.is-invalid {
   border-color: #dc3545;
 }
@@ -342,7 +342,7 @@ export default {
   color: #dc3545;
   padding: 0.8rem;
   border-radius: 0.5rem;
-  margin-top: 0.5rem;
+    margin-top: 0.5rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -359,18 +359,18 @@ export default {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.9rem;
-}
-
-.submit-button {
+  }
+  
+  .submit-button {
   width: 100%;
   padding: 1rem;
   background-color: #db2323;
   color: white;
-  border: none;
+    border: none;
   border-radius: 0.5rem;
   font-size: 1rem;
   font-weight: 500;
-  cursor: pointer;
+    cursor: pointer;
   transition: all 0.3s ease;
   margin-bottom: 1rem;
 }
@@ -387,9 +387,9 @@ export default {
 
 .back-to-login {
   text-align: center;
-  margin-top: 1rem;
-}
-
+    margin-top: 1rem;
+  }
+  
 .back-to-login a {
   color: #666;
   text-decoration: none;
@@ -397,8 +397,8 @@ export default {
   align-items: center;
   gap: 0.5rem;
   transition: color 0.3s ease;
-}
-
+  }
+  
 .back-to-login a:hover {
   color: #db2323;
 }
@@ -407,8 +407,8 @@ export default {
   flex: 1;
   position: relative;
   display: none;
-}
-
+  }
+  
 .reset-password-image img {
   width: 100%;
   height: 100%;
@@ -434,25 +434,25 @@ export default {
 .image-overlay h2 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
-}
-
+  }
+  
 @media (min-width: 768px) {
   .reset-password-image {
     display: block;
-  }
+    }
 }
 
 @media (max-width: 767px) {
   .reset-password-container {
     flex-direction: column;
-  }
-
+    }
+  
   .reset-password-content {
     padding: 2rem;
   }
 
   .reset-password-image {
     display: none;
+    }
   }
-}
-</style>
+  </style>

@@ -99,13 +99,13 @@
     </div>
   </div>
 </template>
-
-<script>
+  
+  <script>
 import { Chart } from 'chart.js/auto';
 import { mapState } from 'vuex';
-
-export default {
-  data() {
+  
+  export default {
+    data() {
     return {
       selectedPeriod: 'week',
       timePeriods: [
@@ -129,7 +129,7 @@ export default {
   computed: {
     ...mapState(['theme'])
   },
-  mounted() {
+    mounted() {
     this.initCharts();
   },
   methods: {
@@ -143,33 +143,33 @@ export default {
         type: 'bar',
         data: {
           labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
-          datasets: [{
+        datasets: [{
             label: 'Heures travaillées',
             data: [8, 7.5, 8.5, 7, 9, 6.5, 0],
             backgroundColor: 'rgba(219, 35, 35, 0.2)',
             borderColor: 'rgba(219, 35, 35, 1)',
             borderWidth: 1
-          }]
+        }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          scales: {
+        scales: {
             y: {
               beginAtZero: true,
               grid: {
                 color: 'rgba(0, 0, 0, 0.1)'
-              }
+            }
             },
             x: {
               grid: {
                 display: false
-              }
+        }
             }
           }
         }
       });
-
+  
       // Graphique de productivité
       new Chart(this.$refs.productivityChart, {
         type: 'line',
@@ -208,16 +208,16 @@ export default {
       // Mise à jour des données des graphiques en fonction de la période sélectionnée
       // À implémenter selon les besoins
     }
-  }
-};
-</script>
-
+    }
+  };
+  </script>
+  
 <style lang="scss" scoped>
 .statistics-page {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-}
+  }
 
 .statistics-header {
   display: flex;
@@ -339,7 +339,7 @@ export default {
   h3 {
     margin: 0 0 1rem 0;
     color: #333;
-  }
+}
 }
 
 .chart-wrapper {
@@ -469,5 +469,5 @@ export default {
     }
   }
 }
-</style>
+  </style>
   

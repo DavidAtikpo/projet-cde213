@@ -62,13 +62,6 @@
 
           <!-- Action Section -->
           <div class="action-section">
-            <input
-              type="checkbox"
-              v-model="selectedChildren"
-              :value="child._id"
-              @click.stop
-              class="select-checkbox"
-            >
             <button class="action-button" @click="toggleDropdown(child._id)">
               <i class="fas" :class="isDropdownOpen === child._id ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
             </button>
@@ -416,6 +409,7 @@ export default {
   padding: 1rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  border-left: 5px solid #db2323;
 }
 
 .dark .child-item {
@@ -424,7 +418,8 @@ export default {
 
 .child-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(219, 35, 35, 0.15);
+  border-left: 8px solid #db2323;
 }
 
 .profile-section {
@@ -447,7 +442,7 @@ export default {
 .profile-info h3 {
   margin: 0;
   font-size: 1.1rem;
-  color: #2d3748;
+  color: #000000;
 }
 
 .dark .profile-info h3 {
@@ -466,23 +461,18 @@ export default {
   gap: 1rem;
 }
 
-.select-checkbox {
-  width: 1.2rem;
-  height: 1.2rem;
-  cursor: pointer;
-}
-
 .action-button {
-  background: none;
+  background: #fff;
   border: none;
-  color: #718096;
+  color: #db2323;
   cursor: pointer;
-  padding: 0.5rem;
-  transition: color 0.3s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: background 0.3s;
 }
 
 .action-button:hover {
-  color: #4a5568;
+  background: #b31b1b;
 }
 
 .dropdown {
@@ -546,7 +536,7 @@ export default {
 }
 
 .delete-button {
-  background-color: #f56565;
+  background-color: #db2323;
   color: white;
 }
 
@@ -557,7 +547,7 @@ export default {
 
 .submit-button {
   padding: 1rem 2rem;
-  background-color: #48bb78;
+  background-color: #db2323;
   color: white;
   border: none;
   border-radius: 0.5rem;
@@ -567,7 +557,7 @@ export default {
 }
 
 .submit-button:hover {
-  background-color: #38a169;
+  background-color: #b31b1b;
 }
 
 .submit-button:disabled {

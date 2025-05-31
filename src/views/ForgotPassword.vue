@@ -15,14 +15,14 @@
             <label for="email">Email<span class="required">*</span></label>
             <div class="input-wrapper">
               <i class="fas fa-envelope"></i>
-              <input
+            <input
                 id="email"
-                type="email"
-                v-model="email"
+              type="email"
+              v-model="email"
                 placeholder="Entrez votre email"
-                required
+              required
                 :class="{ 'is-invalid': emailError }"
-              />
+            />
             </div>
             <div class="error-message" v-if="emailError">
               <i class="fas fa-exclamation-circle"></i>
@@ -43,7 +43,7 @@
           >
             <span v-if="!loading">Envoyer le lien</span>
             <i v-else class="fas fa-circle-notch fa-spin"></i>
-          </button>
+        </button> 
 
           <div class="back-to-login">
             <router-link to="/login">
@@ -61,53 +61,53 @@
           <p>Nous sommes là pour vous aider</p>
         </div>
       </div>
+      </div>
     </div>
-  </div>
-</template>
+  </template>
 
-<script>
-import axios from 'axios';
-import { API_BASE_URL } from '@/config.js';
-
-export default {
+  <script>
+  import axios from 'axios';
+  import { API_BASE_URL } from '@/config.js';
+  
+  export default {
   name: 'ForgotPassword',
-  data() {
-    return {
+    data() {
+      return {
       loading: false,
-      email: '',
-      emailError: '',
-      successMessage: ''
-    };
-  },
-  methods: {
-    requestPasswordReset() {
+        email: '',
+        emailError: '',
+        successMessage: ''
+      };
+    },
+    methods: {
+      requestPasswordReset() {
       this.loading = true;
       this.emailError = '';
       this.successMessage = '';
 
-      axios
-        .post(`${API_BASE_URL}/user/forgot-password`, { email: this.email })
-        .then((res) => {
+        axios
+          .post(`${API_BASE_URL}/user/forgot-password`, { email: this.email })
+          .then((res) => {
           this.successMessage = 'Un lien de réinitialisation a été envoyé à votre email.';
           setTimeout(() => {
             this.$router.push('/reset');
           }, 2000);
-        })
-        .catch((error) => {
-          console.log(error);
-          if (error.response && error.response.status === 404) {
+          })
+          .catch((error) => {
+            console.log(error);
+            if (error.response && error.response.status === 404) {
             this.emailError = 'Email non trouvé';
-          } else {
+            } else {
             this.emailError = 'Une erreur est survenue. Veuillez réessayer plus tard.';
-          }
+            }
         })
         .finally(() => {
           this.loading = false;
-        });
+    });
+      }
     }
-  }
-};
-</script>
+  };
+  </script>
 
 <style scoped>
 .forgot-password-page {
@@ -305,7 +305,7 @@ export default {
   color: white;
   padding: 2rem;
   text-align: center;
-}
+  }
 
 .image-overlay h2 {
   font-size: 2.5rem;

@@ -45,7 +45,7 @@
             <span class="status-indicator" :class="{ 'online': activeUser.isOnline }"></span>
           </div>
           <div class="contact-details">
-            <div class="contact-name">{{ activeUser.firstName }} {{ activeUser.lastName }}</div>
+          <div class="contact-name">{{ activeUser.firstName }} {{ activeUser.lastName }}</div>
             <div class="contact-status">{{ activeUser.isOnline ? 'En ligne' : 'Hors ligne' }}</div>
           </div>
         </div>
@@ -75,8 +75,8 @@
           <div v-else v-for="message in messages" 
                :key="message._id" 
                :class="{'message received': message.senderId !== currentUser.id, 'message sent': message.senderId === currentUser.id}">
-            <div class="message-content">
-              <p>{{ message.content }}</p>
+          <div class="message-content">
+            <p>{{ message.content }}</p>
               <span class="message-time">{{ formatTime(message.createdAt) }}</span>
             </div>
           </div>
@@ -228,7 +228,7 @@ export default {
         );
         
         if (response.data && response.data.data) {
-          this.messages = response.data.data;
+        this.messages = response.data.data;
         } else {
           this.messages = [];
         }
@@ -284,7 +284,7 @@ export default {
           this.newMessage = '';
           this.scrollToBottom();
         }
-      } catch (error) {
+        } catch (error) {
         console.error('Failed to send message:', error);
         this.error = error.message === 'No authentication token found'
           ? 'Vous devez être connecté pour envoyer des messages'

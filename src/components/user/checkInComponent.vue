@@ -21,7 +21,7 @@
             <h3>Objectif hebdomadaire</h3>
           </div>
           <div class="card-content">
-            <p>{{ dailyGoals }}</p>
+          <p>{{ dailyGoals }}</p>
           </div>
         </div>
 
@@ -38,7 +38,7 @@
               readonly 
               class="form-control"
             >
-          </div>
+        </div>
 
           <div class="form-group">
             <label>
@@ -51,17 +51,17 @@
               readonly 
               class="form-control"
             >
-          </div>
+        </div>
 
           <div class="form-group">
             <label>
               <i class="fas fa-tasks"></i>
               Objectif de la journée
             </label>
-            <textarea 
-              v-model="dailyGoal" 
+          <textarea 
+            v-model="dailyGoal" 
               :class="['form-control', { 'error': errorMessage }]"
-              rows="4" 
+            rows="4" 
               ref="dailyGoalInput"
               placeholder="Décrivez vos objectifs pour aujourd'hui..."
             ></textarea>
@@ -96,9 +96,9 @@
             <h2>Check-in enregistré avec succès !</h2>
             <p>Redirection en cours...</p>
           </div>
-        </div>
-      </transition>
     </div>
+      </transition>
+  </div>
   </div>
 </template>
 
@@ -230,6 +230,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use "sass:color";
+
 .check-in-page {
   min-height: 100vh;
   padding: 2rem;
@@ -247,7 +249,7 @@ export default {
 
   h1 {
     font-size: 2rem;
-    color: #333;
+  color: #333;
     margin-bottom: 1rem;
   }
 }
@@ -289,7 +291,7 @@ export default {
     margin: 0;
     font-size: 1.1rem;
     color: #333;
-  }
+}
 }
 
 .card-content {
@@ -310,7 +312,7 @@ export default {
 .form-group {
   margin-bottom: 1.5rem;
 
-  label {
+label {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -320,7 +322,7 @@ export default {
 
     i {
       color: #db2323;
-    }
+}
   }
 }
 
@@ -335,7 +337,7 @@ export default {
   &:focus {
     outline: none;
     border-color: #db2323;
-  }
+}
 
   &.error {
     border-color: #dc3545;
@@ -358,7 +360,7 @@ textarea.form-control {
 
 .submit-button {
   width: 100%;
-  background: #db2323;
+  background: color.adjust(#db2323, $lightness: -10%);
   color: white;
   border: none;
   padding: 1rem;
@@ -372,9 +374,9 @@ textarea.form-control {
   gap: 0.8rem;
 
   &:hover {
-    background: darken(#db2323, 10%);
+    background: color.adjust(#db2323, $lightness: -20%);
     transform: translateY(-2px);
-  }
+}
 
   &:disabled {
     opacity: 0.7;
@@ -463,12 +465,12 @@ textarea.form-control {
   }
 
   .check-in-header h1 {
-    color: #fff;
-  }
+  color: #fff;
+}
 
   .card-header h3 {
-    color: #fff;
-  }
+  color: #fff;
+}
 
   .card-content p {
     color: #ccc;
@@ -491,7 +493,7 @@ textarea.form-control {
   .error-alert {
     background: #2d2d2d;
     color: #ffc107;
-  }
+}
 
   .popup-content {
     background: #2d2d2d;

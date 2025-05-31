@@ -22,6 +22,19 @@ const MessageComponent = () => import('@/components/messageComponent.vue')
 const checking = () => import('@/components/admin/checkInComponent.vue')
 const Weekly = () => import('@/components/admin/weekGoalComponent.vue')
 const HebdomadaireObjectifs = () => import('@/components/user/createActivityComponent.vue')
+const CreateActivity = () => import('@/components/admin/createActivityComponent.vue')
+const accueil = () => import('@/components/user/accueillComponent.vue')
+const checkin = () => import('@/components/user/checkInComponent.vue')
+const checkOutcomponent = () => import('@/components/user/checkOutcomponent.vue')
+const createActivityComponent = () => import('@/components/user/createActivityComponent.vue')
+const userReportComponent = () => import('@/components/user/userReportComponent.vue')
+const userRevewComponent = () => import('@/components/user/userRevewComponent.vue')
+const userStatisticComponent = () => import('@/components/user/userStatisticComponent.vue')
+const UserView = () => import('@/components/UsersView.vue')
+const ClassManagementComponent = () => import('@/components/admin/ClassManagementComponent.vue')
+const MonitorClassViewComponent = () => import('@/components/monitor/MonitorClassViewComponent.vue')
+const MonitorDashboard = () => import('@/views/MonitorDashboard.vue')
+// const MonitorRegistrationComponent = () => import('@/components/admin/MonitorRegistrationComponent.vue')
 
 const router = createRouter({
   history: createWebHistory('/'), 
@@ -41,6 +54,14 @@ const router = createRouter({
       name: 'Register',
       component: Register,
     },
+    
+    {
+      path: '/monitor/:id',
+      name: 'monitorDashboard',
+      component: MonitorDashboard,
+    },
+
+
     {
       path: '/user/:id',
       name: 'userDashboard',
@@ -93,6 +114,7 @@ const router = createRouter({
         }
       ]
     },
+
     {
       path: '/admin/:id',
       name: 'dashboard',
@@ -143,11 +165,11 @@ const router = createRouter({
           name: 'rapport',
           component: Rapport
         },
-        {
-          path: 'checkin',
-          name: 'checkin',
-          component: checking
-        },
+        // {
+        //   path: 'checkin',
+        //   name: 'checkin',
+        //   component: checking
+        // },
         {
           path: 'weekly',
           name: 'weekly',
@@ -158,7 +180,66 @@ const router = createRouter({
           name: 'HebdomadaireObjectifs',
           component: HebdomadaireObjectifs
         },
-        
+        // {
+        //   path: 'createActivity',
+        //   name: 'createActivity',
+        //   component: CreateActivity
+        // },
+        {
+          path: 'accueil',
+          name: 'accueil',
+          component: accueil
+        },
+        {
+          path: 'checkin',
+          name: 'checkin',
+          component: checkin
+        },
+        {
+          path: 'checkOut',
+          name: 'checkOut',
+          component: checkOutcomponent
+        },
+        {
+          path: 'createActivity',
+          name: 'createActivity',
+          component: createActivityComponent
+        },
+        {
+          path: 'userReport',
+          name: 'userReport',
+          component: userReportComponent
+        },
+        {
+          path: 'userRevew',
+          name: 'userRevew',
+          component: userRevewComponent
+        },
+        {
+          path: 'userStatistic',
+          name: 'userStatistic',
+          component: userStatisticComponent
+        },
+        {
+          path: 'userView',
+          name: 'userView',
+          component: UserView
+        },
+        {
+          path: 'classManagement',
+          name: 'classManagement',
+          component: ClassManagementComponent
+        },
+        // {
+        //   path: 'monitorRegistration',
+        //   name: 'monitorRegistration',
+        //   component: MonitorRegistrationComponent
+        // }
+        {
+          path: 'monitorClassView',
+          name: 'monitorClassView',
+          component: MonitorClassViewComponent
+        },
       ]
     },
     {

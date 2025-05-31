@@ -47,8 +47,8 @@
               Ce champ est requis
             </div>
           </div>
+          </div>
         </div>
-      </div>
 
       <!-- Message d'erreur de chargement -->
       <div v-if="errorFetchingDate" class="error-alert">
@@ -191,6 +191,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use "sass:color";
+
 .activity-page {
   min-height: 100vh;
   padding: 2rem;
@@ -244,7 +246,7 @@ export default {
     margin: 0;
     font-size: 1.1rem;
     color: #333;
-  }
+}
 }
 
 .card-content {
@@ -272,7 +274,7 @@ export default {
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  }
+}
 
   &.has-error {
     border: 2px solid #dc3545;
@@ -294,18 +296,18 @@ export default {
     margin: 0;
     font-size: 1.1rem;
     color: #333;
-  }
+}
 }
 
 .goal-content {
   .form-control {
-    width: 100%;
+  width: 100%;
     padding: 0.8rem;
     border: 1px solid #ddd;
     border-radius: 0.5rem;
     font-size: 1rem;
     transition: all 0.3s ease;
-    resize: vertical;
+  resize: vertical;
     min-height: 100px;
 
     &:focus {
@@ -357,7 +359,7 @@ export default {
   gap: 0.8rem;
 
   &:hover {
-    background: darken(#db2323, 10%);
+    background: color.adjust(#db2323, $lightness: -10%);
     transform: translateY(-2px);
   }
 

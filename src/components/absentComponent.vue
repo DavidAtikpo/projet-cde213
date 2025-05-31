@@ -43,7 +43,7 @@
              class="child-item">
           <div class="profile-section">
             <img :src="child.profilePhotoURL" :alt="child.firstName" class="profile-icon">
-            <div class="profile-info">
+        <div class="profile-info">
               <h3>{{ child.firstName }} {{ child.lastName }}</h3>
               <p class="class">Classe: {{ child.class }}</p>
               <p class="tel">Tél: {{ child.phoneNumber }}</p>
@@ -126,7 +126,7 @@ export default {
         
         children.value = response.data.sort((a, b) => a.firstName.localeCompare(b.firstName));
         filteredChildren.value = [...children.value];
-        
+
         children.value.forEach(child => {
           isDateVisible.value[child._id] = false;
         });

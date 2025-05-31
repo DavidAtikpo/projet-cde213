@@ -36,7 +36,7 @@
             <i class="fas fa-chevron-right" :class="{ 'rotated': activeSubmenu === 'users' }"></i>
           </div>
           <div class="submenu" v-if="activeSubmenu === 'users' && !isCollapsed">
-            <router-link :to="`/admin/${$route.params.id}/users/list`" class="submenu-item" active-class="active">
+            <router-link :to="`/admin/${$route.params.id}/userView`" class="submenu-item" active-class="active">
               <i class="fas fa-list"></i>
               <span>{{ getTranslatedTitle('userList') }}</span>
             </router-link>
@@ -164,7 +164,7 @@
               <i class="fas fa-calendar-week"></i>
               <span>{{ getTranslatedTitle('weekly') }}</span>
             </router-link>
-            <router-link :to="`/admin/${$route.params.id}/monthly`" class="submenu-item" active-class="active">
+            <router-link :to="`/admin/${$route.params.id}/monitorClassView`" class="submenu-item" active-class="active">
               <i class="fas fa-calendar-alt"></i>
               <span>{{ getTranslatedTitle('monthly') }}</span>
             </router-link>
@@ -298,7 +298,24 @@
 
       <!-- Dashboard Content -->
       <div class="dashboard-content">
-        <router-view></router-view>
+        <template v-if="$route.path === '/admin/dashboard'">
+          <div class="admin-tabs">
+            <button
+              v-for="tab in tabs"
+              :key="tab.id"
+              :class="['tab-btn', { active: activeTab === tab.id }]"
+              @click="activeTab = tab.id"
+            >
+              <i :class="tab.icon"></i> {{ tab.name }}
+            </button>
+          </div>
+          <div class="admin-tab-content">
+            <component :is="currentComponent" />
+          </div>
+        </template>
+        <template v-else>
+          <router-view />
+        </template>
       </div>
     </div>
   </div>
@@ -306,9 +323,30 @@
 
 <script>
 import { mapState } from 'vuex';
-
+import WeekGoalComponent from '@/components/admin/weekGoalComponent.vue';
+import CreateActivityComponent from '@/components/user/createActivityComponent.vue';
+import CheckInComponent from '@/components/user/checkInComponent.vue';
+import CheckOutComponent from '@/components/user/checkOutcomponent.vue';
+import StatisticComponent from '@/components/user/userStatisticComponent.vue';
+import UserRevewComponent from '@/components/user/userRevewComponent.vue';
+import ClassManagementComponent from '@/components/admin/ClassManagementComponent.vue';
+import MonitorRegistrationComponent from '@/components/admin/MonitorRegistrationComponent.vue';
+// import MonitorClassViewComponent from '@/components/monitor/MonitorClassViewComponent.vue';
+import MonitorReportsAdminComponent from '@/components/admin/MonitorReportsAdminComponent.vue';
 export default {
   name: 'AdminDashboard',
+  components: {
+    WeekGoalComponent,
+    CreateActivityComponent,
+    CheckInComponent,
+    CheckOutComponent,
+    StatisticComponent,
+    UserRevewComponent,
+    ClassManagementComponent,
+    MonitorRegistrationComponent,
+    // MonitorClassViewComponent
+    MonitorReportsAdminComponent
+  },
   data() {
     return {
       isCollapsed: false,
@@ -348,6 +386,19 @@ export default {
       userName: 'Administrateur',
       userRole: 'Administrateur',
       userAvatar: 'https://via.placeholder.com/40',
+      activeTab: 'week-goal',
+      tabs: [
+        { id: 'week-goal', name: 'Objectif Hebdomadaire', icon: 'fas fa-bullseye', component: 'WeekGoalComponent' },
+        { id: 'create-activity', name: 'Créer Activité', icon: 'fas fa-plus-circle', component: 'CreateActivityComponent' },
+        { id: 'check-in', name: 'Check-in', icon: 'fas fa-sign-in-alt', component: 'CheckInComponent' },
+        { id: 'check-out', name: 'Check-out', icon: 'fas fa-sign-out-alt', component: 'CheckOutComponent' },
+        { id: 'statistic', name: 'Statistique', icon: 'fas fa-chart-line', component: 'StatisticComponent' },
+        { id: 'user-review', name: 'Avis Utilisateur', icon: 'fas fa-star', component: 'UserRevewComponent' },
+        { id: 'class-management', name: 'Gestion des Classes', icon: 'fas fa-calendar-alt', component: 'ClassManagementComponent' },
+        { id: 'monitor-registration', name: 'Inscription Moniteur', icon: 'fas fa-user-plus', component: 'MonitorRegistrationComponent' },
+        // { id: 'monitor-class-view', name: 'Voir les Classes', icon: 'fas fa-calendar-alt', component: 'MonitorClassViewComponent' }
+        { id: 'monitor-reports-admin', name: 'Voir les Classes', icon: 'fas fa-calendar-alt', component: 'MonitorReportsAdminComponent' }
+      ],
       translatedTitles: {
         en: {
           adminPanel: 'Admin Panel',
@@ -455,6 +506,10 @@ export default {
     },
     currentLanguage() {
       return this.language === 'fr' ? 'FR' : 'EN';
+    },
+    currentComponent() {
+      const tab = this.tabs.find(t => t.id === this.activeTab);
+      return tab ? tab.component : null;
     }
   },
   methods: {
@@ -1310,4 +1365,30 @@ export default {
     box-shadow: 4px 0 10px rgba(0, 0, 0, 0.3);
   }
 }
-</style> 
+
+.admin-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.tab-btn {
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #db2323;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.tab-btn.active {
+  background: #db2323;
+  color: #fff;
+}
+.admin-tab-content {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+</style>

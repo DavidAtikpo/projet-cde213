@@ -28,7 +28,7 @@
         <!-- Formulaire de rapport -->
         <div class="report-form">
           <div class="form-group">
-            <h4>Est-ce que l'objectif quotidien a été réalisé ?</h4>
+          <h4>Est-ce que l'objectif quotidien a été réalisé ?</h4>
             <div class="radio-group">
               <label class="radio-label">
                 <input 
@@ -50,7 +50,7 @@
                 >
                 <span class="radio-text">Non</span>
               </label>
-            </div>
+          </div>
           </div>
 
           <div class="form-group">
@@ -85,7 +85,7 @@
           <div class="message">
             <i class="fas fa-heart"></i>
             <p>Bon travail ! Passez une agréable soirée sous la protection de Dieu</p>
-          </div>
+        </div>
 
           <button 
             @click="submitForm" 
@@ -213,6 +213,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use "sass:color";
+
 .check-out-page {
   min-height: 100vh;
   padding: 2rem;
@@ -230,7 +232,7 @@ export default {
 
   h1 {
     font-size: 2rem;
-    color: #333;
+  color: #333;
     margin-bottom: 1rem;
   }
 }
@@ -376,7 +378,7 @@ textarea.form-control {
   p {
     margin: 0;
     color: #666;
-  }
+}
 }
 
 .submit-button {
@@ -395,9 +397,9 @@ textarea.form-control {
   gap: 0.8rem;
 
   &:hover {
-    background: darken(#db2323, 10%);
+    background: color.adjust(#db2323, $lightness: -10%);
     transform: translateY(-2px);
-  }
+}
 
   &:disabled {
     opacity: 0.7;
@@ -429,17 +431,17 @@ textarea.form-control {
     font-size: 3rem;
     color: #28a745;
     margin-bottom: 1rem;
-  }
+}
 
-  h2 {
+h2 {
     color: #333;
     margin-bottom: 0.5rem;
-  }
+}
 
   p {
     color: #666;
     margin: 0;
-  }
+}
 }
 
 .shake {
@@ -493,7 +495,7 @@ textarea.form-control {
 
     label {
       color: #fff;
-    }
+  }
   }
 
   .radio-label .radio-text {
@@ -507,7 +509,7 @@ textarea.form-control {
 
     &:focus {
       border-color: #db2323;
-    }
+  }
   }
 
   .message {
@@ -515,15 +517,15 @@ textarea.form-control {
 
     p {
       color: #ccc;
-    }
+  }
   }
 
   .popup-content {
     background: #2d2d2d;
 
-    h2 {
+  h2 {
       color: #fff;
-    }
+  }
 
     p {
       color: #ccc;
@@ -547,11 +549,11 @@ textarea.form-control {
 
   .info-card {
     padding: 1rem;
-  }
+}
 
   .report-form {
     padding: 1.5rem;
-  }
+}
 
   .radio-group {
     flex-direction: column;

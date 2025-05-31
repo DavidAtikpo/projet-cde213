@@ -120,7 +120,7 @@ export default {
     },
     handleLogin() {
       this.loading = true;
-      axios.post(`${API_BASE_URL}/user/login`, this.loginData, { withCredentials: true })
+      axios.post('http://localhost:8000/user/login', this.loginData, { withCredentials: true })
         .then((res) => {
           localStorage.setItem('token', res.data.token);
           localStorage.setItem('user', res.data.firstName);
@@ -128,9 +128,11 @@ export default {
             this.popupVisible = true;
             setTimeout(() => {
               if (res.data.role === 'Coordinateur') {
-                this.$router.push(`/adminDashboard`);
+                this.$router.push(`/admin/${res.data._id}`);
+              } else if (res.data.role === 'monitor') {
+                this.$router.push(`/monitor/${res.data._id}`);
               } else {
-                this.$router.push(`/user/userDashboard`);
+                this.$router.push(`/user/${res.data._id}`);
               }
             }, 2000);
           }
