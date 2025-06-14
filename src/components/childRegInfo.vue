@@ -321,30 +321,34 @@ export default {
 </script>
 
 <style scoped>
+* {
+  box-sizing: border-box;
+}
+
 .page {
-  padding: 20px;
+  padding: 1rem;
   background-color: #f5f7fa;
   min-height: 100vh;
 }
 
 .container {
-  max-width: 1000px;
+  max-width: min(95vw, 800px);
   margin: 0 auto;
-  padding: 30px;
+  padding: 1.5rem;
   background-color: #fff;
-  border-radius: 15px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(219, 35, 35, 0.1);
 }
 
 .progress-container {
-  margin-bottom: 40px;
+  margin-bottom: 2rem;
 }
 
 .progress-bar {
-  height: 6px;
+  height: 4px;
   background-color: #e2e8f0;
-  border-radius: 3px;
-  margin-bottom: 20px;
+  border-radius: 2px;
+  margin-bottom: 1rem;
   overflow: hidden;
 }
 
@@ -369,8 +373,8 @@ export default {
 }
 
 .step-number {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background-color: #e2e8f0;
   color: #64748b;
@@ -378,7 +382,8 @@ export default {
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  margin-bottom: 8px;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
   transition: all 0.3s ease;
 }
 
@@ -393,9 +398,10 @@ export default {
 }
 
 .step-label {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: #64748b;
   text-align: center;
+  max-width: 60px;
 }
 
 .step.active .step-label {
@@ -405,11 +411,12 @@ export default {
 
 h2 {
   color: #1e293b;
-  font-size: 1.5rem;
-  margin-bottom: 30px;
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.5rem;
+  font-weight: 600;
 }
 
 h2 i {
@@ -419,11 +426,11 @@ h2 i {
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  gap: 1rem;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 0;
 }
 
 .form-group.full-width {
@@ -432,9 +439,10 @@ h2 i {
 
 label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 0.4rem;
   color: #475569;
   font-weight: 500;
+  font-size: 0.85rem;
 }
 
 span {
@@ -443,10 +451,10 @@ span {
 
 .input-field {
   width: 100%;
-  padding: 12px;
+  padding: 0.6rem 0.8rem;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
   transition: all 0.3s ease;
   background-color: #f8fafc;
 }
@@ -454,29 +462,31 @@ span {
 .input-field:focus {
   outline: none;
   border-color: #db2323;
-  box-shadow: 0 0 0 3px rgba(219, 35, 35, 0.1);
+  box-shadow: 0 0 0 2px rgba(219, 35, 35, 0.1);
 }
 
 .input-field::placeholder {
   color: #94a3b8;
+  font-size: 0.85rem;
 }
 
 .button-group {
   display: flex;
   justify-content: flex-end;
-  gap: 15px;
-  margin-top: 30px;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
 }
 
 .button, .previous {
-  padding: 12px 24px;
+  padding: 0.6rem 1.2rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   font-weight: 500;
+  font-size: 0.85rem;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.4rem;
   transition: all 0.3s ease;
 }
 
@@ -486,13 +496,14 @@ span {
 }
 
 .button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(219, 35, 35, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(219, 35, 35, 0.2);
 }
 
 .button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+  transform: none;
 }
 
 .previous {
@@ -502,27 +513,32 @@ span {
 
 .previous:hover {
   background-color: #cbd5e1;
+  transform: translateY(-1px);
 }
 
 .alert-message {
   color: #db2323;
-  font-size: 0.9rem;
-  margin-top: 20px;
+  font-size: 0.8rem;
+  margin-top: 1rem;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.4rem;
+  padding: 0.6rem;
+  background: #fff3f3;
+  border-radius: 0.5rem;
+  border: 1px solid #ffebee;
 }
 
 .photo-upload {
   text-align: center;
-  margin: 30px 0;
+  margin: 1.5rem 0;
 }
 
 .upload-area {
-  width: 200px;
-  height: 200px;
+  width: 150px;
+  height: 150px;
   border: 2px dashed #e2e8f0;
-  border-radius: 12px;
+  border-radius: 0.8rem;
   margin: 0 auto;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -532,6 +548,7 @@ span {
 
 .upload-area:hover {
   border-color: #db2323;
+  transform: scale(1.02);
 }
 
 .upload-area.has-image {
@@ -552,8 +569,13 @@ span {
 }
 
 .upload-placeholder i {
-  font-size: 3rem;
-  margin-bottom: 10px;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.upload-placeholder p {
+  font-size: 0.8rem;
+  margin: 0;
 }
 
 .profile-photo {
@@ -563,9 +585,9 @@ span {
 }
 
 .upload-hint {
-  margin-top: 10px;
+  margin-top: 0.6rem;
   color: #64748b;
-  font-size: 0.9rem;
+  font-size: 0.75rem;
 }
 
 .popup {
@@ -583,25 +605,29 @@ span {
 
 .popup-content {
   background-color: white;
-  padding: 30px;
-  border-radius: 12px;
+  padding: 2rem;
+  border-radius: 1rem;
   text-align: center;
   animation: popup 0.3s ease;
+  max-width: 300px;
 }
 
 .popup-content i {
-  font-size: 3rem;
+  font-size: 2.5rem;
   color: #22c55e;
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
 }
 
 .popup-content h3 {
   color: #1e293b;
-  margin-bottom: 10px;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
 }
 
 .popup-content p {
   color: #64748b;
+  font-size: 0.9rem;
+  margin: 0;
 }
 
 @keyframes popup {
@@ -616,26 +642,95 @@ span {
 }
 
 @media (max-width: 768px) {
+  .page {
+    padding: 0.5rem;
+  }
+
   .container {
-    padding: 20px;
+    padding: 1rem;
+    border-radius: 0.8rem;
+  }
+
+  .progress-container {
+    margin-bottom: 1.5rem;
   }
 
   .form-grid {
     grid-template-columns: 1fr;
+    gap: 0.8rem;
   }
 
   .button-group {
     flex-direction: column;
+    gap: 0.6rem;
   }
 
   .button, .previous {
     width: 100%;
     justify-content: center;
+    padding: 0.7rem 1rem;
   }
 
   .upload-area {
-    width: 150px;
-    height: 150px;
+    width: 120px;
+    height: 120px;
+  }
+
+  .upload-placeholder i {
+    font-size: 1.5rem;
+  }
+
+  .steps {
+    gap: 0.5rem;
+  }
+
+  .step-number {
+    width: 20px;
+    height: 20px;
+    font-size: 0.7rem;
+  }
+
+  .step-label {
+    font-size: 0.65rem;
+    max-width: 50px;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+    margin-bottom: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.8rem;
+  }
+
+  .progress-container {
+    margin-bottom: 1rem;
+  }
+
+  .form-grid {
+    gap: 0.6rem;
+  }
+
+  .input-field {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .upload-area {
+    width: 100px;
+    height: 100px;
+  }
+
+  .popup-content {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .button-group {
+    margin-top: 1rem;
   }
 }
 </style>

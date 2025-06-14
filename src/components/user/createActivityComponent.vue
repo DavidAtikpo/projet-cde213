@@ -3,7 +3,7 @@
     <div class="activity-container">
       <!-- En-tête -->
       <div class="activity-header">
-        <h1>Planification des objectifs</h1>
+        <h1>🎯 Planification des objectifs</h1>
         <div class="info-card">
           <TypewriterText 
             class="typewriter-text" 
@@ -15,11 +15,10 @@
       <!-- Objectif hebdomadaire -->
       <div class="week-goal-card">
         <div class="card-header">
-          <i class="fas fa-bullseye"></i>
-          <h3>Objectif hebdomadaire</h3>
+          <h3>🎯 Objectif hebdomadaire</h3>
         </div>
         <div class="card-content">
-          <p>{{ goalOfWeek }}</p>
+          <p>{{ goalOfWeek || 'Aucun objectif défini pour cette semaine' }}</p>
         </div>
       </div>
 
@@ -30,49 +29,53 @@
              class="goal-card"
              :class="{ 'has-error': errors[index] }">
           <div class="goal-header">
-            <i class="fas fa-calendar-day"></i>
-            <h3>{{ day.label }}</h3>
+            <h3>{{ getDayEmoji(index) }} {{ day.label }}</h3>
+            <div class="goal-status" :class="{ 'filled': day.goal.trim() }">
+              {{ day.goal.trim() ? '✅' : '⏳' }}
+            </div>
           </div>
           <div class="goal-content">
             <textarea 
               :id="`dailyGoal-${index}`" 
               v-model="day.goal" 
-              rows="4" 
-              :placeholder="`Entrez vos objectifs pour ${day.label.toLowerCase()}`"
+              rows="3" 
+              :placeholder="`Objectifs pour ${day.label.toLowerCase()}`"
               :ref="'textarea-' + index"
               class="form-control"
             ></textarea>
             <div v-if="errors[index]" class="error-message">
-              <i class="fas fa-exclamation-circle"></i>
-              Ce champ est requis
+              ⚠️ Ce champ est requis
             </div>
           </div>
-          </div>
         </div>
+      </div>
 
       <!-- Message d'erreur de chargement -->
       <div v-if="errorFetchingDate" class="error-alert">
-        <i class="fas fa-exclamation-triangle"></i>
-        Erreur lors du chargement des données. Veuillez vérifier votre connexion Internet.
+        ⚠️ Erreur lors du chargement des données. Veuillez vérifier votre connexion Internet.
       </div>
 
       <!-- Bouton de soumission -->
       <div class="submit-section">
         <button 
           @click="submitForm" 
-          :disabled="loading"
+          :disabled="loading || !canSubmit"
           class="submit-button"
+          :class="{ 'ready': canSubmit }"
         >
           <i v-if="loading" class="fas fa-circle-notch fa-spin"></i>
-          <span v-else>Soumettre les objectifs</span>
+          <span v-else>{{ canSubmit ? '🚀 Soumettre les objectifs' : '📝 Complétez tous les champs' }}</span>
         </button>
+        <div class="submit-info">
+          <small>{{ filledCount }}/{{ days.length }} objectifs complétés</small>
+        </div>
       </div>
 
       <!-- Popup de succès -->
       <transition name="fade">
         <div v-if="showPopup" class="success-popup">
           <div class="popup-content">
-            <i class="fas fa-check-circle"></i>
+            <div class="popup-icon">🎉</div>
             <h2>Objectifs enregistrés avec succès !</h2>
             <p>Redirection en cours...</p>
           </div>
@@ -109,12 +112,23 @@ export default {
     };
   },
   computed: {
-    ...mapState(['theme'])
+    ...mapState(['theme']),
+    filledCount() {
+      return this.days.filter(day => day.goal.trim()).length;
+    },
+    canSubmit() {
+      return this.days.every(day => day.goal.trim());
+    }
   },
   mounted() {
     this.fetchData();
   },
   methods: {
+    getDayEmoji(index) {
+      const emojis = ['📅', '📆', '🗓️', '📋', '⭐'];
+      return emojis[index] || '📝';
+    },
+    
     fetchData() {
       const token = localStorage.getItem('token');
       const headers = {
@@ -130,9 +144,12 @@ export default {
           this.errorFetchingDate = true;
         });
     },
+    
     submitForm() {
+      if (!this.canSubmit) return;
+      
       let hasError = false;
-      this.errors = this.days.map(day => !day.goal);
+      this.errors = this.days.map(day => !day.goal.trim());
 
       this.errors.forEach(error => {
         if (error) hasError = true;
@@ -166,7 +183,7 @@ export default {
             this.showPopup = false;
             this.$router.push(`/user/${this.$route.params.id}`);
             this.$parent.activeTab = 'check-in';
-          }, 3000);
+          }, 2000);
         })
         .catch(error => {
           console.error('Erreur lors de la soumission du formulaire :', error);
@@ -176,6 +193,7 @@ export default {
           this.loading = false;
         });
     },
+    
     shakeInput() {
       this.errors.forEach((error, index) => {
         if (error) {
@@ -192,181 +210,218 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@use "sass:color";
+* {
+  box-sizing: border-box;
+}
 
 .activity-page {
   min-height: 100vh;
-  padding: 2rem;
+  padding: 1rem;
   background: #f8f9fa;
 }
 
 .activity-container {
-  max-width: 1200px;
+  max-width: min(95vw, 1000px);
   margin: 0 auto;
 }
 
 .activity-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 
   h1 {
-    font-size: 2rem;
-    color: #333;
+    font-size: 1.6rem;
+    color: #db2323;
     margin-bottom: 1rem;
+    font-weight: 600;
   }
 }
 
 .info-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
+  background: linear-gradient(135deg, #fff, #f8f9fa);
+  padding: 1rem;
+  border-radius: 0.8rem;
+  box-shadow: 0 2px 12px rgba(219, 35, 35, 0.08);
+  margin-bottom: 1.5rem;
+  border: 1px solid #e9ecef;
 }
 
 .week-goal-card {
-  background: white;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
+  background: linear-gradient(135deg, #db2323, #b31b1b);
+  color: white;
+  border-radius: 0.8rem;
+  padding: 1.2rem;
+  box-shadow: 0 4px 20px rgba(219, 35, 35, 0.2);
+  margin-bottom: 1.5rem;
 }
 
 .card-header {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  margin-bottom: 1rem;
-
-  i {
-    color: #db2323;
-    font-size: 1.2rem;
-  }
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
 
   h3 {
     margin: 0;
-    font-size: 1.1rem;
-    color: #333;
-}
+    font-size: 1rem;
+    font-weight: 600;
+  }
 }
 
 .card-content {
   p {
     margin: 0;
-    color: #666;
     line-height: 1.5;
+    font-size: 0.9rem;
+    opacity: 0.95;
   }
 }
 
 .daily-goals {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .goal-card {
   background: white;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 0.8rem;
+  padding: 1rem;
+  box-shadow: 0 2px 12px rgba(219, 35, 35, 0.08);
   transition: all 0.3s ease;
+  border: 1px solid #e9ecef;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
+    box-shadow: 0 4px 20px rgba(219, 35, 35, 0.15);
+  }
 
   &.has-error {
-    border: 2px solid #dc3545;
+    border-color: #dc3545;
+    box-shadow: 0 2px 12px rgba(220, 53, 69, 0.2);
   }
 }
 
 .goal-header {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  margin-bottom: 1rem;
-
-  i {
-    color: #db2323;
-    font-size: 1.2rem;
-  }
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
 
   h3 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     color: #333;
+    font-weight: 600;
+  }
 }
+
+.goal-status {
+  font-size: 1.2rem;
+  opacity: 0.6;
+  
+  &.filled {
+    opacity: 1;
+  }
 }
 
 .goal-content {
   .form-control {
-  width: 100%;
-    padding: 0.8rem;
+    width: 100%;
+    padding: 0.7rem;
     border: 1px solid #ddd;
-    border-radius: 0.5rem;
-    font-size: 1rem;
+    border-radius: 0.6rem;
+    font-size: 0.85rem;
     transition: all 0.3s ease;
-  resize: vertical;
-    min-height: 100px;
+    resize: vertical;
+    min-height: 80px;
+    background-color: #fff;
 
     &:focus {
       outline: none;
       border-color: #db2323;
+      box-shadow: 0 0 0 2px rgba(219, 35, 35, 0.1);
+    }
+
+    &::placeholder {
+      color: #999;
+      font-size: 0.8rem;
     }
   }
 }
 
 .error-message {
   color: #dc3545;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   margin-top: 0.5rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.3rem;
+  background: #fff3f3;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.4rem;
+  border: 1px solid #ffebee;
 }
 
 .error-alert {
   background: #fff3cd;
   color: #856404;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1.5rem;
+  padding: 0.8rem;
+  border-radius: 0.6rem;
+  margin-bottom: 1rem;
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  border: 1px solid #ffeaa7;
 }
 
 .submit-section {
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
 }
 
 .submit-button {
   width: 100%;
   max-width: 400px;
-  background: #db2323;
+  background: #ccc;
   color: white;
   border: none;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  font-size: 1.1rem;
+  padding: 0.8rem 1.5rem;
+  border-radius: 0.6rem;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.8rem;
+  gap: 0.5rem;
 
-  &:hover {
-    background: color.adjust(#db2323, $lightness: -10%);
-    transform: translateY(-2px);
+  &.ready {
+    background: linear-gradient(135deg, #db2323, #b31b1b);
+    box-shadow: 0 2px 8px rgba(219, 35, 35, 0.2);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(219, 35, 35, 0.3);
+    }
   }
 
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.submit-info {
+  margin-top: 0.5rem;
+  
+  small {
+    color: #666;
+    font-size: 0.8rem;
   }
 }
 
@@ -377,6 +432,7 @@ export default {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -388,23 +444,28 @@ export default {
   padding: 2rem;
   border-radius: 1rem;
   text-align: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.3s ease;
+  max-width: 300px;
+  margin: 1rem;
+}
 
-  i {
-    font-size: 3rem;
-    color: #28a745;
-    margin-bottom: 1rem;
-  }
+.popup-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
 
-  h2 {
-    color: #333;
-    margin-bottom: 0.5rem;
-  }
+.popup-content h2 {
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
 
-  p {
-    color: #666;
-    margin: 0;
-  }
+.popup-content p {
+  color: #666;
+  margin: 0;
+  font-size: 0.9rem;
 }
 
 .shake {
@@ -415,6 +476,17 @@ export default {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
   75% { transform: translateX(5px); }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .fade-enter-active,
@@ -434,25 +506,22 @@ export default {
   }
 
   .info-card,
-  .week-goal-card,
   .goal-card {
     background: #2d2d2d;
+    border-color: #404040;
   }
 
   .activity-header h1 {
     color: #fff;
   }
 
-  .card-header h3 {
+  .card-header h3,
+  .goal-header h3 {
     color: #fff;
   }
 
   .card-content p {
     color: #ccc;
-  }
-
-  .goal-header h3 {
-    color: #fff;
   }
 
   .form-control {
@@ -463,11 +532,21 @@ export default {
     &:focus {
       border-color: #db2323;
     }
+
+    &::placeholder {
+      color: #888;
+    }
   }
 
   .error-alert {
     background: #2d2d2d;
     color: #ffc107;
+    border-color: #555;
+  }
+
+  .error-message {
+    background: #2d1a1a;
+    border-color: #553333;
   }
 
   .popup-content {
@@ -481,29 +560,93 @@ export default {
       color: #ccc;
     }
   }
+
+  .submit-info small {
+    color: #888;
+  }
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .activity-page {
-    padding: 1rem;
+    padding: 0.5rem;
   }
 
   .activity-header h1 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
 
   .info-card,
   .week-goal-card {
-    padding: 1rem;
+    padding: 0.8rem;
   }
 
   .daily-goals {
     grid-template-columns: 1fr;
+    gap: 0.8rem;
   }
 
   .goal-card {
+    padding: 0.8rem;
+  }
+
+  .form-control {
+    min-height: 70px;
+    font-size: 0.8rem;
+  }
+
+  .submit-button {
+    font-size: 0.85rem;
+    padding: 0.7rem 1.2rem;
+  }
+
+  .popup-content {
+    padding: 1.5rem;
+    margin: 0.5rem;
+  }
+
+  .popup-icon {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .activity-container {
+    padding: 0;
+  }
+
+  .activity-header h1 {
+    font-size: 1.2rem;
+  }
+
+  .daily-goals {
+    gap: 0.6rem;
+  }
+
+  .goal-card {
+    padding: 0.6rem;
+  }
+
+  .card-header h3,
+  .goal-header h3 {
+    font-size: 0.85rem;
+  }
+
+  .form-control {
+    padding: 0.6rem;
+    font-size: 0.8rem;
+    min-height: 60px;
+  }
+
+  .submit-button {
+    width: 100%;
+    max-width: none;
+    margin: 0 0.5rem;
+  }
+
+  .popup-content {
     padding: 1.2rem;
+    margin: 0.5rem;
   }
 }
 </style>

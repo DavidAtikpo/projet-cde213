@@ -1,47 +1,71 @@
 <template>
   <div class="page">
     <div class="content">
-      <h2>Définir l'objectif pour la Semaine</h2>
-      <hr>
-      <div class="input-group">
-        <label for="weeklyGoal">Objectif</label><br>
-        <textarea id="weeklyGoal" v-model="weeklyGoal" rows="4" 
-                  :class="{ 'error-border': errorSubmitting }" 
-                  ref="weeklyGoalField"></textarea>
-      </div><br>
-      <button @click="submitForm"> <i v-if="loading" class="fas fa-circle-notch fa-spin"></i>
-        <span v-else>Submit</span></button>
-      <h5 v-if="errorFetchingDate">Erreur lors du chargement de la date. Veuillez vérifier votre connexion Internet.</h5>
+      <div class="header">
+        <h2>🎯 Définir l'objectif pour la Semaine</h2>
+        <p class="description">Créez un objectif hebdomadaire pour guider les activités</p>
+      </div>
+      
+      <div class="form-card">
+        <div class="input-group">
+          <label for="weeklyGoal">📝 Objectif de la semaine *</label>
+          <textarea 
+            id="weeklyGoal" 
+            v-model="weeklyGoal" 
+            rows="4" 
+            :class="{ 'error-border': errorSubmitting }" 
+            ref="weeklyGoalField"
+            placeholder="Décrivez l'objectif principal pour cette semaine..."
+          ></textarea>
+          <small class="help-text">💡 Soyez spécifique et mesurable dans votre objectif</small>
+        </div>
+        
+        <div class="form-actions">
+          <button @click="submitForm" :disabled="!weeklyGoal.trim() || loading" class="submit-btn">
+            <i v-if="loading" class="fas fa-circle-notch fa-spin"></i>
+            <span v-else>✅ Enregistrer l'objectif</span>
+          </button>
+        </div>
+        
+        <div v-if="errorFetchingDate" class="error-message">
+          ⚠️ Erreur lors du chargement. Veuillez vérifier votre connexion Internet.
+        </div>
+      </div>
     </div>
-    <!-- Popup to display "Created successfully" -->
+    
+    <!-- Success Popup -->
     <div v-if="showPopup" class="popup">
-      <h2>Formulaire soumis avec succès !</h2>
+      <div class="popup-content">
+        <div class="popup-icon">✅</div>
+        <h3>Objectif créé avec succès !</h3>
+        <p>L'objectif hebdomadaire a été enregistré</p>
+      </div>
     </div>
   </div>
 </template>
 
-
-  
-  <script>
-  import axios from 'axios';
+<script>
+import axios from 'axios';
 import { API_BASE_URL } from '@/config.js';
 import TypewriterText from '@/components/TypewriterText.vue';
 
 export default {
-  components :{
+  components: {
     TypewriterText
-    },
+  },
   data() {
     return {
-      loading:false,
+      loading: false,
       weeklyGoal: '',
-      showPopup: false, // Initialize popup visibility to false
+      showPopup: false,
       errorSubmitting: false,
       errorFetchingDate: false
     };
   },
   methods: {
     submitForm() {
+      if (!this.weeklyGoal.trim()) return;
+      
       const token = localStorage.getItem('token');
       const headers = {
         'Content-Type': 'application/json',
@@ -50,18 +74,19 @@ export default {
       const formData = {
         weeklyGoal: this.weeklyGoal
       };
-  this.loading = true
+      
+      this.loading = true;
+      
       axios.post(`${API_BASE_URL}/week/weekly`, formData, { headers })
         .then(response => {
           console.log('Form submitted successfully:', response.data);
           this.weeklyGoal = '';
-          this.showPopup = true; // Show the popup
-          // Hide the popup after 3 seconds
+          this.showPopup = true;
           setTimeout(() => {
-            this.showPopup = false; // Hide the popup
+            this.showPopup = false;
             this.$router.push(`/admin/${this.$route.params.id}`);
             this.$parent.activeTab = 'create-activity';
-          }, 3000);
+          }, 2000);
           this.errorSubmitting = false;
         })
         .catch(error => {
@@ -69,12 +94,12 @@ export default {
           this.errorSubmitting = true;
           this.shakeInput();
         })
-        .finally(()=>{
-          this.loading = false
+        .finally(() => {
+          this.loading = false;
         });
     },
+    
     shakeInput() {
-      // Vérifier l'existence de la référence avant d'ajouter ou de retirer la classe 'shake'
       const weeklyGoalField = this.$refs.weeklyGoalField;
       if (weeklyGoalField) {
         weeklyGoalField.classList.add('shake');
@@ -83,15 +108,17 @@ export default {
     }
   }
 };
+</script>
 
-  </script>
-  
-  <style scoped>
+<style scoped>
+* {
+  box-sizing: border-box;
+}
+
 .page {
   min-height: 100vh;
   background-color: #f8f9fa;
-  padding: 2rem;
-  box-sizing: border-box;
+  padding: 1rem;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -99,68 +126,98 @@ export default {
 
 .content {
   width: 100%;
-  max-width: 800px;
-  padding: 4rem;
+  max-width: min(95vw, 600px);
+  padding: 1.5rem;
   background-color: #fff;
   border-radius: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease;
+  box-shadow: 0 4px 20px rgba(219, 35, 35, 0.1);
+  border: 1px solid #e9ecef;
+}
 
-  &:hover {
-    transform: translateY(-2px);
-  }
+.header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
 
-  h2 {
-    color: #db2323;
-    font-size: 1.8rem;
-    margin: 0 0 1.5rem;
-    font-weight: 600;
-  }
+.header h2 {
+  color: #db2323;
+  font-size: 1.4rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+}
 
-  hr {
-    border: none;
-    border-top: 1px solid #eee;
-    margin: 1.5rem 0;
-  }
+.description {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.form-card {
+  background: linear-gradient(135deg, #f8f9fa, #fff);
+  border-radius: 0.8rem;
+  padding: 1.2rem;
+  border: 1px solid #e9ecef;
 }
 
 .input-group {
-  margin-bottom: 1.5rem;
-
-  label {
-    display: block;
-    font-weight: 500;
-    color: #333;
-    margin-bottom: 0.5rem;
-    font-size: 1rem;
-  }
-
-  textarea {
-    width: 100%;
-    padding: 1rem;
-    border: 2px solid #eee;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: #333;
-    transition: all 0.3s ease;
-    resize: vertical;
-    min-height: 120px;
-
-    &:focus {
-      outline: none;
-      border-color: #db2323;
-      box-shadow: 0 0 0 3px rgba(219, 35, 35, 0.1);
-    }
-
-    &.error-border {
-      border-color: #dc3545;
-      animation: shake 0.5s;
-    }
-  }
+  margin-bottom: 1.2rem;
 }
 
-button {
+.input-group label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.6rem;
+  font-size: 0.9rem;
+}
+
+.input-group textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 0.6rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #333;
+  transition: all 0.3s ease;
+  resize: vertical;
+  min-height: 100px;
+  background-color: #fff;
+}
+
+.input-group textarea:focus {
+  outline: none;
+  border-color: #db2323;
+  box-shadow: 0 0 0 2px rgba(219, 35, 35, 0.1);
+}
+
+.input-group textarea.error-border {
+  border-color: #dc3545;
+  animation: shake 0.5s;
+}
+
+.input-group textarea::placeholder {
+  color: #999;
+  font-size: 0.85rem;
+}
+
+.help-text {
+  display: block;
+  color: #666;
+  font-size: 0.75rem;
+  margin-top: 0.4rem;
+  font-style: italic;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.submit-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -169,52 +226,82 @@ button {
   background: linear-gradient(135deg, #db2323 0%, #b31b1b 100%);
   color: #fff;
   border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  font-weight: 500;
+  border-radius: 0.6rem;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(219, 35, 35, 0.2);
+  box-shadow: 0 2px 8px rgba(219, 35, 35, 0.2);
+  min-width: 180px;
+}
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(219, 35, 35, 0.3);
-  }
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(219, 35, 35, 0.3);
+}
 
-  &:active {
-    transform: translateY(0);
-  }
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  background: #ccc;
+}
 
-  i {
-    font-size: 1.1rem;
-  }
+.error-message {
+  background: #fff3f3;
+  color: #dc3545;
+  padding: 0.8rem;
+  border-radius: 0.6rem;
+  font-size: 0.85rem;
+  margin-top: 1rem;
+  border: 1px solid #ffebee;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .popup {
   position: fixed;
-  top: 2rem;
-  right: 2rem;
-  background: linear-gradient(135deg, #28a745 0%, #218838 100%);
-  color: #fff;
-  padding: 1rem 1.5rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 1000;
-  animation: slideIn 0.3s ease;
-
-  h2 {
-    color: #fff;
-    font-size: 1rem;
-    margin: 0;
-    font-weight: 500;
-  }
+  animation: fadeIn 0.3s ease;
 }
 
-h5 {
-  color: #dc3545;
+.popup-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  text-align: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.3s ease;
+  max-width: 300px;
+  margin: 1rem;
+}
+
+.popup-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.popup-content h3 {
+  color: #1e293b;
+  font-size: 1.2rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+}
+
+.popup-content p {
+  color: #666;
   font-size: 0.9rem;
-  margin: 1rem 0 0;
-  font-weight: 500;
+  margin: 0;
 }
 
 @keyframes shake {
@@ -223,141 +310,91 @@ h5 {
   75% { transform: translateX(5px); }
 }
 
-@keyframes slideIn {
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
   from {
-    transform: translateX(100%);
+    transform: translateY(20px);
     opacity: 0;
   }
   to {
-    transform: translateX(0);
+    transform: translateY(0);
     opacity: 1;
   }
 }
 
-/* Dark theme */
-:deep(.dark) {
-  .page {
-    background-color: #1a1a1a;
-  }
-
-  .content {
-    background-color: #2d2d2d;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-
-    h2 {
-      color: #fff;
-    }
-
-    hr {
-      border-color: #404040;
-    }
-  }
-
-  .input-group {
-    label {
-      color: #e2e8f0;
-    }
-
-    textarea {
-      background-color: #1a1a1a;
-      border-color: #404040;
-      color: #e2e8f0;
-
-      &:focus {
-        border-color: #db2323;
-        box-shadow: 0 0 0 3px rgba(219, 35, 35, 0.2);
-      }
-    }
-  }
-
-  button {
-    background: linear-gradient(135deg, #db2323 0%, #8b1515 100%);
-  }
-
-  h5 {
-    color: #ff6b6b;
-  }
-}
-
 /* Responsive Design */
-@media (max-width: 1024px) {
-  .page {
-    padding: 1rem;
-  }
-
-  .content {
-    padding: 1.5rem;
-  }
-}
-
 @media (max-width: 768px) {
   .page {
-    padding: 1rem;
+    padding: 0.5rem;
   }
 
   .content {
-    padding: 1.2rem;
-
-    h2 {
-      font-size: 1.5rem;
-    }
+    padding: 1rem;
   }
 
-  .input-group {
-    label {
-      font-size: 0.9rem;
-    }
-
-    textarea {
-      font-size: 0.9rem;
-      padding: 0.8rem;
-    }
+  .header h2 {
+    font-size: 1.2rem;
   }
 
-  button {
+  .description {
+    font-size: 0.8rem;
+  }
+
+  .form-card {
+    padding: 1rem;
+  }
+
+  .input-group textarea {
+    padding: 0.7rem;
+    font-size: 0.85rem;
+    min-height: 80px;
+  }
+
+  .submit-btn {
     padding: 0.7rem 1.2rem;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    min-width: 150px;
   }
 
-  .popup {
-    top: 1rem;
-    right: 1rem;
-    padding: 0.8rem 1.2rem;
+  .popup-content {
+    padding: 1.5rem;
+    margin: 0.5rem;
+  }
 
-    h2 {
-      font-size: 0.9rem;
-    }
+  .popup-icon {
+    font-size: 2.5rem;
   }
 }
 
 @media (max-width: 480px) {
-  .page {
+  .content {
     padding: 0.8rem;
   }
 
-  .content {
-    padding: 1rem;
-
-    h2 {
-      font-size: 1.3rem;
-    }
+  .header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
   }
 
-  .input-group {
-    label {
-      font-size: 0.85rem;
-    }
-
-    textarea {
-      font-size: 0.85rem;
-      padding: 0.7rem;
-    }
+  .header h2 {
+    font-size: 1.1rem;
   }
 
-  button {
+  .form-card {
+    padding: 0.8rem;
+  }
+
+  .submit-btn {
     width: 100%;
-    padding: 0.7rem 1rem;
-    font-size: 0.85rem;
+    min-width: auto;
+  }
+
+  .popup-content {
+    padding: 1.2rem;
   }
 }
 </style>

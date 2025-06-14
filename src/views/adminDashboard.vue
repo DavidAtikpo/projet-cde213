@@ -37,7 +37,7 @@
             <i class="fas fa-chevron-right" :class="{ 'rotated': activeSubmenu === 'users' }"></i>
           </div>
           <div class="submenu" v-if="activeSubmenu === 'users' && !isCollapsed">
-            <router-link :to="`/admin/${$route.params.id}/userView`" class="submenu-item" active-class="active">
+            <router-link :to="`/review`" class="submenu-item" active-class="active">
               <i class="fas fa-list"></i>
               <span>{{ getTranslatedTitle('userList') }}</span>
             </router-link>
@@ -99,15 +99,15 @@
             <i class="fas fa-chevron-right" :class="{ 'rotated': activeSubmenu === 'attendance' }"></i>
           </div>
           <div class="submenu" v-if="activeSubmenu === 'attendance' && !isCollapsed">
-            <router-link :to="`/admin/${$route.params.id}/attendance/present`" class="submenu-item" active-class="active">
+            <router-link :to="`/admin/${$route.params.id}/Present`" class="submenu-item" active-class="active">
               <i class="fas fa-check-circle"></i>
               <span>{{ getTranslatedTitle('present') }}</span>
             </router-link>
-            <router-link :to="`/admin/${$route.params.id}/attendance/absent`" class="submenu-item" active-class="active">
+            <router-link :to="`/admin/${$route.params.id}/Absent`" class="submenu-item" active-class="active">
               <i class="fas fa-times-circle"></i>
               <span>{{ getTranslatedTitle('absent') }}</span>
             </router-link>
-            <router-link :to="`/admin/${$route.params.id}/attendance/history`" class="submenu-item" active-class="active">
+            <router-link :to="`/admin/${$route.params.id}/History`" class="submenu-item" active-class="active">
               <i class="fas fa-history"></i>
               <span>{{ getTranslatedTitle('attendanceHistory') }}</span>
             </router-link>
@@ -289,13 +289,17 @@
 
           <div class="user-menu">
             <button class="user-button" @click="toggleUserMenu">
-              <img :src="userAvatar" :alt="userName" class="user-avatar">
+              <div class="user-avatar">
+                {{ getUserInitial() }}
+              </div>
               <span class="user-name">{{ userName }}</span>
               <i class="fas fa-chevron-down"></i>
             </button>
             <div class="user-dropdown" v-if="showUserMenu">
               <div class="user-info">
-                <img :src="userAvatar" :alt="userName" class="user-avatar-large">
+                <div class="user-avatar-large">
+                  {{ getUserInitial() }}
+                </div>
                 <div class="user-details">
                   <h4>{{ userName }}</h4>
                   <p>{{ userRole }}</p>
@@ -322,7 +326,7 @@
 
       <!-- Dashboard Content -->
       <div class="dashboard-content">
-        <template v-if="$route.path === '/admin/dashboard'">
+        <template v-if="isOnAdminDashboardHome">
           <div class="admin-tabs">
             <button
               v-for="tab in tabs"
@@ -404,7 +408,7 @@ export default {
           read: false
         }
       ],
-      userName: 'Administrateur',
+      userName: '',
       userRole: 'Administrateur',
       userAvatar: 'https://via.placeholder.com/40',
       activeTab: 'week-goal',
@@ -473,7 +477,12 @@ export default {
           calendar: 'Calendar',
           createActivity: 'Create Activity',
           toggleTheme: 'Toggle Theme',
+          profile: 'Profile',
+          settings: 'Settings',
           logout: 'Logout',
+          notifications: 'Notifications',
+          markAllAsRead: 'Mark all as read',
+          searchPlaceholder: 'Search...',
         },
         fr: {
           adminPanel: 'Panneau Administrateur',
@@ -523,7 +532,12 @@ export default {
           calendar: 'Calendrier',
           createActivity: 'Créer une Activité',
           toggleTheme: 'Changer le Thème',
+          profile: 'Profil',
+          settings: 'Paramètres',
           logout: 'Déconnexion',
+          notifications: 'Notifications',
+          markAllAsRead: 'Tout marquer comme lu',
+          searchPlaceholder: 'Rechercher...',
         }
       }
     };
@@ -539,6 +553,23 @@ export default {
     currentComponent() {
       const tab = this.tabs.find(t => t.id === this.activeTab);
       return tab ? tab.component : null;
+    },
+    isOnAdminDashboardHome() {
+      // Vérifier si nous sommes sur la page dashboard principale admin
+      const path = this.$route.path;
+      const adminId = this.$route.params.id || localStorage.getItem('userId') || 'dashboard';
+      
+      console.log('Admin - Current path:', path);
+      console.log('Admin - Admin ID:', adminId);
+      console.log('Admin - Route name:', this.$route.name);
+      
+      // Vérifications pour s'assurer qu'on est sur la page d'accueil du dashboard admin uniquement
+      const isDashboard = path === `/admin/${adminId}` || 
+                         path === `/admin/${adminId}/` || 
+                         this.$route.name === 'adminHome';
+      
+      console.log('Admin - Is on dashboard home:', isDashboard);
+      return isDashboard;
     }
   },
   methods: {
@@ -593,7 +624,8 @@ export default {
       this.unreadNotifications = 0;
     },
     navigateTo(route) {
-      this.$router.push(`/admin/${route}`);
+      const adminId = localStorage.getItem('userId') || this.$route.params.id;
+      this.$router.push(`/admin/${adminId}/${route}`);
       this.showUserMenu = false;
     },
     logout() {
@@ -613,9 +645,24 @@ export default {
       } else {
         this.activeNestedSubmenu = submenu;
       }
+    },
+    getUserInitial() {
+      if (this.userName && this.userName.length > 0) {
+        return this.userName.charAt(0).toUpperCase();
+      }
+      return 'A';
+    },
+    loadUserData() {
+      const storedUserName = localStorage.getItem('user');
+      if (storedUserName) {
+        this.userName = storedUserName;
+      } else {
+        this.userName = 'Administrateur';
+      }
     }
   },
   mounted() {
+    this.loadUserData();
     this.checkScreenSize();
     window.addEventListener('resize', this.checkScreenSize);
     
@@ -659,14 +706,14 @@ export default {
 
 .main-content {
   flex: 1;
-  margin-left: 280px;
+  margin-left: 240px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   
   &.sidebar-collapsed {
-    margin-left: 80px;
+    margin-left: 65px;
 
     .navbar {
-      left: 80px;
+      left: 65px;
     }
   }
   
@@ -680,7 +727,7 @@ export default {
 }
 
 .sidebar {
-  width: 280px;
+  width: 240px;
   background: white;
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
@@ -691,7 +738,7 @@ export default {
   z-index: 1000;
 
   &.collapsed {
-    width: 80px;
+    width: 65px;
   }
 
   &.mobile {
@@ -700,58 +747,61 @@ export default {
 
     &.mobile-open {
       transform: translateX(0);
-      width: 280px;
+      width: 240px;
     }
   }
 
   .sidebar-header {
-    padding: 1.5rem;
+    padding: 0.8rem;
     background: linear-gradient(135deg, #db2323 0%, #b31b1b 100%);
     color: white;
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.6rem;
 
     .logo {
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
     }
 
     h1 {
-      font-size: 1.4rem;
+      font-size: 1rem;
       margin: 0;
       white-space: nowrap;
+      font-weight: 600;
     }
   }
 
   .sidebar-nav {
     flex: 1;
-    padding: 1rem 0;
+    padding: 0.5rem 0;
     overflow-y: auto;
 
     .nav-section {
-      padding: 1rem 0;
+      padding: 0.8rem 0;
 
       h2 {
         color: #666;
-        font-size: 0.8rem;
+        font-size: 0.65rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        padding: 0 1.5rem;
-        margin-bottom: 0.5rem;
+        padding: 0 1rem;
+        margin-bottom: 0.3rem;
+        font-weight: 600;
       }
     }
 
     .nav-item {
       display: flex;
       align-items: center;
-      padding: 0.8rem 1.5rem;
+      padding: 0.55rem 1rem;
       color: #333;
       text-decoration: none;
       transition: all 0.3s ease;
       border-left: 3px solid transparent;
       cursor: pointer;
+      font-size: 0.85rem;
 
       &:hover {
         background: rgba(219, 35, 35, 0.05);
@@ -765,15 +815,16 @@ export default {
       }
 
       i {
-        font-size: 1.2rem;
-        margin-right: 1rem;
-        width: 24px;
+        font-size: 0.9rem;
+        margin-right: 0.6rem;
+        width: 18px;
         text-align: center;
       }
 
       .fa-chevron-right {
         margin-left: auto;
         transition: transform 0.3s ease;
+        font-size: 0.75rem;
         
         &.rotated {
           transform: rotate(90deg);
@@ -783,25 +834,26 @@ export default {
   }
 
   .sidebar-footer {
-    padding: 1rem;
+    padding: 0.6rem;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.2rem;
 
     button {
       display: flex;
       align-items: center;
-      gap: 0.8rem;
-      padding: 0.8rem;
+      gap: 0.5rem;
+      padding: 0.5rem;
       border: none;
       background: none;
       color: #666;
       cursor: pointer;
       transition: all 0.3s ease;
-      border-radius: 0.5rem;
+      border-radius: 0.3rem;
       width: 100%;
       text-align: left;
+      font-size: 0.85rem;
 
       &:hover {
         background: rgba(219, 35, 35, 0.05);
@@ -809,14 +861,14 @@ export default {
       }
 
       i {
-        font-size: 1.2rem;
-        width: 24px;
+        font-size: 0.9rem;
+        width: 18px;
         text-align: center;
       }
     }
 
     .logout-button {
-      margin-top: 0.5rem;
+      margin-top: 0.2rem;
       color: #db2323;
       
       &:hover {
@@ -830,11 +882,11 @@ export default {
   position: fixed;
   top: 0;
   right: 0;
-  left: 280px;
-  height: 70px;
+  left: 240px;
+  height: 50px;
   background: white;
-  padding: 0 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 0 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   z-index: 1000;
   display: flex;
@@ -846,13 +898,91 @@ export default {
 .navbar-left {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.6rem;
 }
 
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.6rem;
+
+  .notifications {
+    position: relative;
+
+    .icon-button {
+      background: none;
+      border: none;
+      color: #666;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 0.4rem;
+      border-radius: 0.4rem;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(219, 35, 35, 0.05);
+        color: #db2323;
+      }
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: #db2323;
+      color: white;
+      font-size: 0.6rem;
+      padding: 0.15rem 0.3rem;
+      border-radius: 0.8rem;
+      transform: translate(50%, -50%);
+    }
+  }
+
+  .user-menu {
+    position: relative;
+
+         .user-button {
+       display: flex;
+       align-items: center;
+       gap: 0.6rem;
+       background: none;
+       border: none;
+       padding: 0.4rem;
+       border-radius: 0.4rem;
+       cursor: pointer;
+       transition: all 0.3s ease;
+
+       &:hover {
+         background: rgba(219, 35, 35, 0.05);
+       }
+
+       .user-avatar {
+         width: 28px;
+         height: 28px;
+         border-radius: 50%;
+         background: linear-gradient(135deg, #db2323, #b31b1b);
+         color: white;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         font-size: 0.8rem;
+         font-weight: 700;
+         box-shadow: 0 2px 4px rgba(219, 35, 35, 0.2);
+         transition: all 0.3s ease;
+       }
+
+       .user-name {
+         color: #333;
+         font-size: 0.85rem;
+         font-weight: 500;
+       }
+
+       i {
+         color: #666;
+         font-size: 0.8rem;
+       }
+     }
+  }
 }
 
 .menu-toggle {
@@ -863,37 +993,43 @@ export default {
   border: none;
   color: white;
   cursor: pointer;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.3rem;
   transition: all 0.2s ease;
-  width: 40px;
-  height: 40px;
-  margin-right: 1rem;
-  box-shadow: 0 4px 12px rgba(219, 35, 35, 0.2);
+  width: 30px;
+  height: 30px;
+  margin-right: 0.6rem;
+  box-shadow: 0 2px 6px rgba(219, 35, 35, 0.2);
 }
 
 .menu-toggle:hover {
   transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(219, 35, 35, 0.3);
+  box-shadow: 0 3px 8px rgba(219, 35, 35, 0.3);
 }
 
 .menu-toggle i {
-  font-size: 1.2rem;
+  font-size: 0.9rem;
 }
 
 .search-bar {
   background: #f5f7fa;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.3rem;
   transition: all 0.3s ease;
-  width: 300px;
+  width: 250px;
+  font-size: 0.85rem;
 
   &:focus-within {
     background: white;
     box-shadow: 0 0 0 2px rgba(219, 35, 35, 0.2);
+  }
+
+  i {
+    font-size: 0.8rem;
+    color: #666;
   }
 
   input {
@@ -902,6 +1038,7 @@ export default {
     outline: none;
     color: #333;
     width: 100%;
+    font-size: 0.85rem;
 
     &::placeholder {
       color: #666;
@@ -910,8 +1047,8 @@ export default {
 }
 
 .dashboard-content {
-  margin-top: 70px;
-  padding: 2rem;
+  margin-top: 50px;
+  padding: 1.2rem;
 }
 
 .stats-grid {
@@ -1117,66 +1254,66 @@ export default {
 @media (max-width: 1024px) {
   .navbar {
     left: 0;
-    padding: 0 1rem;
-    height: 60px;
+    padding: 0 0.8rem;
+    height: 48px;
   }
 
   .main-content {
     margin-left: 0;
-    padding: 1rem;
+    padding: 0.8rem;
   }
 
   .dashboard-content {
-    margin-top: 60px;
+    margin-top: 48px;
   }
 
   .admin-tabs {
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
 
   .tab-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.8rem;
   }
 
   .admin-tab-content {
-    padding: 1rem;
+    padding: 0.8rem;
   }
 
   .stats-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
+    gap: 0.8rem;
   }
 
   .stat-card {
-    padding: 1rem;
+    padding: 0.8rem;
   }
 
   .stat-header h3 {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
   }
 
   .stat-value {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
 
   .recent-activity {
-    padding: 1rem;
+    padding: 0.8rem;
   }
 
   .activity-item {
-    padding: 0.8rem;
+    padding: 0.6rem;
   }
 }
 
 @media (max-width: 768px) {
   .navbar {
-    height: 50px;
+    height: 45px;
   }
 
   .dashboard-content {
-    margin-top: 50px;
+    margin-top: 45px;
   }
 
   .search-bar {
@@ -1185,7 +1322,7 @@ export default {
 
   .admin-tabs {
     overflow-x: auto;
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.4rem;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     &::-webkit-scrollbar {
@@ -1195,8 +1332,8 @@ export default {
 
   .tab-btn {
     white-space: nowrap;
-    padding: 0.4rem 0.8rem;
-    font-size: 0.85rem;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
   }
 
   .stats-grid {
@@ -1209,7 +1346,7 @@ export default {
 
   .activity-item {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.4rem;
 
     .activity-time {
       align-self: flex-start;
@@ -1219,34 +1356,40 @@ export default {
   .notifications-dropdown,
   .user-dropdown {
     position: fixed;
-    top: 50px;
+    top: 45px;
     left: 0;
     right: 0;
     width: 100%;
     margin: 0;
     border-radius: 0;
-    max-height: calc(100vh - 50px);
+    max-height: calc(100vh - 45px);
     overflow-y: auto;
   }
 
   .notifications-list {
-    max-height: calc(100vh - 150px);
+    max-height: calc(100vh - 140px);
   }
 }
 
 @media (max-width: 480px) {
   .navbar {
-    padding: 0 0.5rem;
+    padding: 0 0.4rem;
   }
 
   .menu-toggle {
-    width: 35px;
-    height: 35px;
-    padding: 0.5rem;
+    width: 28px;
+    height: 28px;
+    padding: 0.4rem;
   }
 
   .user-button {
-    padding: 0.3rem;
+    padding: 0.25rem;
+    
+    .user-avatar {
+      width: 24px;
+      height: 24px;
+      font-size: 0.7rem;
+    }
     
     .user-name {
       display: none;
@@ -1254,30 +1397,30 @@ export default {
   }
 
   .admin-tab-content {
-    padding: 0.8rem;
+    padding: 0.6rem;
   }
 
   .stat-card {
-    padding: 0.8rem;
+    padding: 0.6rem;
   }
 
   .stat-header {
     i {
-      padding: 0.8rem;
-      font-size: 1rem;
+      padding: 0.6rem;
+      font-size: 0.9rem;
     }
   }
 
   .stat-value {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   }
 
   .activity-item {
-    padding: 0.6rem;
+    padding: 0.5rem;
     
     i {
-      padding: 0.6rem;
-      font-size: 1rem;
+      padding: 0.5rem;
+      font-size: 0.9rem;
     }
   }
 }
@@ -1415,19 +1558,19 @@ export default {
   background: rgba(0, 0, 0, 0.02);
   overflow: hidden;
   transition: all 0.3s ease;
-  margin-left: 1rem;
+  margin-left: 0.8rem;
   border-left: 1px solid rgba(0, 0, 0, 0.1);
 
   .submenu-item {
     display: flex;
     align-items: center;
-    padding: 0.8rem 1rem;
+    padding: 0.6rem 0.8rem;
     color: #666;
     text-decoration: none;
     transition: all 0.3s ease;
     cursor: pointer;
     border-left: 3px solid transparent;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 
     &:hover {
       background: rgba(219, 35, 35, 0.05);
@@ -1441,15 +1584,15 @@ export default {
     }
 
     i {
-      font-size: 1rem;
-      margin-right: 0.8rem;
-      width: 20px;
+      font-size: 0.9rem;
+      margin-right: 0.6rem;
+      width: 18px;
       text-align: center;
     }
 
     .fa-chevron-right {
       margin-left: auto;
-      font-size: 0.8rem;
+      font-size: 0.7rem;
       transition: transform 0.3s ease;
     }
   }
@@ -1457,12 +1600,12 @@ export default {
 
 .daily-submenu {
   background: rgba(0, 0, 0, 0.02);
-  margin-left: 1rem;
+  margin-left: 0.8rem;
   border-left: 1px solid rgba(0, 0, 0, 0.1);
 
   .submenu-item {
-    padding-left: 2rem;
-    font-size: 0.85rem;
+    padding-left: 1.5rem;
+    font-size: 0.8rem;
   }
 }
 
@@ -1512,7 +1655,7 @@ export default {
 .sidebar.collapsed {
   .submenu {
     position: absolute;
-    left: 80px;
+    left: 65px;
     top: 0;
     width: 200px;
     background: white;
@@ -1522,7 +1665,8 @@ export default {
     margin-left: 0;
 
     .submenu-item {
-      padding: 0.8rem 1rem;
+      padding: 0.6rem 0.8rem;
+      font-size: 0.85rem;
     }
   }
 
@@ -1541,18 +1685,20 @@ export default {
 
 .admin-tabs {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
 }
 .tab-btn {
-  padding: 0.7rem 1.5rem;
+  padding: 0.4rem 0.8rem;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 0.3rem;
   background: #fff;
   color: #db2323;
   font-weight: 500;
   cursor: pointer;
   transition: background 0.2s;
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 .tab-btn.active {
   background: #db2323;
@@ -1560,9 +1706,9 @@ export default {
 }
 .admin-tab-content {
   background: #fff;
-  border-radius: 1rem;
-  padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-radius: 0.6rem;
+  padding: 1.2rem;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 }
 
 .notifications-dropdown,
@@ -1571,17 +1717,17 @@ export default {
   top: 100%;
   right: 0;
   background: white;
-  border-radius: 0.5rem;
+  border-radius: 0.4rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  min-width: 300px;
+  min-width: 280px;
   z-index: 1000;
-  margin-top: 0.5rem;
+  margin-top: 0.4rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
 .notifications-header {
-  padding: 1rem;
+  padding: 0.8rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
@@ -1589,8 +1735,9 @@ export default {
 
   h3 {
     margin: 0;
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: #333;
+    font-weight: 600;
   }
 
   button {
@@ -1598,8 +1745,8 @@ export default {
     border: none;
     color: #db2323;
     cursor: pointer;
-    font-size: 0.9rem;
-    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
     border-radius: 0.3rem;
     transition: all 0.3s ease;
 
@@ -1610,16 +1757,16 @@ export default {
 }
 
 .notifications-list {
-  max-height: 400px;
+  max-height: 350px;
   overflow-y: auto;
-  padding: 0.5rem;
+  padding: 0.4rem;
 
   .notification-item {
     display: flex;
     align-items: flex-start;
-    gap: 1rem;
-    padding: 0.8rem;
-    border-radius: 0.5rem;
+    gap: 0.8rem;
+    padding: 0.6rem;
+    border-radius: 0.4rem;
     transition: all 0.3s ease;
     cursor: pointer;
 
@@ -1632,24 +1779,24 @@ export default {
     }
 
     i {
-      font-size: 1.2rem;
+      font-size: 1rem;
       color: #db2323;
-      padding: 0.5rem;
+      padding: 0.4rem;
       background: rgba(219, 35, 35, 0.1);
-      border-radius: 0.5rem;
+      border-radius: 0.4rem;
     }
 
     .notification-content {
       flex: 1;
 
       p {
-        margin: 0 0 0.3rem;
+        margin: 0 0 0.2rem;
         color: #333;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
       }
 
       .notification-time {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         color: #666;
       }
     }
@@ -1657,35 +1804,57 @@ export default {
 }
 
 .user-dropdown {
-  min-width: 250px;
-  padding: 1rem;
+  min-width: 230px;
+  padding: 0.8rem;
 
   .user-info {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding-bottom: 1rem;
+    gap: 0.8rem;
+    padding-bottom: 0.8rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
+
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #db2323, #b31b1b);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      box-shadow: 0 2px 4px rgba(219, 35, 35, 0.2);
+    }
 
     .user-avatar-large {
-      width: 50px;
-      height: 50px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
-      object-fit: cover;
+      background: linear-gradient(135deg, #db2323, #b31b1b);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(219, 35, 35, 0.3);
     }
 
     .user-details {
       h4 {
-        margin: 0 0 0.3rem;
+        margin: 0 0 0.2rem;
         color: #333;
-        font-size: 1rem;
+        font-size: 0.9rem;
+        font-weight: 600;
       }
 
       p {
         margin: 0;
         color: #666;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
       }
     }
   }
@@ -1693,21 +1862,22 @@ export default {
   .dropdown-menu {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.3rem;
 
     button {
       display: flex;
       align-items: center;
-      gap: 0.8rem;
-      padding: 0.8rem;
+      gap: 0.6rem;
+      padding: 0.65rem;
       border: none;
       background: none;
       color: #333;
       cursor: pointer;
-      border-radius: 0.5rem;
+      border-radius: 0.4rem;
       transition: all 0.3s ease;
       width: 100%;
       text-align: left;
+      font-size: 0.9rem;
 
       &:hover {
         background: #f8f9fa;
@@ -1715,8 +1885,8 @@ export default {
       }
 
       i {
-        font-size: 1.1rem;
-        width: 20px;
+        font-size: 1rem;
+        width: 18px;
         text-align: center;
       }
     }
@@ -1784,6 +1954,66 @@ export default {
   }
 }
 
+/* Dark theme adjustments for avatars and navbar */
+:deep(.dark) {
+  .navbar {
+    background: #2d2d2d;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    .search-bar {
+      background: #1a1a1a;
+
+      input {
+        color: #e2e8f0;
+
+        &::placeholder {
+          color: #94a3b8;
+        }
+      }
+    }
+
+    .icon-button {
+      color: #e2e8f0;
+
+      &:hover {
+        background: rgba(219, 35, 35, 0.1);
+        color: #db2323;
+      }
+    }
+
+         .user-button {
+       .user-avatar {
+         border: 1px solid rgba(255, 255, 255, 0.1);
+         box-shadow: 0 2px 4px rgba(219, 35, 35, 0.3);
+       }
+
+       .user-name {
+         color: #e2e8f0;
+       }
+
+       i {
+         color: #94a3b8;
+       }
+
+       &:hover {
+         background: rgba(219, 35, 35, 0.1);
+       }
+     }
+  }
+
+  .user-dropdown {
+    .user-avatar {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 2px 4px rgba(219, 35, 35, 0.3);
+    }
+
+    .user-avatar-large {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 2px 6px rgba(219, 35, 35, 0.4);
+    }
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .notifications-dropdown,
@@ -1801,6 +2031,21 @@ export default {
 
   .notifications-list {
     max-height: calc(100vh - 150px);
+  }
+}
+
+/* Responsive adjustments for avatars */
+@media (max-width: 480px) {
+  .user-button {
+    .user-name {
+      display: none;
+    }
+
+    .user-avatar {
+      width: 24px;
+      height: 24px;
+      font-size: 0.7rem;
+    }
   }
 }
 </style>

@@ -23,7 +23,7 @@ const checking = () => import('@/components/admin/checkInComponent.vue')
 const Weekly = () => import('@/components/admin/weekGoalComponent.vue')
 const HebdomadaireObjectifs = () => import('@/components/user/createActivityComponent.vue')
 const CreateActivity = () => import('@/components/admin/createActivityComponent.vue')
-const accueil = () => import('@/components/user/accueillComponent.vue')
+// const accueil = () => import('@/components/user/accueillComponent.vue')
 const checkin = () => import('@/components/user/checkInComponent.vue')
 const checkOutcomponent = () => import('@/components/user/checkOutcomponent.vue')
 const createActivityComponent = () => import('@/components/user/createActivityComponent.vue')
@@ -36,6 +36,10 @@ const MonitorDashboard = () => import('@/views/MonitorDashboard.vue')
 const MonitorRegistrationComponent = () => import('@/components/admin/MonitorRegistrationComponent.vue')
 const MonitorReportsAdminComponent = () => import('@/components/admin/MonitorReportsAdminComponent.vue')
 const ClassManagementComponent = () => import('@/components/admin/ClassManagementComponent.vue')
+const reviewComponent = () => import('@/components/reviewComponent.vue')
+const CalendarComponent = () => import('@/components/activities/CalendarComponent.vue')
+const ScheduleComponent = () => import('@/components/activities/ScheduleComponent.vue')
+const CreateActivityUserComponent = () => import('@/components/activities/CreateActivityComponent.vue')
 const router = createRouter({
   history: createWebHistory('/'), 
   routes: [
@@ -72,16 +76,43 @@ const router = createRouter({
           name: 'userHome',
           component: CheckOutComponent
         },
+
+
+//Activities
+
+        {
+          path: 'activities/calendar',
+          name: 'userCalendar',
+          component: CalendarComponent
+        },
+        {
+          path: 'activities/schedule',
+          name: 'userSchedule',
+          component: ScheduleComponent
+        },
+        {
+          path: 'activities/create',
+          name: 'userCreateActivity',
+          component: CreateActivityUserComponent
+        },
+
+
+
+        {
+          path: 'ListeEnfant',
+          name: 'userListeEnfant',
+          component: ListeEnfant
+        },
         {
           path: 'Registration',
           name: 'userRegistration',
           component: Registration
         },
-        {
-          path: 'children/list',
-          name: 'userChildrenList',
-          component: ListeEnfant
-        },
+        // {
+        //   path: 'children/list',
+        //   name: 'userChildrenList',
+        //   component: ListeEnfant
+        // },
         {
           path: 'attendance/present',
           name: 'userPresent',
@@ -132,12 +163,12 @@ const router = createRouter({
         },
         {
           path: 'Present',
-          name: 'Present',
+          name: 'adminPresent',
           component: Presence
         },
         {
           path: 'Absent',
-          name: 'Absent',
+          name: 'adminAbsent',
           component: Absence
         },
         {
@@ -165,6 +196,24 @@ const router = createRouter({
           name: 'rapport',
           component: Rapport
         },
+
+        // Activities routes for admin
+        {
+          path: 'activities/calendar',
+          name: 'adminCalendar',
+          component: CalendarComponent
+        },
+        {
+          path: 'activities/schedule',
+          name: 'adminSchedule',
+          component: ScheduleComponent
+        },
+        {
+          path: 'activities/create',
+          name: 'adminCreateActivity',
+          component: CreateActivityUserComponent
+        },
+
         // {
         //   path: 'checkin',
         //   name: 'checkin',
@@ -185,11 +234,7 @@ const router = createRouter({
         //   name: 'createActivity',
         //   component: CreateActivity
         // },
-        {
-          path: 'accueil',
-          name: 'accueil',
-          component: accueil
-        },
+
         {
           path: 'checkin',
           name: 'checkin',
@@ -245,6 +290,11 @@ const router = createRouter({
           name: 'monitorReportsAdmin',
           component: MonitorReportsAdminComponent
         },
+        {
+          path: '/review',
+          name: 'adminReview',
+          component: reviewComponent,
+        },
       ]
     },
     {
@@ -257,6 +307,7 @@ const router = createRouter({
       name: 'ForgotPassword',
       component: ForgotPassword,
     },
+
     {
       path: '/resset',
       name: 'RessetPassword',

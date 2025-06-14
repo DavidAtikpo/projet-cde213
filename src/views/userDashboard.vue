@@ -9,7 +9,7 @@
       </div>
 
       <nav class="sidebar-nav">
-        <router-link to="/user/dashboard" class="nav-item" active-class="active">
+        <router-link :to="getUserRoute('dashboard')" class="nav-item" active-class="active">
           <i class="fas fa-home"></i>
           <span v-if="!isCollapsed">{{ getTranslatedTitle('dashboard') }}</span>
         </router-link>
@@ -22,15 +22,15 @@
             <i class="fas fa-chevron-right" :class="{ 'rotated': activeSubmenu === 'children' }"></i>
           </div>
           <div class="submenu" v-if="activeSubmenu === 'children' && !isCollapsed">
-            <router-link :to="`/user/${$route.params.id}/children/list`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('ListeEnfant')" class="submenu-item" active-class="active">
               <i class="fas fa-list"></i>
               <span>{{ getTranslatedTitle('childrenList') }}</span>
             </router-link>
-            <router-link :to="`/user/${$route.params.id}/Registration`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('Registration')" class="submenu-item" active-class="active">
               <i class="fas fa-user-plus"></i>
               <span>{{ getTranslatedTitle('registration') }}</span>
             </router-link>
-            <router-link :to="`/user/${$route.params.id}/children/groups`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('children/groups')" class="submenu-item" active-class="active">
               <i class="fas fa-users"></i>
               <span>{{ getTranslatedTitle('groups') }}</span>
             </router-link>
@@ -42,15 +42,15 @@
             <i class="fas fa-chevron-right" :class="{ 'rotated': activeSubmenu === 'attendance' }"></i>
           </div>
           <div class="submenu" v-if="activeSubmenu === 'attendance' && !isCollapsed">
-            <router-link :to="`/user/${$route.params.id}/attendance/present`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('attendance/present')" class="submenu-item" active-class="active">
               <i class="fas fa-check-circle"></i>
               <span>{{ getTranslatedTitle('present') }}</span>
             </router-link>
-            <router-link :to="`/user/${$route.params.id}/attendance/absent`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('attendance/absent')" class="submenu-item" active-class="active">
               <i class="fas fa-times-circle"></i>
               <span>{{ getTranslatedTitle('absent') }}</span>
             </router-link>
-            <router-link :to="`/user/${$route.params.id}/attendance/history`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('attendance/history')" class="submenu-item" active-class="active">
               <i class="fas fa-history"></i>
               <span>{{ getTranslatedTitle('attendanceHistory') }}</span>
             </router-link>
@@ -65,15 +65,15 @@
             <i class="fas fa-chevron-right" :class="{ 'rotated': activeSubmenu === 'activities' }"></i>
           </div>
           <div class="submenu" v-if="activeSubmenu === 'activities' && !isCollapsed">
-            <router-link :to="`/user/${$route.params.id}/activities/schedule`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('activities/schedule')" class="submenu-item" active-class="active">
               <i class="fas fa-clock"></i>
               <span>{{ getTranslatedTitle('schedule') }}</span>
             </router-link>
-            <router-link :to="`/user/${$route.params.id}/activities/calendar`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('activities/calendar')" class="submenu-item" active-class="active">
               <i class="fas fa-calendar"></i>
               <span>{{ getTranslatedTitle('calendar') }}</span>
             </router-link>
-            <router-link :to="`/user/${$route.params.id}/activities/create`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('activities/create')" class="submenu-item" active-class="active">
               <i class="fas fa-plus-circle"></i>
               <span>{{ getTranslatedTitle('createActivity') }}</span>
             </router-link>
@@ -85,16 +85,16 @@
             <i class="fas fa-chevron-right" :class="{ 'rotated': activeSubmenu === 'communication' }"></i>
           </div>
           <div class="submenu" v-if="activeSubmenu === 'communication' && !isCollapsed">
-            <router-link :to="`/user/${$route.params.id}/communication/messages`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('communication/messages')" class="submenu-item" active-class="active">
               <i class="fas fa-envelope"></i>
               <span>{{ getTranslatedTitle('messages') }}</span>
               <span class="badge" v-if="unreadMessages">{{ unreadMessages }}</span>
             </router-link>
-            <router-link :to="`/user/${$route.params.id}/communication/announcements`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('communication/announcements')" class="submenu-item" active-class="active">
               <i class="fas fa-bullhorn"></i>
               <span>{{ getTranslatedTitle('announcements') }}</span>
             </router-link>
-            <router-link :to="`/user/${$route.params.id}/communication/parents`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('communication/parents')" class="submenu-item" active-class="active">
               <i class="fas fa-user-friends"></i>
               <span>{{ getTranslatedTitle('parentCommunication') }}</span>
             </router-link>
@@ -106,15 +106,15 @@
             <i class="fas fa-chevron-right" :class="{ 'rotated': activeSubmenu === 'settings' }"></i>
           </div>
           <div class="submenu" v-if="activeSubmenu === 'settings' && !isCollapsed">
-            <router-link :to="`/user/${$route.params.id}/settings/profile`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('settings/profile')" class="submenu-item" active-class="active">
               <i class="fas fa-user-cog"></i>
               <span>{{ getTranslatedTitle('profileSettings') }}</span>
             </router-link>
-            <router-link :to="`/user/${$route.params.id}/settings/preferences`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('settings/preferences')" class="submenu-item" active-class="active">
               <i class="fas fa-sliders-h"></i>
               <span>{{ getTranslatedTitle('preferences') }}</span>
             </router-link>
-            <router-link :to="`/user/${$route.params.id}/settings/notifications`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('settings/notifications')" class="submenu-item" active-class="active">
               <i class="fas fa-bell"></i>
               <span>{{ getTranslatedTitle('notificationSettings') }}</span>
             </router-link>
@@ -135,11 +135,11 @@
               <i class="fas fa-chevron-right"></i>
             </div>
             <div class="submenu daily-submenu" v-if="activeNestedSubmenu === 'daily'">
-              <router-link :to="`/user/${$route.params.id}/objectif`" class="submenu-item" active-class="active">
+              <router-link :to="getUserRoute('objectif')" class="submenu-item" active-class="active">
                 <i class="fas fa-bullseye"></i>
                 <span>{{ getTranslatedTitle('objectives') }}</span>
               </router-link>
-              <router-link :to="`/user/${$route.params.id}/rapport`" class="submenu-item" active-class="active">
+              <router-link :to="getUserRoute('rapport')" class="submenu-item" active-class="active">
                 <i class="fas fa-file-alt"></i>
                 <span>{{ getTranslatedTitle('reports') }}</span>
               </router-link>
@@ -149,21 +149,21 @@
                 <i class="fas fa-chevron-right"></i>
               </div>
               <div class="submenu hebdomadaire-submenu" v-if="activeNestedSubmenu === 'hebdomadaire'">
-                <router-link :to="`/user/${$route.params.id}/hebdomadaire/objectifs`" class="submenu-item" active-class="active">
+                <router-link :to="getUserRoute('hebdomadaire/objectifs')" class="submenu-item" active-class="active">
                   <i class="fas fa-bullseye"></i>
                   <span>{{ getTranslatedTitle('objectives') }}</span>
                 </router-link>
-                <router-link :to="`/user/${$route.params.id}/hebdomadaire/rapports`" class="submenu-item" active-class="active">
+                <router-link :to="getUserRoute('hebdomadaire/rapports')" class="submenu-item" active-class="active">
                   <i class="fas fa-file-alt"></i>
                   <span>{{ getTranslatedTitle('reports') }}</span>
                 </router-link>
               </div>
             </div>
-            <router-link :to="`/user/${$route.params.id}/Weekly`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('Weekly')" class="submenu-item" active-class="active">
               <i class="fas fa-calendar-week"></i>
               <span>{{ getTranslatedTitle('weekly') }}</span>
             </router-link>
-            <router-link :to="`/user/${$route.params.id}/monthly`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('monthly')" class="submenu-item" active-class="active">
               <i class="fas fa-calendar-alt"></i>
               <span>{{ getTranslatedTitle('monthly') }}</span>
             </router-link>
@@ -178,15 +178,15 @@
             <i class="fas fa-chevron-right" :class="{ 'rotated': activeSubmenu === 'resources' }"></i>
           </div>
           <div class="submenu" v-if="activeSubmenu === 'resources' && !isCollapsed">
-            <router-link :to="`/user/${$route.params.id}/resources/materials`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('resources/materials')" class="submenu-item" active-class="active">
               <i class="fas fa-pencil-ruler"></i>
               <span>{{ getTranslatedTitle('materials') }}</span>
             </router-link>
-            <router-link :to="`/user/${$route.params.id}/resources/lessons`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('resources/lessons')" class="submenu-item" active-class="active">
               <i class="fas fa-chalkboard-teacher"></i>
               <span>{{ getTranslatedTitle('lessons') }}</span>
             </router-link>
-            <router-link :to="`/user/${$route.params.id}/resources/library`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('resources/library')" class="submenu-item" active-class="active">
               <i class="fas fa-book-open"></i>
               <span>{{ getTranslatedTitle('library') }}</span>
             </router-link>
@@ -198,15 +198,15 @@
             <i class="fas fa-chevron-right" :class="{ 'rotated': activeSubmenu === 'health' }"></i>
           </div>
           <div class="submenu" v-if="activeSubmenu === 'health' && !isCollapsed">
-            <router-link :to="`/user/${$route.params.id}/health/records`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('health/records')" class="submenu-item" active-class="active">
               <i class="fas fa-notes-medical"></i>
               <span>{{ getTranslatedTitle('healthRecords') }}</span>
             </router-link>
-            <router-link :to="`/user/${$route.params.id}/health/medications`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('health/medications')" class="submenu-item" active-class="active">
               <i class="fas fa-pills"></i>
               <span>{{ getTranslatedTitle('medications') }}</span>
             </router-link>
-            <router-link :to="`/user/${$route.params.id}/health/allergies`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('health/allergies')" class="submenu-item" active-class="active">
               <i class="fas fa-allergies"></i>
               <span>{{ getTranslatedTitle('allergies') }}</span>
             </router-link>
@@ -218,15 +218,15 @@
             <i class="fas fa-chevron-right" :class="{ 'rotated': activeSubmenu === 'finance' }"></i>
           </div>
           <div class="submenu" v-if="activeSubmenu === 'finance' && !isCollapsed">
-            <router-link :to="`/user/${$route.params.id}/finance/payments`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('finance/payments')" class="submenu-item" active-class="active">
               <i class="fas fa-credit-card"></i>
               <span>{{ getTranslatedTitle('payments') }}</span>
             </router-link>
-            <router-link :to="`/user/${$route.params.id}/finance/invoices`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('finance/invoices')" class="submenu-item" active-class="active">
               <i class="fas fa-file-invoice-dollar"></i>
               <span>{{ getTranslatedTitle('invoices') }}</span>
             </router-link>
-            <router-link :to="`/user/${$route.params.id}/finance/reports`" class="submenu-item" active-class="active">
+            <router-link :to="getUserRoute('finance/reports')" class="submenu-item" active-class="active">
               <i class="fas fa-chart-pie"></i>
               <span>{{ getTranslatedTitle('financialReports') }}</span>
             </router-link>
@@ -293,13 +293,17 @@
 
           <div class="user-menu">
             <button class="user-button" @click="toggleUserMenu">
-              <img :src="userAvatar" :alt="userName" class="user-avatar">
+              <div class="user-avatar">
+                {{ getUserInitial() }}
+              </div>
               <span class="user-name">{{ userName }}</span>
               <i class="fas fa-chevron-down"></i>
             </button>
             <div class="user-dropdown" v-if="showUserMenu">
               <div class="user-info">
-                <img :src="userAvatar" :alt="userName" class="user-avatar-large">
+                <div class="user-avatar-large">
+                  {{ getUserInitial() }}
+                </div>
                 <div class="user-details">
                   <h4>{{ userName }}</h4>
                   <p>{{ userRole }}</p>
@@ -326,7 +330,24 @@
 
       <!-- Dashboard Content -->
       <div class="dashboard-content">
-        <router-view></router-view>
+        <template v-if="isOnDashboardHome || showTabsForce">
+          <div class="user-tabs">
+            <button
+              v-for="tab in tabs"
+              :key="tab.id"
+              :class="['tab-btn', { active: activeTab === tab.id }]"
+              @click="activeTab = tab.id"
+            >
+              <i :class="tab.icon"></i> {{ tab.name }}
+            </button>
+          </div>
+          <div class="user-tab-content">
+            <component :is="currentComponent" />
+          </div>
+        </template>
+        <template v-else>
+          <router-view></router-view>
+        </template>
       </div>
     </div>
   </div>
@@ -334,9 +355,23 @@
 
 <script>
 import { mapState } from 'vuex';
+import WeekGoalComponent from '@/components/admin/weekGoalComponent.vue';
+import CreateActivityComponent from '@/components/user/createActivityComponent.vue';
+import CheckInComponent from '@/components/user/checkInComponent.vue';
+import CheckOutComponent from '@/components/user/checkOutcomponent.vue';
+import StatisticComponent from '@/components/user/userStatisticComponent.vue';
+import UserRevewComponent from '@/components/user/userRevewComponent.vue';
 
 export default {
   name: 'UserDashboard',
+  components: {
+    WeekGoalComponent,
+    CreateActivityComponent,
+    CheckInComponent,
+    CheckOutComponent,
+    StatisticComponent,
+    UserRevewComponent,
+  },
   data() {
     return {
       isCollapsed: false,
@@ -345,7 +380,7 @@ export default {
       showUserMenu: false,
       unreadNotifications: 3,
       unreadMessages: 5,
-      userName: 'John Doe',
+      userName: '',
       userRole: 'Educateur',
       userAvatar: 'https://via.placeholder.com/40',
       totalChildren: 25,
@@ -401,6 +436,16 @@ export default {
       ],
       activeSubmenu: null,
       activeNestedSubmenu: null,
+      activeTab: 'week-goal',
+      showTabsForce: false, // Ne pas forcer l'affichage des onglets
+      tabs: [
+        { id: 'week-goal', name: 'Objectif de la Semaine', icon: 'fas fa-bullseye', component: 'WeekGoalComponent' },
+        { id: 'create-activity', name: 'Créer Objectif Hebdomadaire', icon: 'fas fa-plus-circle', component: 'CreateActivityComponent' },
+        { id: 'check-in', name: 'Entrée/Objectif', icon: 'fas fa-sign-in-alt', component: 'CheckInComponent' },
+        { id: 'check-out', name: 'Sortie/Rapport', icon: 'fas fa-sign-out-alt', component: 'CheckOutComponent' },
+        { id: 'statistic', name: 'Statistique', icon: 'fas fa-chart-line', component: 'StatisticComponent' },
+        { id: 'user-review', name: 'Rapport Utilisateur', icon: 'fas fa-star', component: 'UserRevewComponent' },
+      ],
     };
   },
   computed: {
@@ -410,6 +455,27 @@ export default {
     },
     currentLanguage() {
       return this.language === 'fr' ? 'FR' : 'EN';
+    },
+    currentComponent() {
+      const tab = this.tabs.find(t => t.id === this.activeTab);
+      return tab ? tab.component : null;
+    },
+    isOnDashboardHome() {
+      // Vérifier si nous sommes sur la page dashboard principale
+      const path = this.$route.path;
+      const userId = this.$route.params.id || localStorage.getItem('userId') || 'dashboard';
+      
+      console.log('Current path:', path);
+      console.log('User ID:', userId);
+      console.log('Route name:', this.$route.name);
+      
+      // Vérifications pour s'assurer qu'on est sur la page d'accueil du dashboard uniquement
+      const isDashboard = path === `/user/${userId}` || 
+                         path === `/user/${userId}/` || 
+                         this.$route.name === 'userHome';
+      
+      console.log('Is on dashboard home:', isDashboard);
+      return isDashboard;
     },
     currentDate() {
       return new Date().toLocaleDateString(this.language, {
@@ -584,8 +650,8 @@ export default {
       this.unreadNotifications = 0;
     },
     navigateTo(route) {
-      const userId = localStorage.getItem('userId');
-      this.$router.push(`/user/${userId}/${route}`);
+      this.$router.push(this.getUserRoute(route));
+      this.showUserMenu = false;
     },
     logout() {
       this.$store.dispatch('logout');
@@ -606,6 +672,53 @@ export default {
         this.activeNestedSubmenu = submenu;
       }
     },
+    getUserInitial() {
+      if (this.userName && this.userName.length > 0) {
+        return this.userName.charAt(0).toUpperCase();
+      }
+      return 'U';
+    },
+    loadUserData() {
+      const storedUserName = localStorage.getItem('user');
+      if (storedUserName) {
+        this.userName = storedUserName;
+      } else {
+        this.userName = 'Utilisateur';
+      }
+    },
+    getUserRoute(path) {
+      // Essayer d'obtenir l'ID utilisateur depuis plusieurs sources
+      const userId = this.$route.params.id || 
+                     localStorage.getItem('userId') || 
+                     localStorage.getItem('user_id') || 
+                     'dashboard';
+      
+      // Si le path est 'dashboard', retourner juste la route de base
+      if (path === 'dashboard') {
+        return `/user/${userId}`;
+      }
+      
+      return `/user/${userId}/${path}`;
+    },
+    initializeUserId() {
+      // S'assurer qu'un ID utilisateur est disponible
+      if (!localStorage.getItem('userId') && !localStorage.getItem('user_id')) {
+        // Si aucun ID n'est stocké, utiliser un ID par défaut ou rediriger vers login
+        const defaultUserId = 'user1'; // ou rediriger vers login
+        localStorage.setItem('userId', defaultUserId);
+      }
+    }
+  },
+  mounted() {
+    this.loadUserData();
+    this.initializeUserId();
+    
+    // Debug: vérifier l'état au montage
+    this.$nextTick(() => {
+      console.log('Component mounted, checking dashboard state...');
+      console.log('isOnDashboardHome:', this.isOnDashboardHome);
+      console.log('Current route:', this.$route);
+    });
   }
 };
 </script>
@@ -619,7 +732,7 @@ export default {
 }
 
 .sidebar {
-  width: 280px;
+  width: 240px;
   background: white;
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
@@ -630,56 +743,60 @@ export default {
   z-index: 1000;
 
   &.collapsed {
-    width: 80px;
+    width: 65px;
   }
 
   .sidebar-header {
-    padding: 1.5rem;
+    padding: 0.8rem;
     background: linear-gradient(135deg, #db2323 0%, #b31b1b 100%);
     color: white;
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.6rem;
 
     .logo {
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
     }
 
     h1 {
-      font-size: 1.4rem;
+      font-size: 1rem;
       margin: 0;
       white-space: nowrap;
+      font-weight: 600;
     }
   }
 
   .sidebar-nav {
     flex: 1;
-    padding: 1rem 0;
+    padding: 0.5rem 0;
     overflow-y: auto;
 
     .nav-section {
-      padding: 1rem 0;
+      padding: 0.8rem 0;
 
       h2 {
         color: #666;
-        font-size: 0.8rem;
+        font-size: 0.65rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        padding: 0 1.5rem;
-        margin-bottom: 0.5rem;
+        padding: 0 1rem;
+        margin-bottom: 0.3rem;
+        font-weight: 600;
       }
     }
 
     .nav-item {
       display: flex;
       align-items: center;
-      padding: 0.8rem 1.5rem;
+      padding: 0.55rem 1rem;
       color: #333;
       text-decoration: none;
       transition: all 0.3s ease;
       border-left: 3px solid transparent;
+      cursor: pointer;
+      font-size: 0.85rem;
 
       &:hover {
         background: rgba(219, 35, 35, 0.05);
@@ -693,15 +810,16 @@ export default {
       }
 
       i {
-        font-size: 1.2rem;
-        margin-right: 1rem;
-        width: 24px;
+        font-size: 0.9rem;
+        margin-right: 0.6rem;
+        width: 18px;
         text-align: center;
       }
 
       .fa-chevron-right {
         margin-left: auto;
         transition: transform 0.3s ease;
+        font-size: 0.75rem;
         
         &.rotated {
           transform: rotate(90deg);
@@ -711,23 +829,24 @@ export default {
   }
 
   .sidebar-footer {
-    padding: 1rem;
+    padding: 0.6rem;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.2rem;
 
     button {
       display: flex;
       align-items: center;
-      gap: 0.8rem;
-      padding: 0.8rem;
+      gap: 0.5rem;
+      padding: 0.5rem;
       border: none;
       background: none;
       color: #666;
       cursor: pointer;
       transition: all 0.3s ease;
-      border-radius: 0.5rem;
+      border-radius: 0.3rem;
+      font-size: 0.85rem;
 
       &:hover {
         background: rgba(219, 35, 35, 0.05);
@@ -735,8 +854,8 @@ export default {
       }
 
       i {
-        font-size: 1.2rem;
-        width: 24px;
+        font-size: 0.9rem;
+        width: 18px;
         text-align: center;
       }
     }
@@ -745,54 +864,76 @@ export default {
 
 .main-content {
   flex: 1;
-  margin-left: 280px;
+  margin-left: 240px;
   transition: margin-left 0.3s ease;
 
   &.sidebar-collapsed {
-    margin-left: 80px;
+    margin-left: 65px;
   }
 }
 
 .navbar {
   background: white;
-  padding: 1rem 2rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 0.6rem 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: sticky;
   top: 0;
   z-index: 900;
+  height: 50px;
 
   .navbar-left {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.6rem;
 
     .menu-toggle {
-      background: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #db2323 0%, #b31b1b 100%);
       border: none;
-      color: #666;
-      font-size: 1.2rem;
+      color: white;
       cursor: pointer;
       padding: 0.5rem;
-      border-radius: 0.5rem;
-      transition: all 0.3s ease;
+      border-radius: 0.3rem;
+      transition: all 0.2s ease;
+      width: 30px;
+      height: 30px;
+      box-shadow: 0 2px 6px rgba(219, 35, 35, 0.2);
 
       &:hover {
-        background: rgba(219, 35, 35, 0.05);
-        color: #db2323;
+        transform: scale(1.05);
+        box-shadow: 0 3px 8px rgba(219, 35, 35, 0.3);
+      }
+
+      i {
+        font-size: 0.9rem;
       }
     }
 
     .search-bar {
       background: #f5f7fa;
-      border-radius: 8px;
-      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      padding: 0.3rem 0.6rem;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      width: 300px;
+      gap: 0.3rem;
+      width: 250px;
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+
+      &:focus-within {
+        background: white;
+        box-shadow: 0 0 0 2px rgba(219, 35, 35, 0.2);
+      }
+
+      i {
+        font-size: 0.8rem;
+        color: #666;
+      }
 
       input {
         border: none;
@@ -800,6 +941,7 @@ export default {
         outline: none;
         width: 100%;
         color: #333;
+        font-size: 0.85rem;
 
         &::placeholder {
           color: #666;
@@ -811,233 +953,265 @@ export default {
   .navbar-right {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.6rem;
 
     .notifications {
       position: relative;
 
-      .icon-button {
-        background: none;
-        border: none;
-        color: #666;
-        font-size: 1.2rem;
-        cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        transition: all 0.3s ease;
+              .icon-button {
+          background: none;
+          border: none;
+          color: #666;
+          font-size: 1rem;
+          cursor: pointer;
+          padding: 0.4rem;
+          border-radius: 0.4rem;
+          transition: all 0.3s ease;
 
-        &:hover {
-          background: rgba(219, 35, 35, 0.05);
-          color: #db2323;
-        }
-      }
-
-      .notification-badge {
-        position: absolute;
-        top: 0;
-        right: 0;
-        background: #db2323;
-        color: white;
-        font-size: 0.7rem;
-        padding: 0.2rem 0.4rem;
-        border-radius: 1rem;
-        transform: translate(50%, -50%);
-      }
-
-      .notifications-dropdown {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background: white;
-        border-radius: 0.5rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        width: 300px;
-        margin-top: 0.5rem;
-
-        .notifications-header {
-          padding: 1rem;
-          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-
-          h3 {
-            margin: 0;
-            font-size: 1rem;
-          }
-
-          button {
-            background: none;
-            border: none;
+          &:hover {
+            background: rgba(219, 35, 35, 0.05);
             color: #db2323;
-            cursor: pointer;
-            font-size: 0.9rem;
-
-            &:hover {
-              text-decoration: underline;
-            }
           }
         }
 
-        .notifications-list {
-          max-height: 300px;
-          overflow-y: auto;
+        .notification-badge {
+          position: absolute;
+          top: 0;
+          right: 0;
+          background: #db2323;
+          color: white;
+          font-size: 0.6rem;
+          padding: 0.15rem 0.3rem;
+          border-radius: 0.8rem;
+          transform: translate(50%, -50%);
+        }
 
-          .notification-item {
-            padding: 1rem;
+              .notifications-dropdown {
+          position: absolute;
+          top: 100%;
+          right: 0;
+          background: white;
+          border-radius: 0.4rem;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          width: 280px;
+          margin-top: 0.4rem;
+          border: 1px solid rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+
+          .notifications-header {
+            padding: 0.8rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             display: flex;
-            gap: 1rem;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
+            justify-content: space-between;
+            align-items: center;
 
-            &:hover {
-              background: #f5f7fa;
+            h3 {
+              margin: 0;
+              font-size: 0.9rem;
+              font-weight: 600;
             }
 
-            &.unread {
-              background: rgba(219, 35, 35, 0.05);
-            }
-
-            i {
-              font-size: 1.2rem;
+            button {
+              background: none;
+              border: none;
               color: #db2323;
+              cursor: pointer;
+              font-size: 0.8rem;
+              padding: 0.25rem 0.5rem;
+              border-radius: 0.3rem;
+              transition: all 0.3s ease;
+
+              &:hover {
+                background: rgba(219, 35, 35, 0.1);
+              }
             }
+          }
 
-            .notification-content {
-              flex: 1;
+          .notifications-list {
+            max-height: 350px;
+            overflow-y: auto;
+            padding: 0.4rem;
 
-              p {
-                margin: 0 0 0.3rem;
-                font-size: 0.9rem;
-                color: #333;
+            .notification-item {
+              padding: 0.6rem;
+              display: flex;
+              gap: 0.8rem;
+              border-radius: 0.4rem;
+              transition: all 0.3s ease;
+              cursor: pointer;
+
+              &:hover {
+                background: #f5f7fa;
               }
 
-              .notification-time {
-                font-size: 0.8rem;
-                color: #666;
+              &.unread {
+                background: rgba(219, 35, 35, 0.05);
+              }
+
+              i {
+                font-size: 1rem;
+                color: #db2323;
+                padding: 0.4rem;
+                background: rgba(219, 35, 35, 0.1);
+                border-radius: 0.4rem;
+              }
+
+              .notification-content {
+                flex: 1;
+
+                p {
+                  margin: 0 0 0.2rem;
+                  font-size: 0.85rem;
+                  color: #333;
+                }
+
+                .notification-time {
+                  font-size: 0.75rem;
+                  color: #666;
+                }
               }
             }
           }
         }
-      }
     }
 
     .user-menu {
       position: relative;
 
-      .user-button {
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-        background: none;
-        border: none;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-
-        &:hover {
-          background: rgba(219, 35, 35, 0.05);
-        }
-
-        .user-avatar {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-        }
-
-        .user-name {
-          color: #333;
-          font-size: 0.9rem;
-        }
-      }
-
-      .user-dropdown {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background: white;
-        border-radius: 0.5rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        width: 250px;
-        margin-top: 0.5rem;
-
-        .user-info {
-          padding: 1rem;
-          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+              .user-button {
           display: flex;
-          gap: 1rem;
           align-items: center;
+          gap: 0.6rem;
+          background: none;
+          border: none;
+          padding: 0.4rem;
+          border-radius: 0.4rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
 
-          .user-avatar-large {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
+          &:hover {
+            background: rgba(219, 35, 35, 0.05);
           }
 
-          .user-details {
-            h4 {
-              margin: 0 0 0.3rem;
-              font-size: 1rem;
-              color: #333;
-            }
-
-            p {
-              margin: 0;
-              font-size: 0.9rem;
-              color: #666;
-            }
-          }
+                  .user-avatar {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #db2323, #b31b1b);
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.8rem;
+          font-weight: 700;
+          box-shadow: 0 2px 4px rgba(219, 35, 35, 0.2);
         }
 
-        .dropdown-menu {
-          padding: 0.5rem;
-
-          button {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            width: 100%;
-            padding: 0.8rem;
-            background: none;
-            border: none;
+          .user-name {
             color: #333;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 0.5rem;
+            font-size: 0.85rem;
+          }
+        }
 
-            &:hover {
-              background: rgba(219, 35, 35, 0.05);
-              color: #db2323;
+              .user-dropdown {
+          position: absolute;
+          top: 100%;
+          right: 0;
+          background: white;
+          border-radius: 0.4rem;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          width: 230px;
+          margin-top: 0.4rem;
+          border: 1px solid rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+
+          .user-info {
+            padding: 0.8rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+
+            .user-avatar-large {
+              width: 42px;
+              height: 42px;
+              border-radius: 50%;
+              background: linear-gradient(135deg, #db2323, #b31b1b);
+              color: white;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 1rem;
+              font-weight: 700;
+              box-shadow: 0 2px 6px rgba(219, 35, 35, 0.3);
             }
 
-            i {
-              font-size: 1.1rem;
-              width: 24px;
-              text-align: center;
+            .user-details {
+              h4 {
+                margin: 0 0 0.2rem;
+                font-size: 0.9rem;
+                color: #333;
+                font-weight: 600;
+              }
+
+              p {
+                margin: 0;
+                font-size: 0.8rem;
+                color: #666;
+              }
+            }
+          }
+
+          .dropdown-menu {
+            padding: 0.4rem;
+
+            button {
+              display: flex;
+              align-items: center;
+              gap: 0.6rem;
+              width: 100%;
+              padding: 0.65rem;
+              background: none;
+              border: none;
+              color: #333;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              border-radius: 0.4rem;
+              font-size: 0.9rem;
+
+              &:hover {
+                background: rgba(219, 35, 35, 0.05);
+                color: #db2323;
+              }
+
+              i {
+                font-size: 1rem;
+                width: 18px;
+                text-align: center;
+              }
             }
           }
         }
-      }
     }
   }
 }
 
 .dashboard-content {
-  padding: 2rem;
+  padding: 1.2rem;
 
   .dashboard-header {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 
     h1 {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       color: #333;
-      margin: 0 0 0.5rem;
+      margin: 0 0 0.4rem;
     }
 
     .date {
       color: #666;
       margin: 0;
+      font-size: 0.9rem;
     }
   }
 }
@@ -1380,50 +1554,113 @@ export default {
   }
 
   .navbar {
+    padding: 0.5rem 0.8rem;
+    height: 48px;
+
     .search-bar {
       display: none;
     }
   }
+
+  .dashboard-content {
+    padding: 1rem;
+  }
 }
 
 @media (max-width: 768px) {
+  .navbar {
+    height: 45px;
+    padding: 0.4rem 0.6rem;
+  }
+
   .dashboard-content {
-    padding: 1rem;
+    padding: 0.8rem;
   }
 
   .stats-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .dashboard-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .activity-item {
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 0.6rem;
 
     .activity-time {
       align-self: flex-start;
     }
   }
+
+  .notifications-dropdown,
+  .user-dropdown {
+    position: fixed;
+    top: 45px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+    max-height: calc(100vh - 45px);
+    overflow-y: auto;
+  }
+
+  .notifications-list {
+    max-height: calc(100vh - 140px);
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0.3rem 0.4rem;
+    height: 42px;
+  }
+
+  .menu-toggle {
+    width: 28px;
+    height: 28px;
+    padding: 0.4rem;
+    
+    i {
+      font-size: 0.8rem;
+    }
+  }
+
+  .dashboard-content {
+    padding: 0.6rem;
+  }
+
+  .user-button {
+    padding: 0.25rem;
+    
+    .user-name {
+      display: none;
+    }
+  }
 }
 
 .submenu {
-  padding-left: 2.5rem;
+  padding-left: 0.8rem;
   background: rgba(0, 0, 0, 0.02);
   overflow: hidden;
   transition: all 0.3s ease;
+  margin-left: 0.8rem;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
 
   .submenu-item {
     display: flex;
     align-items: center;
-    padding: 0.8rem 1rem;
+    padding: 0.6rem 0.8rem;
     color: #666;
     text-decoration: none;
     transition: all 0.3s ease;
     cursor: pointer;
     border-left: 3px solid transparent;
+    font-size: 0.85rem;
 
     &:hover {
       background: rgba(219, 35, 35, 0.05);
@@ -1437,15 +1674,15 @@ export default {
     }
 
     i {
-      font-size: 1rem;
-      margin-right: 0.8rem;
-      width: 20px;
+      font-size: 0.9rem;
+      margin-right: 0.6rem;
+      width: 18px;
       text-align: center;
     }
 
     .fa-chevron-right {
       margin-left: auto;
-      font-size: 0.8rem;
+      font-size: 0.7rem;
       transition: transform 0.3s ease;
     }
   }
@@ -1453,8 +1690,15 @@ export default {
 
 .daily-submenu,
 .hebdomadaire-submenu {
-  padding-left: 1rem;
+  padding-left: 0.8rem;
   background: rgba(0, 0, 0, 0.02);
+  margin-left: 0.8rem;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+
+  .submenu-item {
+    padding-left: 1.5rem;
+    font-size: 0.8rem;
+  }
 }
 
 :deep(.dark) {
@@ -1480,16 +1724,167 @@ export default {
 .badge {
   background: #db2323;
   color: white;
-  font-size: 0.7rem;
-  padding: 0.2rem 0.4rem;
-  border-radius: 1rem;
+  font-size: 0.65rem;
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.8rem;
   margin-left: auto;
 }
 
 .submenu-item {
   .badge {
     margin-left: auto;
-    margin-right: 0.5rem;
+    margin-right: 0.4rem;
+  }
+}
+
+/* Dark theme adjustments for avatars */
+:deep(.dark) {
+  .user-avatar {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 4px rgba(219, 35, 35, 0.3);
+  }
+
+  .user-avatar-large {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 6px rgba(219, 35, 35, 0.4);
+  }
+}
+
+/* Responsive adjustments for avatars */
+@media (max-width: 480px) {
+  .user-button {
+    .user-name {
+      display: none;
+    }
+
+    .user-avatar {
+      width: 24px;
+      height: 24px;
+      font-size: 0.7rem;
+    }
+  }
+}
+
+/* User Tabs Styles */
+.user-tabs {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 0.3rem;
+  background: #fff;
+  color: #db2323;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background: rgba(219, 35, 35, 0.05);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  &.active {
+    background: #db2323;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(219, 35, 35, 0.3);
+  }
+
+  i {
+    font-size: 0.9rem;
+  }
+}
+
+.user-tab-content {
+  background: #fff;
+  border-radius: 0.6rem;
+  padding: 1.2rem;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  min-height: 400px;
+}
+
+/* Dark theme for tabs */
+:deep(.dark) {
+  .tab-btn {
+    background: #2d2d2d;
+    color: #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+    &:hover {
+      background: rgba(219, 35, 35, 0.1);
+    }
+
+    &.active {
+      background: #db2323;
+      color: #fff;
+    }
+  }
+
+  .user-tab-content {
+    background: #2d2d2d;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Responsive tabs */
+@media (max-width: 1024px) {
+  .user-tabs {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tab-btn {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.8rem;
+  }
+
+  .user-tab-content {
+    padding: 0.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .user-tabs {
+    overflow-x: auto;
+    padding-bottom: 0.4rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .tab-btn {
+    white-space: nowrap;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-tab-content {
+    padding: 0.6rem;
+  }
+
+  .tab-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    
+    i {
+      font-size: 0.8rem;
+    }
   }
 }
 </style>
